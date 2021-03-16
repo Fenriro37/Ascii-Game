@@ -1,6 +1,6 @@
 # Ascii-Game
 Scaletta: 
-Mappa
-Movimento del protagonista
-Nemici e oggetti
+Mappa <br/>
+Movimento del protagonista <br/>
+Nemici e oggetti <br/>
 ?Proiettili?
