@@ -1,5 +1,5 @@
 # Ascii-Game
-Scaletta: 
+Scaletta: <br/>
 Mappa <br/>
 Protagonista <br/>
 Movimento del protagonista <br/>
