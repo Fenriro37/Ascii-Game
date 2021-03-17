@@ -5,4 +5,5 @@ Protagonista <br/>
 Movimento del protagonista <br/>
 Nemici <br/> 
 Oggetti <br/>
-?Proiettili?
+Proiettili <br/>
+Punteggio(vita/bonus/malus/gettoni) <br/>
