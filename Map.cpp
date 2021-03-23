@@ -1,16 +1,8 @@
 #include <iostream>
-#include <conio.h>
-#include <windows.h>
 #include "Hero.hpp"
-//#include "Map.hpp"
-
+#include "Map.hpp"
 using namespace std;
 
-            
-//const int width = 20;
-//const int height = 20;
-//hero Bugo(1,1,1,1,1);
-//char level[height][width];
    const int width = 20;
    const int height = 20;
    hero Bugo(1,1,1,1,1);
@@ -89,17 +81,4 @@ void move(char mossa){
             
 }
 
-
-int main(){
-    
-    initializeArray();
-    while(1)
-    {
-    char mossa = getch(); //getch() salva il primo tasto che premi da tastira
-    move(mossa);           //che passiamo a move
-    system("cls");          //refresh dello
-    initializeArray();
-    //Sleep(100);
-    }
-    return 0;
-}
+//};

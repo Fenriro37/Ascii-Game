@@ -1,15 +1,23 @@
-#ifndef Map_hpp
-#define Map_hpp
+#ifndef MAP_H_INCLUDED
+#define MAP_H_INCLUDED
 
-   const int width = 10;
+#include <iostream>
+#include "Hero.hpp"
+#include "Map.hpp"
+using namespace std;
+
+   const int width = 20;
    const int height = 20;
+   hero Bugo(1,1,1,1,1);
 
-class map{
-    private:
+//class map{
+  //  private:
         char level[height][width];
     
-    public:
-        map ();
-        void initializeArray();
-};
+
+
+void initializeArray(); 
+void move(char mossa);
+
+//};
 #endif

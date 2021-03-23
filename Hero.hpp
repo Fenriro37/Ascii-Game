@@ -1,5 +1,7 @@
+#ifndef HERO_H_INCLUDED
+#define HERO_H_INCLUDED
+
 #include <iostream>
-#include "Hero.hpp"
 
 using namespace std;
 
@@ -12,13 +14,13 @@ class hero{
         int Yhero;
         //int firerate;
  
-   hero(int hp, int dmg, int exp, int x,int y){
+        hero(int hp, int dmg, int exp, int x,int y){
             life = hp;
             damage = dmg;
             experience = exp;
             Xhero = x;
             Yhero = y;
-        }         
+        }        
 
     void lvlUP(){
         life++;
@@ -30,3 +32,5 @@ class hero{
     }
 
 };
+
+#endif

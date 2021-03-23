@@ -1,23 +1,21 @@
-#include <iostream>
-#include "Hero.hpp"
+#ifndef ENEMY_H_INCLUDED
+#define ENEMY_H_INCLUDED
 
-using namespace std;
-
-class hero{
+class enemy{
     public: 
         int life;
         int damage;
         int experience;
-        int Xhero;
-        int Yhero;
+        int Xenemy;
+        int Yenemy;
         //int firerate;
  
-   hero(int hp, int dmg, int exp, int x,int y){
+   enemy(int hp, int dmg, int exp, int x,int y){
             life = hp;
             damage = dmg;
             experience = exp;
-            Xhero = x;
-            Yhero = y;
+            Xenemy = x;
+            Yenemy = y;
         }         
 
     void lvlUP(){
@@ -28,5 +26,6 @@ class hero{
     void hpchange(int val){
         life += val;
     }
-
 };
+
+#endif
