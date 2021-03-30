@@ -1,14 +1,6 @@
-
-class enemy{
-    public: 
-        int life;
-        int damage;
-        int experience;
-        int Xenemy;
-        int Yenemy;
-        //int firerate;
+#include "Enemy.hpp"
  
-   enemy(int hp, int dmg, int exp, int x,int y){
+    enemy::enemy(int hp, int dmg, int exp, int x,int y){
             life = hp;
             damage = dmg;
             experience = exp;
@@ -16,12 +8,11 @@ class enemy{
             Yenemy = y;
         }         
 
-    void lvlUP(){
+    void enemy::lvlUP(){
         life++;
         damage++;
     }
     
-    void hpchange(int val){
+    void enemy::hpchange(int val){
         life += val;
     }
-};

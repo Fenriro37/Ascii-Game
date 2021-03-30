@@ -10,22 +10,11 @@ class enemy{
         int Yenemy;
         //int firerate;
  
-   enemy(int hp, int dmg, int exp, int x,int y){
-            life = hp;
-            damage = dmg;
-            experience = exp;
-            Xenemy = x;
-            Yenemy = y;
-        }         
+   enemy(int hp, int dmg, int exp, int x,int y);        
 
-    void lvlUP(){
-        life++;
-        damage++;
-    }
+    void lvlUP();
     
-    void hpchange(int val){
-        life += val;
-    }
+    void hpchange(int val);
 };
 
 #endif

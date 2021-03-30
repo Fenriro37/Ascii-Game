@@ -14,22 +14,11 @@ class hero{
         int Yhero;
         //int firerate;
  
-        hero(int hp, int dmg, int exp, int x,int y){
-            life = hp;
-            damage = dmg;
-            experience = exp;
-            Xhero = x;
-            Yhero = y;
-        }        
+    hero(int hp, int dmg, int exp, int x,int y);
 
-    void lvlUP(){
-        life++;
-        damage++;
-    }
+    void lvlUP();
     
-    void hpchange(int val){
-        life += val;
-    }
+    void hpchange(int val);
 
 };
 

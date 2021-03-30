@@ -3,21 +3,13 @@
 
 #include <iostream>
 #include "Hero.hpp"
-#include "Map.hpp"
-using namespace std;
-
-   const int width = 20;
-   const int height = 20;
-   hero Bugo(1,1,1,1,1);
-
-//class map{
-  //  private:
-        char level[height][width];
-    
+#include "Enemy.hpp"
+#include <conio.h>
 
 
-void initializeArray(); 
-void move(char mossa);
+   bool gameover();
+   void encounter();
+   void initializeArray(); 
+   void move(char mossa);
 
-//};
 #endif
