@@ -1,0 +1,4 @@
+list of room(room, enemy[], items[], difficulty?, list* next);
+generate random room
+popolate the room (items, enemys, hero)
+logic (enemys pattern, bullets)
