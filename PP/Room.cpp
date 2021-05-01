@@ -7,25 +7,27 @@ void room::encounter(){
             enemy.YPos = -1;
         }
     }
+
+/**/    
 void room::initializeView() 
     {
         if(hero.life<=0)
             cout<<"GameOver";  
         //ciclo sulle righe   
         else{ 
-            for (int row = 0; row < height; row++)
+            for (int row = 0; row < roomHeight; row++)
             {   
                 //ciclo sulle colonne
-                for (int col = 0; col < width; col++)
+                for (int col = 0; col < roomWidth; col++)
                 {   
                     //caso muri sinistro e destro
-                    if( col == 0 || col == width-1)
+                    if( col == 0 || col == roomWidth-1)
                     {
                         view[row][col]='#';
                         cout << view[row][col];
                     }   
                     //caso tetto e pavimento
-                    else if(row == 0 || row == height-1 )
+                    else if(row == 0 || row == roomHeight-1 )
                     {
                         view[row][col] = '#';
                         cout<< view[row][col];

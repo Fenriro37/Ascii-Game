@@ -6,7 +6,7 @@
 class room{
 
     public:
-    char view[height][width];
+    char view[roomHeight][roomWidth];
     cast monters[monsterNum];
     //array items 
     int roomNum;
