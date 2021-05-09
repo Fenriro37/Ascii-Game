@@ -8,19 +8,18 @@
         int YPos=0;
     }
     
-    cast::cast(int hp, int dmg, int exp, int x,int y){
+    cast::cast(int hp, int dmg, int exp, int x){
         life = hp;
         damage = dmg;
         experience = exp;
-        XPos = x;
-        YPos = y;
+        position = x;
     } 
 
     void cast::lvlUP(){
-    life++;
-    damage++;
+        life++;
+        damage++;
     }
 
     void cast::hpchange(int val){
-    life += val;
+        life += val;
     }

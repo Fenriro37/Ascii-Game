@@ -10,12 +10,11 @@ class cast{
         int life;
         int damage;
         int experience;
-        int XPos;
-        int YPos;
+        int position;
     
     cast();
 
-    cast(int hp, int dmg, int exp, int x,int y);
+    cast(int hp, int dmg, int exp, int x);
 
     void lvlUP();
     
