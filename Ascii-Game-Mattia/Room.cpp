@@ -74,7 +74,7 @@ void room::toCharInfo() {
             }
             else { 
                 CIview[count].Char.AsciiChar = ' ';
-                CIview[count].Attributes = FOREGROUND_GREEN | BACKGROUND_RED;
+                CIview[count].Attributes = FOREGROUND_GREEN;
             }
             count++;
         }
@@ -161,10 +161,10 @@ void room::spawnItems(){
                 iter->Bonus.setRowPos(x);
                 iter->Bonus.setColPos(y);
                 view[x][y] = iter->Bonus.getFigure();
-                iter = iter->next; 
+                iter = iter->next;
             }
         }
-        else    
+        else
             iter = iter->next;
     }
 }
@@ -198,4 +198,31 @@ void room::nextLevelPos(){
 void room::prevLevelPos(){
     protagonist.setRowPos(endRowPos);
     protagonist.setColPos(endColPos);
+}
+
+void room::enemyMove(){ //movimento orizzontale
+    enemyNode* iter = currentMonsters;
+    while(iter != NULL){
+        if(!iter->monster.getAlive()){
+            if(rand()%2==0){
+                //movimento a sx
+                if(view[iter->monster.getRowPos()+1][iter->monster.getColPos()-1] != ' ' 
+                    && view[iter->monster.getRowPos()][iter->monster.getColPos()-1] != '#'){
+                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
+                        iter->monster.setColPos(iter->monster.getColPos()-1);
+                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
+                }
+            }
+            else {
+                //movimento a dx
+                if(view[iter->monster.getRowPos()+1][iter->monster.getColPos()+1] != ' ' 
+                    && view[iter->monster.getRowPos()][iter->monster.getColPos()+1] != '#'){
+                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
+                        iter->monster.setColPos(iter->monster.getColPos()+1);
+                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
+                }
+            }
+        }
+        iter = iter->next;
+    }
 }

@@ -5,17 +5,17 @@ item::item(){
     
     switch (rand()%3)
     {
-    case '0':    //1 vita in più
+    case 0:    //1 vita in più
         setValue(1);
-        cast::setFigure('a'); //(char)3);   //♥
+        cast::setFigure((char)3);   //♥
         break;
-    case '1':   //Più 2 proiettili
+    case 1:   //Più 2 proiettili
         setValue(2);
-        cast::setFigure('b'); //(char)207); //¤
+        cast::setFigure((char)207); //¤
         break;
-    case '2':    //Score più 10 punti
+    case 2:    //Score più 10 punti
         setValue(10);
-        cast::setFigure('c'); //(char)184); //©
+        cast::setFigure((char)184); //©
         break;    
     }
 }

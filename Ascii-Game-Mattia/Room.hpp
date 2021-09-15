@@ -53,4 +53,7 @@ public:
     void nextLevelPos();
     /*Funzione per riposizionare il personaggio in caso di ritorno al livello precedente*/
     void prevLevelPos();
+
+    //Cast IA
+    void enemyMove();
 };

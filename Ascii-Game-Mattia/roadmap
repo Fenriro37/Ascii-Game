@@ -18,8 +18,14 @@ Bullet
 scivere relazione e registrare video
 commentare le funzioni
 
-15/9:
+#15/9:
+fatto: costruttore di item, aggiustato lo switch + aggiunti caratteri speciali
+    incrementato il font della finestra
+
+    #include <Windows.h>
+
+    Sleep(number of milliseconds);
+
     -difficoltà: danno dei nemici, punti e bonus, piattaforme
     -come si muovono i nemici, tipi diversi dei nemici
-    -mail ad ADELE
     -cercare come creare il quanto di tempo

@@ -39,6 +39,12 @@ game::game() {
     /* Set the screen's buffer size */
     SetConsoleScreenBufferSize(hStdout, bufferSize);
 
+    CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};//CONSOLE_FONT_INFOEX is defined in some windows header
+    GetCurrentConsoleFontEx(hStdout, false, &font);//PCONSOLE_FONT_INFOEX is the same as CONSOLE_FONT_INFOEX*
+    font.dwFontSize.X = 24;
+    font.dwFontSize.Y = 35;
+    SetCurrentConsoleFontEx(hStdout, false, &font);
+
     //currentroom.initializeView();
     currentroom = new room();
     currentroom->roomGenerator();
@@ -94,6 +100,8 @@ void game::logic(){
         
         //stamp view aggiungere controllo per alive e taken
     }
+    currentroom->enemyMove();
+    Sleep(700);
 }
 
 //Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello
