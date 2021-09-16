@@ -1,6 +1,5 @@
 #pragma once
 
-#include "windows.h"
 #include "Variables.hpp"
 #include "hero.hpp"
 #include "item.hpp"
@@ -41,6 +40,8 @@ public:
     void initializeView();
     void generateRow(int currentLevel); //funzione per interagire con platforms
     void roomGenerator();
+    int sizeofArray(char charArray[]);
+    void paste(char arrayToPaste[], int &count);
     void toCharInfo();
 
     void initializeItems(int currentLevel);

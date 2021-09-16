@@ -5,6 +5,7 @@ class enemy: public cast{
 protected:    
     int life;
     bool alive;
+    bool direction;
 
 public:
     enemy();
@@ -12,6 +13,8 @@ public:
     void setAlive();
     int  getLife();
     bool getAlive();
+    bool getDirection();
+    void setDirection();
 
     //IA and types
 

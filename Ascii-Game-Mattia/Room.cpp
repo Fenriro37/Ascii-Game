@@ -1,4 +1,5 @@
 #include "Room.hpp"
+#include <string>
 
 room::room(){
     roomNum = 1;
@@ -63,18 +64,41 @@ void room::roomGenerator(){
     toCharInfo();
 }
 
+/*
+* Doing sizeof myArray will get you the total number of bytes allocated for that array.
+* You can then find out the number of elements in the array  by dividing
+* by the size of one element in the array: sizeof myArray[0]
+*/
+int room::sizeofArray(char charArray[]){
+    return sizeof(charArray)/sizeof(charArray[0]);
+}
+
+void room::paste (char arrayToPaste[], int &count){
+        for (int i=0; arrayToPaste[i]!='\0'; i++){
+            CIview[count].Char.AsciiChar = arrayToPaste[i];
+            CIview[count++].Attributes = DEF_COLORFOREGROUND;
+        }
+    }
+
 //funzione per convertire da char a charinfo per poter essere rappresentato tramite la libreria windows.h
-void room::toCharInfo() {
+void room::toCharInfo() {    
+
     int count = 0;
     for (int row = 0; row < consoleHeight; row++) {
         for (int col = 0; col < consoleWidth; col++) {
             if (col < roomWidth  && row < roomHeight) {
                 CIview[count].Char.AsciiChar = view[row][col];
-                CIview[count].Attributes = FOREGROUND_GREEN;
+                CIview[count].Attributes = DEF_COLORFOREGROUND;
+            }
+            /*
+            * lvl, hp, score, ammo */
+            else if (row == 4 && col == roomWidth+3){
+                char LVL[] = {'L','V','L',':','\0'};
+                paste(LVL, count);
             }
             else { 
                 CIview[count].Char.AsciiChar = ' ';
-                CIview[count].Attributes = FOREGROUND_GREEN;
+                CIview[count].Attributes = DEF_COLORFOREGROUND;
             }
             count++;
         }
@@ -204,22 +228,28 @@ void room::enemyMove(){ //movimento orizzontale
     enemyNode* iter = currentMonsters;
     while(iter != NULL){
         if(!iter->monster.getAlive()){
-            if(rand()%2==0){
-                //movimento a sx
+            if(!iter->monster.getDirection()){
+                //0 per movimento a sx
                 if(view[iter->monster.getRowPos()+1][iter->monster.getColPos()-1] != ' ' 
                     && view[iter->monster.getRowPos()][iter->monster.getColPos()-1] != '#'){
                         view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
                         iter->monster.setColPos(iter->monster.getColPos()-1);
                         view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
                 }
+                else {
+                    iter->monster.setDirection();
+                }
             }
             else {
-                //movimento a dx
+                //1 per movimento a dx
                 if(view[iter->monster.getRowPos()+1][iter->monster.getColPos()+1] != ' ' 
                     && view[iter->monster.getRowPos()][iter->monster.getColPos()+1] != '#'){
                         view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
                         iter->monster.setColPos(iter->monster.getColPos()+1);
                         view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
+                }
+                else {
+                    iter->monster.setDirection();
                 }
             }
         }

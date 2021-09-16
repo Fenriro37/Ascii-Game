@@ -3,7 +3,7 @@
          possiamo invalidare le colonne o le righe (ad esempio con un array dove salviamo i numeri delle colonne o 
          delle righe per evitare che i nemici si intercettino oppure nel caso entrino in contatto fonderli in un mostro
          più forte)
-2)continue with game::logic() ADELE
+2)continue with game::logic() FANCULOADELE
 
 3)cercare un modo per abbellire i caratteri
 next step
@@ -29,3 +29,8 @@ fatto: costruttore di item, aggiustato lo switch + aggiunti caratteri speciali
     -difficoltà: danno dei nemici, punti e bonus, piattaforme
     -come si muovono i nemici, tipi diversi dei nemici
     -cercare come creare il quanto di tempo
+
+#16/9:
+fatto: variabile globale per il colore del foreground, riadattata dimensione della console,
+    miglioramento del pattern orizzontale dei nemici, primi tentativi di scrivere gli score sulla console,
+    risultato, tutto tabbato a destra + carattere casuale

@@ -101,7 +101,7 @@ void game::logic(){
         //stamp view aggiungere controllo per alive e taken
     }
     currentroom->enemyMove();
-    Sleep(700);
+    Sleep(200);
 }
 
 //Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello
