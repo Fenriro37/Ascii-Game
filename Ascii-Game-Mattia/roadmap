@@ -34,3 +34,14 @@ fatto: costruttore di item, aggiustato lo switch + aggiunti caratteri speciali
 fatto: variabile globale per il colore del foreground, riadattata dimensione della console,
     miglioramento del pattern orizzontale dei nemici, primi tentativi di scrivere gli score sulla console,
     risultato, tutto tabbato a destra + carattere casuale
+    
+    
+#17/09
+Marco e Lorenzo: gestione dei livelli
+- Ogni volta che viene generata una nuova stanza aumenta il punteggio, onde evitare problemi se il personaggio torna indietro. 
+- Quando un nemico viene ucciso, si guadagnano punti extra.
+- Aumentando il punteggio si sale di livello, salendo di livello aumenta la difficoltà (numero, vita, danno e velocità dei nemici).
+
+
+
+
