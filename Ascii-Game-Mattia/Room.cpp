@@ -70,22 +70,25 @@ void room::roomGenerator(){
 * by the size of one element in the array: sizeof myArray[0]
 */
 int room::sizeofArray(char charArray[]){
-    return sizeof(charArray)/sizeof(charArray[0]);
+    return (sizeof(charArray)/sizeof(charArray[0]));
 }
 
-void room::paste (char arrayToPaste[], int &count){
-        for (int i=0; arrayToPaste[i]!='\0'; i++){
-            CIview[count].Char.AsciiChar = arrayToPaste[i];
-            CIview[count++].Attributes = DEF_COLORFOREGROUND;
-        }
+void room::paste (char arrayToPaste[], int &count, int &col, int size){
+    for (int i=0; i<size-1; i++){
+        CIview[count].Char.AsciiChar = arrayToPaste[i];
+        CIview[count++].Attributes = DEF_COLORFOREGROUND;
+        col++;
     }
+    CIview[count].Char.AsciiChar = arrayToPaste[size-1];
+    CIview[count++].Attributes = DEF_COLORFOREGROUND; col++;
+}
 
 //funzione per convertire da char a charinfo per poter essere rappresentato tramite la libreria windows.h
 void room::toCharInfo() {    
 
     int count = 0;
     for (int row = 0; row < consoleHeight; row++) {
-        for (int col = 0; col < consoleWidth; col++) {
+        for (int col = 0; col < consoleWidth; col++, count++) {
             if (col < roomWidth  && row < roomHeight) {
                 CIview[count].Char.AsciiChar = view[row][col];
                 CIview[count].Attributes = DEF_COLORFOREGROUND;
@@ -93,14 +96,16 @@ void room::toCharInfo() {
             /*
             * lvl, hp, score, ammo */
             else if (row == 4 && col == roomWidth+3){
-                char LVL[] = {'L','V','L',':','\0'};
-                paste(LVL, count);
+                char LVL[] = {'L','V','L',':'};
+                paste(LVL, count, col, sizeofArray(LVL));
+                count++; col++;
+                CIview[count].Char.AsciiChar = (char)sizeofArray(LVL);
+                CIview[count].Attributes = DEF_COLORFOREGROUND;
             }
             else { 
                 CIview[count].Char.AsciiChar = ' ';
                 CIview[count].Attributes = DEF_COLORFOREGROUND;
             }
-            count++;
         }
     }
 }

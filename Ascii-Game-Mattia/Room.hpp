@@ -41,7 +41,7 @@ public:
     void generateRow(int currentLevel); //funzione per interagire con platforms
     void roomGenerator();
     int sizeofArray(char charArray[]);
-    void paste(char arrayToPaste[], int &count);
+    void paste(char arrayToPaste[], int &count, int &col, int size);
     void toCharInfo();
 
     void initializeItems(int currentLevel);
