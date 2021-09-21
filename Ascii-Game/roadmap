@@ -37,4 +37,12 @@ fatto: variabile globale per il colore del foreground, riadattata dimensione del
 
 #17/9:
 fatto: fixato la stampa dei campi, divisi i compiti per la gestione del punteggio e altre statistiche
-da fare: funzioni per il calcolo dei campi
+dafare: funzioni per il calcolo dei campi
+
+#18/9
+fatto: fottuto tutto
+dafare: mettere a posto il prevroom() e rendere protected view[][] e aggiustare tocharinfo
+
+#20/9
+aggiustato i bug del 18/9 (grafica)
+dafare: rendere protected view[][], bullets, bonus e malus

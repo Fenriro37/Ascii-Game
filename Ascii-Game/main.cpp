@@ -11,7 +11,7 @@ int main() {
     char mossa;
     while (1) {
         x.logic();
-        x.currentroom->toCharInfo();
+        x.toCharInfo();
         x.stampView();
 
         //x.currentroom.initializeView();

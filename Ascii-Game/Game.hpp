@@ -2,6 +2,12 @@
 
 #include "Room.hpp"
 
+struct roomList {
+    room myRoom;
+    roomList* next = NULL;
+    roomList* prev = NULL;
+};
+
 class game {
 protected:
     
@@ -9,19 +15,22 @@ protected:
     HANDLE hStdout, hStdin, hNewScreenBuffer;
     _SMALL_RECT consoleSize;
     _COORD characterBufferSize, characterPosition;
-    int score;
-///////////////////////////SET E GET
-public:
-    room* currentroom;
-    
+    CHAR_INFO CIview[consoleHeight * consoleWidth];
 
+    int score;
+    roomList* currentroom;
+
+public:
 
     game();
     void logic();
     void nextRoom();
     void prevRoom();
     void stampView();
-    void move(char input);
+    void move(char input);    
+    void toCharInfo();
+    void paste(char arrayToPaste[], int size, int &count, int &col);
+
     
     int getScore();
     void setScore(int newScore);

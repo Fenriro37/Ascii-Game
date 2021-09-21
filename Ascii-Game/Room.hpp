@@ -16,33 +16,31 @@ struct enemyNode{
 };
 
 class room {
-
-public:
+protected:
     int roomNum = 1;
-    char view[roomHeight][roomWidth];
     char platforms [roomWidth];
    
     itemNode* currentBonus;
     enemyNode* currentMonsters;
-    room* next = NULL;
-    room* prev = NULL;
-    CHAR_INFO CIview[consoleHeight * consoleWidth];
 
-    /////////////////////////////////////////////////////////////////////////
-    //TODO: modificare i parametri come protetti aggiungendo setter e getter/
-    /////////////////////////////////////////////////////////////////////////
-
+public:
+    char view[roomHeight][roomWidth];   // da capire come rendere protected
+    
     room();
 
     void setRoomNum(int newRoomNum);
-    void setView(char newView[roomHeight][roomWidth]);
     int getRoomNum();
+    itemNode* getCurrentBonus();
+    enemyNode* getCurrentMonsters();
+    room* getNext();
+    room* getPrev();
+
+
+    void setView(char newView[roomHeight][roomWidth]);
     void initializeView();
     void generateRow(int currentLevel); //funzione per interagire con platforms
     void roomGenerator();
     int sizeofArray(char charArray[]);
-    void paste(char arrayToPaste[], int size, int &count, int &col);
-    void toCharInfo();
 
     void initializeItems(int currentLevel);
     void initializeEnemies(int currentLevel);

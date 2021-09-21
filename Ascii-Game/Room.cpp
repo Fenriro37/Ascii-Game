@@ -4,11 +4,9 @@
 room::room(){
     roomNum = 1;
     roomGenerator();
-   
-    currentBonus = NULL;
-    currentMonsters = NULL;
-    next = NULL;
-    prev = NULL;
+    nextLevelPos();
+    //currentBonus = NULL;
+    //currentMonsters = NULL;
 }
 
 //Funzione per creare randomicamente una serie di piattaforme
@@ -48,8 +46,9 @@ void room::roomGenerator(){
             }    
         }
     }
+    
     //inserimento protagonista
-    view[protagonist.getRowPos()][protagonist.getColPos()] = protagonist.getFigure();
+    view[startRowPos][startColPos] = protagonist.getFigure();
 
     /*  TODO: aggiornare initialize item con bonus casuali
           ora tutti i bonus sono copie 
@@ -58,10 +57,8 @@ void room::roomGenerator(){
     initializeItems(getRoomNum());
     initializeEnemies(getRoomNum());
 
-    spawnEnemies();
     spawnItems();
-    
-    toCharInfo();
+    spawnEnemies();
 }
 
 /*
@@ -70,62 +67,20 @@ void room::roomGenerator(){
 * by the size of one element in the array: sizeof myArray[0]
 */
 
-void room::paste (char arrayToPaste[], int size, int &count, int &col){
-    for (int i=0; i<size-1; i++){
-        CIview[count].Char.AsciiChar = arrayToPaste[i];
-        CIview[count++].Attributes = DEF_COLORFOREGROUND;
-        col++;
-    }
-    CIview[count].Char.AsciiChar = arrayToPaste[size-1];
-    CIview[count].Attributes = DEF_COLORFOREGROUND;
-}
-
-//funzione per convertire da char a charinfo per poter essere rappresentato tramite la libreria windows.h
-void room::toCharInfo() {    
-
-    int count = 0;
-    for (int row = 0; row < consoleHeight; row++) {
-        for (int col = 0; col < consoleWidth; col++, count++) {
-            if (col < roomWidth  && row < roomHeight) {
-                CIview[count].Char.AsciiChar = view[row][col];
-                CIview[count].Attributes = DEF_COLORFOREGROUND;
-            }
-            /*
-            * lvl, hp, score, ammo */
-            else if (row == 2 && col == roomWidth+10){
-                char field[] = {'L','V','L',':'};
-                int size = sizeof(field)/sizeof(field[0]);
-                paste(field, size, count, col);
-            }
-            else if (row == 4 && col == roomWidth+10){
-                char field[] = {'S','C','O','R','E',':'};
-                int size = sizeof(field)/sizeof(field[0]);
-                paste(field, size, count, col);
-            }
-            else if (row == 7 && col == roomWidth+10){
-                char field[] = {'H','P',':'};
-                int size = sizeof(field)/sizeof(field[0]);
-                paste(field, size, count, col);
-            }
-            else if (row == 9 && col == roomWidth+10){
-                char field[] = {'A','M','M','O',':'};
-                int size = sizeof(field)/sizeof(field[0]);
-                paste(field, size, count, col);
-            }
-            else { 
-                CIview[count].Char.AsciiChar = ' ';
-                CIview[count].Attributes = DEF_COLORFOREGROUND;
-            }
-        }
-    }
-}
-
 void room::setRoomNum(int newRoomNum){
     roomNum = newRoomNum;
 }
 
 int room::getRoomNum(){
     return roomNum;
+}
+
+itemNode* room::getCurrentBonus(){
+    return currentBonus;
+}
+
+enemyNode* room::getCurrentMonsters(){
+    return currentMonsters;
 }
 
 void room::setView(char newView[roomHeight][roomWidth]){    //##cos'è?
@@ -246,10 +201,11 @@ void room::enemyMove(){ //movimento orizzontale
             if(!iter->monster.getDirection()){
                 //0 per movimento a sx
                 if(view[iter->monster.getRowPos()+1][iter->monster.getColPos()-1] != ' ' 
-                    && view[iter->monster.getRowPos()][iter->monster.getColPos()-1] != '#'){
-                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
-                        iter->monster.setColPos(iter->monster.getColPos()-1);
-                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
+                    && view[iter->monster.getRowPos()][iter->monster.getColPos()-1] != '#'
+                        && view[iter->monster.getRowPos()][iter->monster.getColPos()-1] != 'M'){
+                            view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
+                            iter->monster.setColPos(iter->monster.getColPos()-1);
+                            view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
                 }
                 else {
                     iter->monster.setDirection();
@@ -258,10 +214,11 @@ void room::enemyMove(){ //movimento orizzontale
             else {
                 //1 per movimento a dx
                 if(view[iter->monster.getRowPos()+1][iter->monster.getColPos()+1] != ' ' 
-                    && view[iter->monster.getRowPos()][iter->monster.getColPos()+1] != '#'){
-                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
-                        iter->monster.setColPos(iter->monster.getColPos()+1);
-                        view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
+                    && view[iter->monster.getRowPos()][iter->monster.getColPos()+1] != '#'
+                        && view[iter->monster.getRowPos()][iter->monster.getColPos()+1] != 'M'){
+                            view[iter->monster.getRowPos()][iter->monster.getColPos()] = ' ';
+                            iter->monster.setColPos(iter->monster.getColPos()+1);
+                            view[iter->monster.getRowPos()][iter->monster.getColPos()] = iter->monster.getFigure();
                 }
                 else {
                     iter->monster.setDirection();

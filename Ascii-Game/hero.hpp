@@ -2,12 +2,13 @@
 #include "Cast.hpp"
 
 class hero : public cast{
-    protected: 
+protected: 
     int life;
     int bullet;
     int experience;
 
-    public:
+public:
+
     hero();
     void decreaseLife();
     void setLife(int newLife);

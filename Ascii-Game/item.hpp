@@ -2,11 +2,11 @@
 #include "Cast.hpp"
 
 class item : public cast{
-    protected:
+protected:
     int value; //Variabile per indicare quanti punti varrà il bonus
     bool taken;
 
-    public:
+public:
     //vari costruttori per vari bonus?
     item();
     item(int bonus);
