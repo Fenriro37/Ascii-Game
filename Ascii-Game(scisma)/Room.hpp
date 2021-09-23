@@ -28,6 +28,7 @@ protected:
    
     itemNode* currentBonus;
     enemyNode* currentMonsters;
+    bulletNode* currentAmmo = NULL;
        
 public:
        // da capire come rendere protected
@@ -38,6 +39,7 @@ public:
     int getRoomNum();
     itemNode* getCurrentBonus();
     enemyNode* getCurrentMonsters();
+    bulletNode* getCurrentAmmo();
     char* getView();
 
     void initializeView();
@@ -51,12 +53,17 @@ public:
     bool isEmpty(int x, int y);
     void spawnItems();
     void spawnEnemies();
+
+    enemyNode* findMoster(int x, int y);
+    itemNode* findBonus(int x, int y);
     /*Funzione per riposizionare il personaggio all'inizio di ogni livello*/
     void nextLevelPos();
     /*Funzione per riposizionare il personaggio in caso di ritorno al livello precedente*/
     void prevLevelPos();
 
     //Cast IA
+    void generateBullet(bool direction);
+    bool bulletCollision(int x, int y);
     void bulletMove();
     void enemyMove();
 };

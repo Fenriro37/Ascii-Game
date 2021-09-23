@@ -1,15 +1,29 @@
 #include "bullet.hpp"
 
+
+bullet::bullet(){
+    cast::setFigure(BULLET);
+    alive = true;
+}
+
 bullet::bullet(bool newDirection){
-    alive = false;  //parte a false e diventa true solo quando spariamo (premiamo j o k)
+    cast::setFigure(BULLET);
+    alive = true;
     direction = newDirection;
 }
+
 bool bullet::getDirection(){
     return direction;
 }
+
 bool bullet::getAlive(){
     return alive;
 }
+
 void bullet::setAlive(){
-    alive = !alive;
+    alive = false;
+}
+
+void bullet::setDirection(){
+    direction = !direction;
 }

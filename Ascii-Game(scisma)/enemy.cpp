@@ -3,14 +3,18 @@
 enemy::enemy(){
     int life = 1;
     bool alive = true;
-    cast::figure = 'M';
+    cast::figure = MONSTER;
     direction = rand()%2;
 }
 void enemy::setLife(int newLife){
     life = newLife;
 }
+
+void enemy::decreaseLife(){
+    life--;
+}
 void enemy::setAlive(){
-    alive = false;
+    alive = !alive;
 }
 int  enemy::getLife(){
     return life;

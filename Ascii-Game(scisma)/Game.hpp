@@ -35,6 +35,6 @@ public:
     int getScore();
     void setScore(int newScore);
 
-    void checkCollision(int row, int col);
+    void playerCollision(int row, int col);
     int findItem(int row, int col);
 };

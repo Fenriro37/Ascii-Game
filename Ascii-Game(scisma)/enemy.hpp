@@ -10,6 +10,7 @@ protected:
 public:
     enemy();
     void setLife(int newLife);
+    void decreaseLife();
     void setAlive();
     int  getLife();
     bool getAlive();

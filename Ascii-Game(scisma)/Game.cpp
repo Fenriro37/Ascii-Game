@@ -53,7 +53,7 @@ game::game() {
 //Quando il personaggio arriva in fondo creiamo una nuova room 
 //se la stanza è già stata creata bisogna respawnarla
 void game::nextRoom(){
-        currentroom->myRoom.view[protagonist.getPos()] = ' ';
+        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
         if (currentroom->next == NULL){
             currentroom->next = new roomList();
             currentroom->next->prev = currentroom;
@@ -71,7 +71,7 @@ void game::nextRoom(){
 //Quando il personaggio vuole tornare indietro
 void game::prevRoom(){
     if (currentroom->prev != NULL){
-        currentroom->myRoom.view[protagonist.getPos()] = ' ';
+        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
         currentroom = currentroom->prev;
         currentroom->myRoom.prevLevelPos();
         currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
@@ -95,6 +95,7 @@ void game::logic(){
         
         //stamp view aggiungere controllo per alive e taken
     }
+    currentroom->myRoom.bulletMove();
     currentroom->myRoom.enemyMove();
     Sleep(50);
 }
@@ -105,54 +106,56 @@ void game::move(char input){
         /*Movimento Sopra e Sotto
          */
         case 'w': 
-        case 'W': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()-1) + protagonist.getColPos()] != ' ' &&    //##quali sono i casi in cui il protagonista non può muoversi? Forse è più facile fare i casi in cui può muoversi
-                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()-1) + protagonist.getColPos()] != '#'){
-                        currentroom->myRoom.view[protagonist.getPos()] = ' ';
+        case 'W': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()-1) + protagonist.getColPos()] != BLANK &&    //##quali sono i casi in cui il protagonista non può muoversi? Forse è più facile fare i casi in cui può muoversi
+                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()-1) + protagonist.getColPos()] != ROOF){
+                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
                         protagonist.setRowPos(protagonist.getRowPos()-2);                               //##sale di piattaforma -> -2
-                        checkCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
                     }  
             break;
         case 's': 
-        case 'S': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+3) + protagonist.getColPos()] != ' ' &&
-                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + protagonist.getColPos()] != '#'){
-                        currentroom->myRoom.view[protagonist.getPos()] = ' ';
+        case 'S': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+3) + protagonist.getColPos()] != BLANK &&
+                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + protagonist.getColPos()] != FLOOR){
+                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
                         protagonist.setRowPos(protagonist.getRowPos()+2);
-                        checkCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
                     }  
             break;
         /*Movimento Sinistra e Destra*/    
         case 'a': 
-        case 'A': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + (protagonist.getColPos()-1)] != ' '){
-                        currentroom->myRoom.view[protagonist.getPos()] = ' ';
+        case 'A': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + (protagonist.getColPos()-1)] != BLANK &&
+                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()) + protagonist.getColPos()-1] != WALL){
+                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
                         //change into new value
                         protagonist.setColPos(protagonist.getColPos()-1);
                         //controlliamo la posizione su cui ci spostiamo
-                        checkCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         //update view
                         currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();  
                     }
             break;
         case 'd': 
-        case 'D': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + (protagonist.getColPos()+1)] != ' '){
-                        currentroom->myRoom.view[protagonist.getPos()] = ' ';
+        case 'D': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + (protagonist.getColPos()+1)] != BLANK &&
+                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()) + protagonist.getColPos()+1] != WALL){
+                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
                         protagonist.setColPos(protagonist.getColPos()+1);
-                        checkCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
                     }  
             break;
         
-        case 'j':
-        case 'J': if(protagonist.getBullet() > 0){
+        case 'j': //Proiettile sinistra
+        case 'J': if(protagonist.getBullet() > 0 && currentroom->myRoom.view[roomWidth * protagonist.getRowPos() + protagonist.getColPos()-1]!= WALL){
                     protagonist.decreaseBullet();
-                    bullet myBullet(LEFT);
+                    currentroom->myRoom.generateBullet(LEFT);
                   }
             break;
-        case 'k':
-        case 'K': if(protagonist.getBullet() > 0){
+        case 'k': //proiettile destra
+        case 'K': if(protagonist.getBullet() > 0  && currentroom->myRoom.view[roomWidth * protagonist.getRowPos() + protagonist.getColPos()+1]!= WALL){
                     protagonist.decreaseBullet();
-                    bullet myBullet(RIGHT);
+                    currentroom->myRoom.generateBullet(RIGHT);
                   }                  
             break;
 
@@ -193,12 +196,13 @@ int game::findItem(int row, int col){
 //Funzione per controllare l'interazione con mostri e items
 //Gestisce le vite e lo score
 //Aggiornare con le collisioni dei proiettili o aggiungere un'altra funzione
+//Funzioni findmMonster() e findBonus() da utilizzare al posto del while
 ///////////////////////////////////////
-void game::checkCollision (int row, int col){
-    if(currentroom->myRoom.view[roomWidth * row + col] != ' '){
+void game::playerCollision (int row, int col){
+    if(currentroom->myRoom.view[roomWidth * row + col] != BLANK){
         bool found = false;
         //caso collisione enemy
-        if(currentroom->myRoom.view[roomWidth * row + col] == 'M'){
+        if(currentroom->myRoom.view[roomWidth * row + col] == MONSTER){
             protagonist.decreaseLife();
             setScore(-10);
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
@@ -214,15 +218,15 @@ void game::checkCollision (int row, int col){
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
         else if(!found){
-            if(currentroom->myRoom.view[roomWidth * row + col] == 'A'){
+            if(currentroom->myRoom.view[roomWidth * row + col] == HEART){
                 int value = findItem(row, col);
                 protagonist.setLife(protagonist.getLife() + value);
             }
-            else if(currentroom->myRoom.view[roomWidth * row + col] == 'B'){
+            else if(currentroom->myRoom.view[roomWidth * row + col] == MAGAZINE){
                 int value = findItem(row, col);
                 protagonist.setBullet(protagonist.getBullet() + value);           
             }
-            else if (currentroom->myRoom.view[roomWidth * row + col] == 'C'){
+            else if (currentroom->myRoom.view[roomWidth * row + col] == COIN){
                 int value = findItem(row, col);
                 setScore(value);
             }
@@ -253,7 +257,7 @@ void game::toCharInfo() {
             /*
             * lvl, hp, score, ammo */
             else if (row == 2 && col == roomWidth+10){
-                char field[8] = {'L','V','L',':',' '};
+                char field[8] = {'L','V','L',':',BLANK};
                 char value[3];
                 /* _itoa() funzione che converte il primo argomento (intero) in stringa
                 * e lo salva nel secondo argomento, il terzo argomento è la base di conversione
@@ -265,7 +269,7 @@ void game::toCharInfo() {
                 paste(field, size, count, col);
             }
             else if (row == 4 && col == roomWidth+10){
-                char field[13] = {'S','C','O','R','E',':',' '};
+                char field[13] = {'S','C','O','R','E',':',BLANK};
                 char value[6]; //fino a 999.999
                 _itoa(score, value, 10);
                 strcat(field, value);
@@ -273,7 +277,7 @@ void game::toCharInfo() {
                 paste(field, size, count, col);
             }
             else if (row == 7 && col == roomWidth+10){
-                char field[6] = {'H','P',':',' '};
+                char field[6] = {'H','P',':',BLANK};
                 char value[2]; //fino a 99
                 _itoa(protagonist.getLife(), value, 10);
                 strcat(field, value);
@@ -281,15 +285,15 @@ void game::toCharInfo() {
                 paste(field, size, count, col);
             }
             else if (row == 9 && col == roomWidth+10){
-                char field[8] = {'A','M','M','O',':',' '};
-                char value[2]; //fino a 99
+                char field[8] = {'A','M','M','O',':',BLANK};
+                char value[3]; //fino a 99
                 _itoa(protagonist.getBullet(), value, 10);
                 strcat(field, value);
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
             else { 
-                CIview[count].Char.AsciiChar = ' ';
+                CIview[count].Char.AsciiChar = BLANK;
                 CIview[count].Attributes = DEF_COLORFOREGROUND;
             }
         }

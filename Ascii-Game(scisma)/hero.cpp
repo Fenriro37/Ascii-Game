@@ -4,9 +4,9 @@
 hero::hero(){
     cast::setRowPos(startRowPos);
     cast::setColPos(startColPos);
-    cast::setFigure('P');
+    cast::setFigure(HERO);
     setLife(3);
-    setBullet(2);
+    setBullet(20);
 }
 
 int hero::getLife(){
@@ -22,7 +22,7 @@ void hero::decreaseLife(){
 }
 
 void hero::decreaseBullet(){
-    bullet--;
+    bullet -= 1;
 }
 
 void hero::setBullet(int newBullet){

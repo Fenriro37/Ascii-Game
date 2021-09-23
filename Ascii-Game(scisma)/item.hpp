@@ -9,7 +9,6 @@ protected:
 public:
     //vari costruttori per vari bonus?
     item();
-    item(int bonus);
     void setValue(int newValue);
     void setTaken();
     int getValue();
