@@ -62,8 +62,8 @@ void room::roomGenerator(){
             }    
         }
     }
-    view[roomWidth * (roomHeight-2)] = LEFTDOOR;
-    view[roomWidth * (roomHeight-2) + roomWidth-1] = RIGHTDOOR;
+    view[roomWidth * (roomHeight-2)] = BLANK;
+    view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
     //inserimento protagonista
     view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
@@ -187,7 +187,7 @@ void room::spawnEnemies(){
     while(iter != NULL){
         //remind i mostri partono sempre con il bool alive = true
         //controllo da rivedere (perché !)
-        if(iter->monster.getAlive()){
+        if(!iter->monster.getAlive()){
             x = rand()%roomHeight;
             y = rand()%roomWidth;
             if(isEmpty(x,y)){
@@ -226,7 +226,7 @@ enemyNode* room::findMoster(int x, int y){
 void room::enemyMove(){ //movimento orizzontale
     enemyNode* iter = currentMonsters;
     while(iter != NULL){
-        if(iter->monster.getAlive()){
+        if(!iter->monster.getAlive()){
             if(!iter->monster.getDirection()){
                 //0 per movimento a sx
                 if(view[roomWidth * (iter->monster.getRowPos()+1) + (iter->monster.getColPos()-1)] != BLANK 

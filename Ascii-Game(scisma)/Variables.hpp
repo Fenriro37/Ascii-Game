@@ -13,9 +13,9 @@
 #define ROOF (char)205
 #define FLOOR (char)205
 #define WALL (char)186
-#define DOOR (char)8
+//#define DOOR (char)8
 #define LEFTDOOR (char)8
-#define RIGHTDOOR (char)8
+#define RIGHTDOOR (char)10
 #define HEART (char)3
 #define COIN (char)184
 #define HERO 'P'
@@ -23,7 +23,7 @@
 #define MAGAZINE (char)169
 #define BULLET (char)9
 
-
+//roomWidth anche in cast.cpp
 const int roomWidth = 40;
 const int roomHeight = 17;
 const int consoleWidth = 70;

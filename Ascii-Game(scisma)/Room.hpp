@@ -25,14 +25,15 @@ class room {
 protected:
     int roomNum = 1;
     char platforms [roomWidth];
-   
+    char view[roomHeight*roomWidth];
+
     itemNode* currentBonus;
     enemyNode* currentMonsters;
     bulletNode* currentAmmo = NULL;
        
 public:
        // da capire come rendere protected
-    char view[roomHeight*roomWidth];
+
     room();
 
     void setRoomNum(int newRoomNum);

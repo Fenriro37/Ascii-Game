@@ -1,7 +1,6 @@
  #include "Cast.hpp" 
 
-/* #Costruttori
-*/
+
 cast::cast(){ 
     int rowPos=0;
     int colPos=0;

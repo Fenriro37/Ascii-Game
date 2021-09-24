@@ -57,14 +57,14 @@ dafare: proiettili, rendere protetto view, aggiustare rowgenerator()
 
 23/09
 aggiustati parzialmente i proiettili
-dafare: Proiettile appare due posizioni dopo il protagonista (causato da move(getch()) e bulletMove()).
-        Funzioni per semplificare gli if (nearWall())
-        I nemici sono stronzi (capire perchè il bool è impazzito)
+dafare: Proiettile appare due posizioni dopo il protagonista (causato da move(getch()) e bulletMove())
         Bulletcollision()
-        Porte
-        Rendere protetto view
+        I nemici sono stronzi (capire perchè il bool è impazzito) e aggiustare la riga zero per i mostri
+        Tipi di nemici
         Aggiustare rowgenerator()
-        Tipi di nemici.
+        Gestione punti e danno (playerCollision() e nextRoom() primo if)
 
 
-Miglioramenti : rimuovere nodi da liste 
+Miglioramenti : Rimuovere nodi da liste 
+                Schermata Iniziale
+                Schermata Finale

@@ -50,10 +50,27 @@ game::game() {
     score = 0;
 }
 
-//Quando il personaggio arriva in fondo creiamo una nuova room 
-//se la stanza è già stata creata bisogna respawnarla
+/*Otteniamo la posizione della cella da cambiare e la sostituiamo con figure
+* Funziona (forse) perchè gli array sono memoria contigua quindi spostandoci di indirizzo senza uscire da 
+*/
+void game::changeCellOfView(int position, char figure){
+    if(position<= roomWidth*roomHeight && position >= 0){
+        char* PtoArray = currentroom->myRoom.getView();
+        PtoArray += position;
+        *PtoArray = figure;
+    }
+}
+
+/*Controlla che la posizione sia uguale a figure
+*/
+bool game::checkNear(int row, int col, char figure){
+    char* PtoArray = currentroom->myRoom.getView();
+    PtoArray += roomWidth*row+col;
+    return (*PtoArray != figure);
+}
+
 void game::nextRoom(){
-        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
+        changeCellOfView(protagonist.getPos(), BLANK);
         if (currentroom->next == NULL){
             currentroom->next = new roomList();
             currentroom->next->prev = currentroom;
@@ -64,17 +81,17 @@ void game::nextRoom(){
         else {
             currentroom = currentroom->next;
             currentroom->myRoom.nextLevelPos();
-            currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
+            changeCellOfView(protagonist.getPos(), protagonist.getFigure());
         }
 }
 
 //Quando il personaggio vuole tornare indietro
 void game::prevRoom(){
     if (currentroom->prev != NULL){
-        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
+        changeCellOfView(protagonist.getPos(), BLANK);
         currentroom = currentroom->prev;
         currentroom->myRoom.prevLevelPos();
-        currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
+        changeCellOfView(protagonist.getPos(), protagonist.getFigure());
     }
 }
 
@@ -106,54 +123,55 @@ void game::move(char input){
         /*Movimento Sopra e Sotto
          */
         case 'w': 
-        case 'W': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()-1) + protagonist.getColPos()] != BLANK &&    //##quali sono i casi in cui il protagonista non può muoversi? Forse è più facile fare i casi in cui può muoversi
-                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()-1) + protagonist.getColPos()] != ROOF){
-                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
-                        protagonist.setRowPos(protagonist.getRowPos()-2);                               //##sale di piattaforma -> -2
+        case 'W': if(checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), BLANK) && 
+                     checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
+                        changeCellOfView(protagonist.getPos(), BLANK);
+                        protagonist.setRowPos(protagonist.getRowPos()-2);   //sale di piattaforma -> -2
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
-                        currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure());
                     }  
             break;
-        case 's': 
-        case 'S': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+3) + protagonist.getColPos()] != BLANK &&
-                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + protagonist.getColPos()] != FLOOR){
-                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
+        case 's':    //+3 per controllare che ci sia la piattaforma sotto i piedi 
+        case 'S': if(checkNear(protagonist.getRowPos()+3, protagonist.getColPos(), BLANK) &&
+                     checkNear(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR)){
+                        changeCellOfView(protagonist.getPos(), BLANK);  
                         protagonist.setRowPos(protagonist.getRowPos()+2);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
-                        currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure());
                     }  
             break;
         /*Movimento Sinistra e Destra*/    
         case 'a': 
-        case 'A': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + (protagonist.getColPos()-1)] != BLANK &&
-                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()) + protagonist.getColPos()-1] != WALL){
-                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
+        case 'A': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()-1, BLANK) &&
+                     checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
+                        changeCellOfView(protagonist.getPos(), BLANK);
                         //change into new value
                         protagonist.setColPos(protagonist.getColPos()-1);
                         //controlliamo la posizione su cui ci spostiamo
+                        //se impattiamo contro porta
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
-                        //update view
-                        currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();  
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
+                        //altrimente se ci siamo scontrati con nulla o con item o nemici 
                     }
             break;
         case 'd': 
-        case 'D': if(currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()+1) + (protagonist.getColPos()+1)] != BLANK &&
-                     currentroom->myRoom.view[roomWidth * (protagonist.getRowPos()) + protagonist.getColPos()+1] != WALL){
-                        currentroom->myRoom.view[protagonist.getPos()] = BLANK;
+        case 'D': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()+1, BLANK) &&
+                     checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
+                        changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setColPos(protagonist.getColPos()+1);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
-                        currentroom->myRoom.view[protagonist.getPos()] = protagonist.getFigure();
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
                     }  
             break;
         
         case 'j': //Proiettile sinistra
-        case 'J': if(protagonist.getBullet() > 0 && currentroom->myRoom.view[roomWidth * protagonist.getRowPos() + protagonist.getColPos()-1]!= WALL){
+        case 'J': if(protagonist.getBullet() > 0 && checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
                     protagonist.decreaseBullet();
                     currentroom->myRoom.generateBullet(LEFT);
                   }
             break;
         case 'k': //proiettile destra
-        case 'K': if(protagonist.getBullet() > 0  && currentroom->myRoom.view[roomWidth * protagonist.getRowPos() + protagonist.getColPos()+1]!= WALL){
+        case 'K': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
                     protagonist.decreaseBullet();
                     currentroom->myRoom.generateBullet(RIGHT);
                   }                  
@@ -198,35 +216,29 @@ int game::findItem(int row, int col){
 //Aggiornare con le collisioni dei proiettili o aggiungere un'altra funzione
 //Funzioni findmMonster() e findBonus() da utilizzare al posto del while
 ///////////////////////////////////////
-void game::playerCollision (int row, int col){
-    if(currentroom->myRoom.view[roomWidth * row + col] != BLANK){
-        bool found = false;
+void game::playerCollision(int row, int col){
+    if(checkNear(row, col, BLANK)){
         //caso collisione enemy
-        if(currentroom->myRoom.view[roomWidth * row + col] == MONSTER){
+        if(!checkNear(row, col, MONSTER)){
             protagonist.decreaseLife();
             setScore(-10);
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
-            enemyNode* iter = currentroom->myRoom.getCurrentMonsters();
-            while(!found){
-                if(iter->monster.getRowPos() == row && iter->monster.getColPos() == col){
-                    iter->monster.setAlive();
-                    found = true;
-                }
-                iter = iter->next;
-            }
+            enemyNode* iter;
+            iter = currentroom->myRoom.findMoster(row, col);
+            iter->monster.setAlive();
         }
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
-        else if(!found){
-            if(currentroom->myRoom.view[roomWidth * row + col] == HEART){
+        else{
+            if(!checkNear(row, col, HEART)){
                 int value = findItem(row, col);
                 protagonist.setLife(protagonist.getLife() + value);
             }
-            else if(currentroom->myRoom.view[roomWidth * row + col] == MAGAZINE){
+            else if(!checkNear(row, col, MAGAZINE)){
                 int value = findItem(row, col);
                 protagonist.setBullet(protagonist.getBullet() + value);           
             }
-            else if (currentroom->myRoom.view[roomWidth * row + col] == COIN){
+            else if(checkNear(row, col, COIN)){
                 int value = findItem(row, col);
                 setScore(value);
             }
@@ -251,7 +263,9 @@ void game::toCharInfo() {
     for (int row = 0; row < consoleHeight; row++) {
         for (int col = 0; col < consoleWidth; col++, count++) {
             if (col < roomWidth  && row < roomHeight) {
-                CIview[count].Char.AsciiChar = currentroom->myRoom.view[roomWidth * row + col];
+                char* tmp = currentroom->myRoom.getView();
+                tmp += roomWidth * row + col;
+                CIview[count].Char.AsciiChar = *tmp;
                 CIview[count].Attributes = DEF_COLORFOREGROUND;
             }
             /*
