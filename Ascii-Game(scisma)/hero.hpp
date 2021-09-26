@@ -5,7 +5,7 @@ class hero : public cast{
 protected: 
     int life;
     int bullet;
-    int experience;
+    bool delay;
 
 public:
 
@@ -16,4 +16,6 @@ public:
     void decreaseBullet();
     int getLife();
     int getBullet();
+    void setDelay();
+    bool getDelay();
 };

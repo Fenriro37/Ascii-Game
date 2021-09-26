@@ -109,14 +109,14 @@ void game::logic(){
             nextRoom(); 
         if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
             prevRoom(); 
-       // toCharInfo();
-        //stampView();   
     }
+
     currentroom->myRoom.bulletMove();
     currentroom->myRoom.enemyMove();
+    Sleep(50);
     toCharInfo();
     stampView();  
-    Sleep(25);
+
 
 }
 
@@ -127,26 +127,30 @@ void game::move(char input){
          */
         case 'w': 
         case 'W': if(checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), BLANK) && 
-                     checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
+                     checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF) && !protagonist.getDelay()){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setRowPos(protagonist.getRowPos()-2);   //sale di piattaforma -> -2
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure());
-                    }  
+                    }
+                    else
+                        protagonist.setDelay();  
             break;
         case 's':    //+3 per controllare che ci sia la piattaforma sotto i piedi 
         case 'S': if(checkNear(protagonist.getRowPos()+3, protagonist.getColPos(), BLANK) &&
-                     checkNear(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR)){
+                     checkNear(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) && !protagonist.getDelay()){
                         changeCellOfView(protagonist.getPos(), BLANK);  
                         protagonist.setRowPos(protagonist.getRowPos()+2);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure());
-                    }  
+                    }
+                    else
+                        protagonist.setDelay();  
             break;
         /*Movimento Sinistra e Destra*/    
         case 'a': 
         case 'A': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()-1, BLANK) &&
-                     checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
+                     checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && !protagonist.getDelay()){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         //change into new value
                         protagonist.setColPos(protagonist.getColPos()-1);
@@ -156,28 +160,38 @@ void game::move(char input){
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
                         //altrimente se ci siamo scontrati con nulla o con item o nemici 
                     }
+                    else
+                        protagonist.setDelay();
             break;
         case 'd': 
         case 'D': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()+1, BLANK) &&
-                     checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
+                     checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && !protagonist.getDelay()){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setColPos(protagonist.getColPos()+1);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
-                    }  
+                    }
+                  else
+                    protagonist.setDelay();  
             break;
         
         case 'j': //Proiettile sinistra
-        case 'J': if(protagonist.getBullet() > 0 && checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
+        case 'J': if(protagonist.getBullet() > 0 && checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && !protagonist.getDelay()){
+                    protagonist.setDelay();
                     protagonist.decreaseBullet();
                     currentroom->myRoom.generateBullet(LEFT);
                   }
+                  else
+                    protagonist.setDelay();
             break;
         case 'k': //proiettile destra
-        case 'K': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
+        case 'K': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && !protagonist.getDelay()){
+                    protagonist.setDelay();
                     protagonist.decreaseBullet();
                     currentroom->myRoom.generateBullet(RIGHT);
-                  }                  
+                  }
+                  else
+                    protagonist.setDelay();                  
             break;
 
         default:    

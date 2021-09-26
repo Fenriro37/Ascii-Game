@@ -7,6 +7,7 @@ hero::hero(){
     cast::setFigure(HERO);
     setLife(3);
     setBullet(20);
+    delay = false;
 }
 
 int hero::getLife(){
@@ -31,4 +32,12 @@ void hero::setBullet(int newBullet){
 
 void hero::setLife(int newLife){
     life = newLife;
+}
+
+void hero::setDelay(){
+    delay = !delay;
+}
+
+bool hero::getDelay(){
+    return delay;
 }

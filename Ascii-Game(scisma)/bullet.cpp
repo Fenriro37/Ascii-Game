@@ -4,6 +4,7 @@
 bullet::bullet(){
     cast::setFigure(BULLET);
     alive = true;
+    delay = false;
 }
 
 bullet::bullet(bool newDirection){

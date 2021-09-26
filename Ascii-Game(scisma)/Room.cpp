@@ -288,7 +288,7 @@ void room::generateBullet(bool direction){
         tmp->ammo.setColPos(protagonist.getColPos());
         tmp->ammo.setRowPos(protagonist.getRowPos());
         if(!bulletCollision(tmp->ammo.getRowPos(), tmp->ammo.getColPos()-1)){
-            //view[roomWidth * tmp->ammo.getRowPos()  + tmp->ammo.getColPos()] = tmp->ammo.getFigure();
+           //view[roomWidth * tmp->ammo.getRowPos()  + tmp->ammo.getColPos()] = tmp->ammo.getFigure();
             tmp->next = currentAmmo;
             currentAmmo = tmp;
         }
@@ -326,7 +326,7 @@ void room::bulletMove(){
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                 }
                 //Proiettile si muove di uno
-                else if(view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] == HERO){
+                else if (view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] == HERO){
                     iter->ammo.setColPos(iter->ammo.getColPos()-1);
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = iter->ammo.getFigure();
                 }
@@ -349,7 +349,7 @@ void room::bulletMove(){
                     iter->ammo.setAlive();
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                 }
-                else if(view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] == HERO){
+                else if (view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] == HERO){
                     iter->ammo.setColPos(iter->ammo.getColPos()+1);
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = iter->ammo.getFigure();
                 }

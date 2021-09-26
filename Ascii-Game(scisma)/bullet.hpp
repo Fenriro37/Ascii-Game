@@ -6,6 +6,7 @@ class bullet: public cast{
 protected:
     bool direction;
     bool alive;
+    bool delay;
 
 public:
     bullet();
