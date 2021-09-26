@@ -45,7 +45,7 @@ game::game() {
     font.dwFontSize.Y = 35;
     SetCurrentConsoleFontEx(hStdout, false, &font);
 
-    currentroom = new roomList();
+    currentroom = new roomList(1);
     //currentroom->myRoom.roomGenerator();
     score = 0;
 }
@@ -72,9 +72,9 @@ bool game::checkNear(int row, int col, char figure){
 void game::nextRoom(){
         changeCellOfView(protagonist.getPos(), BLANK);
         if (currentroom->next == NULL){
-            currentroom->next = new roomList();
+            currentroom->next = new roomList(currentroom->myRoom.getRoomNum() + 1);
             currentroom->next->prev = currentroom;
-            currentroom->next->myRoom.setRoomNum(currentroom->myRoom.getRoomNum() + 1);
+            //currentroom->next->myRoom.setRoomNum(currentroom->myRoom.getRoomNum() + 1);
             
             currentroom = currentroom->next;
         }
@@ -109,12 +109,15 @@ void game::logic(){
             nextRoom(); 
         if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
             prevRoom(); 
-        
-        //stamp view aggiungere controllo per alive e taken
+       // toCharInfo();
+        //stampView();   
     }
     currentroom->myRoom.bulletMove();
     currentroom->myRoom.enemyMove();
-    Sleep(50);
+    toCharInfo();
+    stampView();  
+    Sleep(25);
+
 }
 
 //Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello

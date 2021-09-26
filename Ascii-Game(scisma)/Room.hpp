@@ -33,8 +33,8 @@ protected:
        
 public:
        // da capire come rendere protected
-
     room();
+    room(int lvl);
 
     void setRoomNum(int newRoomNum);
     int getRoomNum();

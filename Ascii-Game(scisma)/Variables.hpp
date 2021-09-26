@@ -13,6 +13,7 @@
 #define ROOF (char)205
 #define FLOOR (char)205
 #define WALL (char)186
+#define PLATFORM (char)223
 //#define DOOR (char)8
 #define LEFTDOOR (char)8
 #define RIGHTDOOR (char)10

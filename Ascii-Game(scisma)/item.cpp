@@ -28,8 +28,7 @@ void item::setValue(int newValue){
 //più prendibile
 
 void item::setTaken(){
-    if(!taken)
-        taken = true;
+    taken = true;
 }
 
 bool item::getTaken(){

@@ -6,6 +6,10 @@ struct roomList {
     room myRoom;
     roomList* next = NULL;
     roomList* prev = NULL;
+
+    roomList(int lvl){
+        myRoom = room(lvl);
+    }
 };
 
 class game {
