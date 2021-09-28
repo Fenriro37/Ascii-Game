@@ -16,6 +16,7 @@ public:
     void decreaseBullet();
     int getLife();
     int getBullet();
-    void setDelay();
+    void changeDelay();
+    void setDelay(bool newDelay);
     bool getDelay();
 };

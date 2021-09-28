@@ -18,12 +18,14 @@ struct enemyNode{
 
 struct bulletNode{
     bullet ammo;
-    bulletNode* next;
+    bulletNode* next = NULL;
+    bulletNode* prev = NULL;
 };
 
 class room {
 protected:
     int roomNum = 1;
+    bool freeRow[roomHeight];
     char platforms [roomWidth];
     char view[roomHeight*roomWidth];
 
@@ -57,14 +59,18 @@ public:
 
     enemyNode* findMoster(int x, int y);
     itemNode* findBonus(int x, int y);
+    bulletNode* findAmmo(int x, int y);
     /*Funzione per riposizionare il personaggio all'inizio di ogni livello*/
     void nextLevelPos();
     /*Funzione per riposizionare il personaggio in caso di ritorno al livello precedente*/
     void prevLevelPos();
 
     //Cast IA
-    void generateBullet(bool direction);
+    void addToList(bulletNode* newNode);
+    void deleteNodes();
+    void generateBullet(bool direction, cast shooter);
     bool bulletCollision(int x, int y);
     void bulletMove();
+    bool enemyCollision(enemyNode* currentEnemy);
     void enemyMove();
 };

@@ -21,6 +21,7 @@
 #define COIN (char)184
 #define HERO 'P'
 #define MONSTER 'M'
+#define TURRET 'T'
 #define MAGAZINE (char)169
 #define BULLET (char)9
 

@@ -103,6 +103,7 @@ void game::stampView() {
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 */
 void game::logic(){
+    currentroom->myRoom.bulletMove();
     if(kbhit()){
         move(getch());
         if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)
@@ -110,14 +111,12 @@ void game::logic(){
         if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
             prevRoom(); 
     }
-
+    Sleep(50);
     currentroom->myRoom.bulletMove();
     currentroom->myRoom.enemyMove();
-    Sleep(50);
+
     toCharInfo();
-    stampView();  
-
-
+    stampView();
 }
 
 //Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello
@@ -127,30 +126,26 @@ void game::move(char input){
          */
         case 'w': 
         case 'W': if(checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), BLANK) && 
-                     checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF) && !protagonist.getDelay()){
+                     checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setRowPos(protagonist.getRowPos()-2);   //sale di piattaforma -> -2
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure());
-                    }
-                    else
-                        protagonist.setDelay();  
+                    } 
             break;
         case 's':    //+3 per controllare che ci sia la piattaforma sotto i piedi 
         case 'S': if(checkNear(protagonist.getRowPos()+3, protagonist.getColPos(), BLANK) &&
-                     checkNear(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) && !protagonist.getDelay()){
+                     checkNear(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) ){
                         changeCellOfView(protagonist.getPos(), BLANK);  
                         protagonist.setRowPos(protagonist.getRowPos()+2);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure());
                     }
-                    else
-                        protagonist.setDelay();  
             break;
         /*Movimento Sinistra e Destra*/    
         case 'a': 
         case 'A': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()-1, BLANK) &&
-                     checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && !protagonist.getDelay()){
+                     checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         //change into new value
                         protagonist.setColPos(protagonist.getColPos()-1);
@@ -160,38 +155,30 @@ void game::move(char input){
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
                         //altrimente se ci siamo scontrati con nulla o con item o nemici 
                     }
-                    else
-                        protagonist.setDelay();
             break;
         case 'd': 
         case 'D': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()+1, BLANK) &&
-                     checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && !protagonist.getDelay()){
+                     checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setColPos(protagonist.getColPos()+1);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos());
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
-                    }
-                  else
-                    protagonist.setDelay();  
+                    } 
             break;
         
         case 'j': //Proiettile sinistra
-        case 'J': if(protagonist.getBullet() > 0 && checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && !protagonist.getDelay()){
-                    protagonist.setDelay();
+        case 'J': if(protagonist.getBullet() > 0 && checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && 
+                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()-1 != roomWidth*(roomHeight-2)){
                     protagonist.decreaseBullet();
-                    currentroom->myRoom.generateBullet(LEFT);
+                    currentroom->myRoom.generateBullet(LEFT, protagonist);
                   }
-                  else
-                    protagonist.setDelay();
             break;
         case 'k': //proiettile destra
-        case 'K': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && !protagonist.getDelay()){
-                    protagonist.setDelay();
+        case 'K': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
+                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1){
                     protagonist.decreaseBullet();
-                    currentroom->myRoom.generateBullet(RIGHT);
-                  }
-                  else
-                    protagonist.setDelay();                  
+                    currentroom->myRoom.generateBullet(RIGHT, protagonist);
+                  }                  
             break;
 
         default:    
@@ -243,6 +230,13 @@ void game::playerCollision(int row, int col){
             enemyNode* iter;
             iter = currentroom->myRoom.findMoster(row, col);
             iter->monster.setAlive();
+        }
+        //caso bullet //aggiungere proiettile nemico
+        else if(!checkNear(row, col, BULLET)){
+            bulletNode* iter;
+            iter = currentroom->myRoom.findAmmo(row, col);
+            iter->ammo.setAlive();
+            protagonist.decreaseLife();
         }
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione

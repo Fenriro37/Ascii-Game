@@ -1,11 +1,19 @@
 Situazione attuale:
-    (Nemici bool matto????)
-    Tipi di nemici (torrette) counter che quando arriva a 5 spara 
     bulletCollision() / playerCollision()
-
+    ERRORI NON VOLUTI: Danno dei nemici quando si scontrano col protagonista
+                       Proiettile che insegue enemy non lo uccide (PATCH il proiettile sovrascrive tutto ciò che incontra)
+    collisione proiettile proiettile
+    Tipi di nemici (torrette) counter che quando arriva a 5 spara  [spawnarne uno per riga -> playerCollision caso T]
+    
+    Rivisionare spawn nemici e bonus
+     
+    (Cambiare nome al booleano di enemy: alive) 
+    (Rimuovere parametro vita e diventare score)
     Gestione punti e danno (playerCollision() e nextRoom() primo if)
 
-    Miglioramenti : Rimuovere nodi da liste 
+
+    Miglioramenti : Rimuovere nodi da liste
+                    Caduta personaggio caso buco 
                     Schermata Iniziale
                     Schermata Finale
                     scivere relazione e registrare video

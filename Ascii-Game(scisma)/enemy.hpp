@@ -6,6 +6,7 @@ protected:
     int life;
     bool alive;
     bool direction;
+    int fireDelay;
 
 public:
     enemy();
@@ -16,5 +17,7 @@ public:
     bool getAlive();
     bool getDirection();
     void setDirection();
+    int getFireDelay();
+    void increaseFireDelay();
 
 };

@@ -6,7 +6,7 @@ hero::hero(){
     cast::setColPos(startColPos);
     cast::setFigure(HERO);
     setLife(3);
-    setBullet(20);
+    setBullet(200);
     delay = false;
 }
 
@@ -34,8 +34,11 @@ void hero::setLife(int newLife){
     life = newLife;
 }
 
-void hero::setDelay(){
+void hero::changeDelay(){
     delay = !delay;
+}
+void hero::setDelay(bool newDelay){
+    delay = newDelay;
 }
 
 bool hero::getDelay(){

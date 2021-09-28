@@ -7,6 +7,12 @@ room::room(){
 
 room::room(int lvl){
     roomNum = lvl;
+    for (int i=0;i<roomHeight;i++){
+        if(i%2 == 0){
+            freeRow[i] = false;
+        }
+        freeRow[i] = true;
+    }
     roomGenerator();
 }
 
@@ -70,37 +76,6 @@ void room::roomGenerator(){
     spawnEnemies();
 }
 
-/*
-* Doing sizeof myArray will get you the total number of bytes allocated for that array.
-* You can then find out the number of elements in the array  by dividing
-* by the size of one element in the array: sizeof myArray[0]
-*/
-
-void room::setRoomNum(int newRoomNum){
-    roomNum = newRoomNum;
-}
-
-int room::getRoomNum(){
-    return roomNum;
-}
-
-itemNode* room::getCurrentBonus(){
-    return currentBonus;
-}
-
-enemyNode* room::getCurrentMonsters(){
-    return currentMonsters;
-}
-
-bulletNode* room::getCurrentAmmo(){
-    return currentAmmo;
-}
-
-
-char* room::getView(){
-    return view;
-}
-
 //Funzione per inizializzare gli item della stanza corrente
 //Quanti nemici contemporaneamente?
 void room::initializeItems(int currentLevel){
@@ -132,7 +107,8 @@ void room::initializeEnemies(int currentLevel){
     while((numOfEnemies-1)!=0 && count!=maxNumOfEnemies){
         //inserimento in testa in una lista
         enemyNode* tmp = new enemyNode();
-        tmp->monster = monster;
+        enemy newEnemy;
+        tmp->monster = newEnemy;
         tmp->next = currentMonsters;
         currentMonsters = tmp;
         count++; numOfEnemies--;
@@ -142,9 +118,13 @@ void room::initializeEnemies(int currentLevel){
 bool room::isEmpty(int x, int y){
     /*Controlliamo che non sia in una riga pari per non sovrascrivere uno spazio bianco dedica 
     a un "buco" e che il nuovo elemento si trovi sopra una piattaforma
+    Spawniamo prima i nemici e 
     */
-    if(x%2 != 0 && view[roomWidth * x + y] == BLANK && view[roomWidth * (x+1) + y] != BLANK)   
+    if(freeRow[x] && view[roomWidth * x + y] == BLANK && view[roomWidth * (x+1) + y] != BLANK
+        && roomWidth*x+y != (roomWidth*roomHeight-2) && roomWidth*x+y != (roomWidth*roomHeight-2)+roomWidth-1){  
+        freeRow[x] = false; 
         return true;
+    }
     return false;
 }
 
@@ -173,7 +153,7 @@ void room::spawnEnemies(){
     enemyNode* iter = currentMonsters;
     while(iter != NULL){
         //remind i mostri partono sempre con il bool alive = true
-        //controllo da rivedere (perché !)
+        //torretta si prende una riga per sè
         if(!iter->monster.getAlive()){
             x = rand()%roomHeight;
             y = rand()%roomWidth;
@@ -189,16 +169,6 @@ void room::spawnEnemies(){
     }
 }
 
-void room::nextLevelPos(){
-    protagonist.setRowPos(startRowPos);
-    protagonist.setColPos(startColPos);
-}
-
-void room::prevLevelPos(){
-    protagonist.setRowPos(endRowPos);
-    protagonist.setColPos(endColPos);
-}
-
 enemyNode* room::findMoster(int x, int y){
     enemyNode* iter = currentMonsters;
     while(iter != NULL){
@@ -210,19 +180,61 @@ enemyNode* room::findMoster(int x, int y){
     return NULL;
 }
 
+bool room::enemyCollision(enemyNode* currentEnemy){
+    int offSet;
+    if(currentEnemy->monster.getDirection() == LEFT){
+        offSet = -1;
+    }
+    else{
+        offSet = 1;
+    }
+    if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == HERO){
+        currentEnemy->monster.decreaseLife();
+        protagonist.decreaseLife();
+        return true;
+    }
+    else if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == BULLET){
+        bulletNode* currentAmmo = findAmmo(currentEnemy->monster.getRowPos(), currentEnemy->monster.getColPos() + offSet);
+        currentAmmo->ammo.setAlive();
+        view[currentAmmo->ammo.getPos()] = BLANK;
+        currentEnemy->monster.decreaseLife();
+        return true;
+    }
+    return false;
+}
+
 void room::enemyMove(){ //movimento orizzontale
     enemyNode* iter = currentMonsters;
     while(iter != NULL){
-        if(!iter->monster.getAlive()){
-            if(!iter->monster.getDirection()){
+        if(!iter->monster.getAlive()){/*
+            //caso torretta
+            if(iter->monster.getFigure() == TURRET){
+                //caso sparo a sinistra
+                if(protagonist.getColPos()<= iter->monster.getColPos() && iter->monster.getFireDelay()==10){
+                    generateBullet(LEFT, iter->monster);
+                }
+                else if (iter->monster.getFireDelay()==10){
+                    generateBullet(RIGHT, iter->monster);
+                }
+                else{
+                    iter->monster.increaseFireDelay();
+                }
+            }*/
+            //caso corridore
+            if(iter->monster.getDirection()==LEFT){
                 //0 per movimento a sx
                 if(view[roomWidth * (iter->monster.getRowPos()+1) + (iter->monster.getColPos()-1)] != BLANK 
                     && view[roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos()-1)] != WALL
                     && view[roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos()-1)] != MONSTER
                     && roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos()-1) != roomWidth * (roomHeight-2)){
+                        if(enemyCollision(iter)){
+                            view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = BLANK;
+                        }
+                        else{
                             view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = BLANK;
                             iter->monster.setColPos(iter->monster.getColPos()-1);
                             view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = iter->monster.getFigure();
+                        }
                 }
                 else {
                     iter->monster.setDirection();
@@ -234,9 +246,14 @@ void room::enemyMove(){ //movimento orizzontale
                     && view[roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos()+1)] != WALL
                     && view[roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos()+1)] != MONSTER
                     &&  roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos()+1) != roomWidth * (roomHeight-2) + roomWidth-1){
+                        if(enemyCollision(iter)){
+                            view[iter->monster.getPos()] = BLANK;
+                        }
+                        else{
                             view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = BLANK;
                             iter->monster.setColPos(iter->monster.getColPos()+1);
                             view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = iter->monster.getFigure();
+                        }    
                 }
                 else {
                     iter->monster.setDirection();
@@ -258,19 +275,99 @@ itemNode* room::findBonus(int x, int y){
     return NULL;
 }
 
+bulletNode* room::findAmmo(int x, int y){
+    bulletNode* iter = currentAmmo;
+    while(iter != NULL){
+        if(iter->ammo.getRowPos() == x && iter->ammo.getColPos() == y){
+            return iter;
+        }
+        iter = iter->next;
+    }
+    return NULL;
+}
+
+void room::addToList(bulletNode* newNode){
+    bulletNode* iter = currentAmmo;
+    while (iter->next != NULL){
+        iter = iter->next;    
+    }
+    iter->next = newNode;
+    newNode->prev = iter;
+}
+
+void room::deleteNodes(){
+    if(currentAmmo!= NULL){
+        bulletNode* iter = currentAmmo;
+        while(iter->next!=NULL){
+            //delete nodo non in testa
+            if(!iter->ammo.getAlive()){
+                bulletNode* tmp = iter;
+                if(iter->prev!=NULL){
+                    iter->prev->next = iter->next;
+                    iter->next->prev = iter->prev;
+                }
+                else{
+                    iter->next->prev = NULL;
+                }
+                iter = iter->next;
+                delete tmp;
+                tmp = NULL; 
+            }
+            else{
+                iter = iter->next;
+            }
+        }
+        //delete nodo testa
+        if (iter->prev == NULL && !iter->ammo.getAlive()){
+            delete currentAmmo;
+            currentAmmo = NULL;
+            iter = NULL;
+        }
+        //delete nodo coda
+        else if(!iter->ammo.getAlive()){
+            iter->prev->next = NULL;
+            delete iter;
+            iter = NULL;
+        }
+    }
+}
+
+void room::generateBullet(bool direction, cast shooter){
+    bullet newAmmo(direction);
+    bulletNode* newBullet = new bulletNode();
+    newBullet->ammo = newAmmo;
+    newBullet->ammo.setColPos(shooter.getColPos());
+    newBullet->ammo.setRowPos(shooter.getRowPos());
+    if(currentAmmo == NULL){
+        currentAmmo = newBullet;
+    }
+    else{
+        addToList(newBullet);
+    }
+
+    if(direction == LEFT){
+        bulletCollision(newBullet->ammo.getRowPos(), newBullet->ammo.getColPos()-1);
+        
+    }
+    else{
+        bulletCollision(newBullet->ammo.getRowPos(), newBullet->ammo.getColPos()+1);
+    }   
+}
+
 bool room::bulletCollision(int x, int y){
     if(view[roomWidth * x + y] != BLANK){
         if(view[roomWidth * x + y] == MONSTER){
             enemyNode* foundMonster = findMoster(x, y);
-            foundMonster->monster.decreaseLife();
+            foundMonster->monster.setAlive();
             //caso nemico ucciso
-            if(foundMonster->monster.getLife() <= 0){
-                view[roomWidth * x + y] = BLANK;
-                foundMonster->monster.setAlive();
-            }
+            view[roomWidth * x + y] = BLANK;
+            
+        }
+        else if(view[roomWidth * x + y] == HERO){
+            protagonist.decreaseLife();
         }
         //i bonus se vengono colpiti sono distrutti
-        else {
+        else if(view[roomWidth * x + y] == HEART || view[roomWidth * x + y] == COIN || view[roomWidth * x + y] == MAGAZINE) {
             itemNode* foundBonus = findBonus(x, y);
             foundBonus->Bonus.setTaken();
             view[roomWidth * x + y] = BLANK;
@@ -278,30 +375,6 @@ bool room::bulletCollision(int x, int y){
         return true;
     }
     return false;
-}
-
-void room::generateBullet(bool direction){
-    bullet newAmmo(direction);
-    bulletNode* tmp = new bulletNode();
-    tmp->ammo = newAmmo;
-    if(direction == LEFT){
-        tmp->ammo.setColPos(protagonist.getColPos());
-        tmp->ammo.setRowPos(protagonist.getRowPos());
-        if(!bulletCollision(tmp->ammo.getRowPos(), tmp->ammo.getColPos()-1)){
-           //view[roomWidth * tmp->ammo.getRowPos()  + tmp->ammo.getColPos()] = tmp->ammo.getFigure();
-            tmp->next = currentAmmo;
-            currentAmmo = tmp;
-        }
-    }
-    else{
-        tmp->ammo.setColPos(protagonist.getColPos());
-        tmp->ammo.setRowPos(protagonist.getRowPos());
-        if(!bulletCollision(tmp->ammo.getRowPos(), tmp->ammo.getColPos()+1)){
-            //view[roomWidth * tmp->ammo.getRowPos()  + tmp->ammo.getColPos()] = tmp->ammo.getFigure();
-            tmp->next = currentAmmo;
-            currentAmmo = tmp;
-        }   
-    }   
 }
 
 void room::bulletMove(){
@@ -315,21 +388,16 @@ void room::bulletMove(){
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                     iter->ammo.setAlive();
                 }
-                //caso vuoto (ex porta)
-                else if(roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()-1 == roomWidth* (roomHeight-2)){
-                    view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
-                    iter->ammo.setAlive();
-                }
                 //caso collisione con nemici o bonus
-                else if(bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos()-1)){
-                    iter->ammo.setAlive();
+                else if(bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos()-1)){                  
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
+                    iter->ammo.setAlive();
                 }
-                //Proiettile si muove di uno
                 else if (view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] == HERO){
                     iter->ammo.setColPos(iter->ammo.getColPos()-1);
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = iter->ammo.getFigure();
                 }
+                //Proiettile si muove di uno
                 else{
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                     iter->ammo.setColPos(iter->ammo.getColPos()-1);
@@ -337,11 +405,7 @@ void room::bulletMove(){
                 }
             }
             else{
-                if(view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()+1] == WALL){
-                    iter->ammo.setAlive();
-                    view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
-                }
-                else if(roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()+1 == roomWidth * (roomHeight-2) + roomWidth-1){
+                if(roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()+1 == roomWidth * (iter->ammo.getRowPos()) + roomWidth-1){
                     view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                     iter->ammo.setAlive();
                 }
@@ -362,4 +426,40 @@ void room::bulletMove(){
         }
         iter = iter->next;
     }
+    //deleteNodes();
+}
+
+void room::nextLevelPos(){
+    protagonist.setRowPos(startRowPos);
+    protagonist.setColPos(startColPos);
+}
+
+void room::prevLevelPos(){
+    protagonist.setRowPos(endRowPos);
+    protagonist.setColPos(endColPos);
+}
+
+void room::setRoomNum(int newRoomNum){
+    roomNum = newRoomNum;
+}
+
+int room::getRoomNum(){
+    return roomNum;
+}
+
+itemNode* room::getCurrentBonus(){
+    return currentBonus;
+}
+
+enemyNode* room::getCurrentMonsters(){
+    return currentMonsters;
+}
+
+bulletNode* room::getCurrentAmmo(){
+    return currentAmmo;
+}
+
+
+char* room::getView(){
+    return view;
 }
