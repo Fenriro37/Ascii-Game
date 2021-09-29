@@ -189,15 +189,16 @@ bool room::enemyCollision(enemyNode* currentEnemy){
         offSet = 1;
     }
     if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == HERO){
-        currentEnemy->monster.decreaseLife();
+        currentEnemy->monster.setAlive();
         protagonist.decreaseLife();
         return true;
     }
     else if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == BULLET){
         bulletNode* currentAmmo = findAmmo(currentEnemy->monster.getRowPos(), currentEnemy->monster.getColPos() + offSet);
+        currentEnemy->monster.setAlive();
         currentAmmo->ammo.setAlive();
         view[currentAmmo->ammo.getPos()] = BLANK;
-        currentEnemy->monster.decreaseLife();
+
         return true;
     }
     return false;

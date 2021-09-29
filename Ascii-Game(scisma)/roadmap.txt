@@ -1,10 +1,8 @@
 Situazione attuale:
-    bulletCollision() / playerCollision()
-    ERRORI NON VOLUTI: Danno dei nemici quando si scontrano col protagonista
-                       Proiettile che insegue enemy non lo uccide (PATCH il proiettile sovrascrive tutto ciò che incontra)
+
     collisione proiettile proiettile
     Tipi di nemici (torrette) counter che quando arriva a 5 spara  [spawnarne uno per riga -> playerCollision caso T]
-    
+    //Per ora i nemici devono avere una singola vita altrimenti succedono cose strane. Risolvere o lasciare così
     Rivisionare spawn nemici e bonus
      
     (Cambiare nome al booleano di enemy: alive) 
