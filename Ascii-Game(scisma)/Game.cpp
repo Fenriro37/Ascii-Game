@@ -103,7 +103,7 @@ void game::stampView() {
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 */
 void game::logic(){
-    currentroom->myRoom.bulletMove();
+    //currentroom->myRoom.bulletMove();
     if(kbhit()){
         move(getch());
         if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)
@@ -223,7 +223,7 @@ int game::findItem(int row, int col){
 void game::playerCollision(int row, int col){
     if(checkNear(row, col, BLANK)){
         //caso collisione enemy
-        if(!checkNear(row, col, MONSTER)){
+        if(!checkNear(row, col, MONSTER) || !checkNear(row, col, TURRET)){
             protagonist.decreaseLife();
             setScore(-10);
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati

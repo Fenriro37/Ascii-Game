@@ -4,9 +4,8 @@
 enemy::enemy(){
     int life = 1;
     bool alive = false;
-    cast::figure = MONSTER;
-    direction = rand()%2;
-    /*
+    //cast::figure = MONSTER;
+    //direction = rand()%2;
     switch (rand()%3)
     {
     case 0:    
@@ -18,7 +17,7 @@ enemy::enemy(){
         cast::figure = TURRET;
         fireDelay = 0;
         break;    
-    }*/
+    }
 }
 void enemy::setLife(int newLife){
     life = newLife;
@@ -57,4 +56,8 @@ int enemy::getFireDelay(){
 
 void enemy::increaseFireDelay(){
     fireDelay+=1;
+}
+
+void enemy::resetFireDelay(){
+    fireDelay = 0;
 }

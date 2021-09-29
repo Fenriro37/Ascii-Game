@@ -1,19 +1,16 @@
 Situazione attuale:
-
-    collisione proiettile proiettile
-    Tipi di nemici (torrette) counter che quando arriva a 5 spara  [spawnarne uno per riga -> playerCollision caso T]
     //Per ora i nemici devono avere una singola vita altrimenti succedono cose strane. Risolvere o lasciare così
+    collisione proiettile proiettile
     Rivisionare spawn nemici e bonus
      
     (Cambiare nome al booleano di enemy: alive) 
-    (Rimuovere parametro vita e diventare score)
     Gestione punti e danno (playerCollision() e nextRoom() primo if)
 
 
     Miglioramenti : Rimuovere nodi da liste
                     Caduta personaggio caso buco 
                     Schermata Iniziale
-                    Schermata Finale
+                    Schermata Finale mostrando score finale
                     scivere relazione e registrare video
                     commentare le funzioni
 

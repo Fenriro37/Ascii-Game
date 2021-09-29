@@ -19,5 +19,6 @@ public:
     void setDirection();
     int getFireDelay();
     void increaseFireDelay();
+    void resetFireDelay();
 
 };
