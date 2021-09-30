@@ -1,11 +1,11 @@
 Situazione attuale:
     //Per ora i nemici devono avere una singola vita altrimenti succedono cose strane. Risolvere o lasciare così
     collisione proiettile proiettile
-    Rivisionare spawn nemici e bonus
+    bug torrette invisibili
+    
      
     (Cambiare nome al booleano di enemy: alive) 
     Gestione punti e danno (playerCollision() e nextRoom() primo if)
-
 
     Miglioramenti : Rimuovere nodi da liste
                     Caduta personaggio caso buco 
@@ -46,10 +46,6 @@ fatto: variabile globale per il colore del foreground, riadattata dimensione del
 #15/9:
 fatto: costruttore di item, aggiustato lo switch + aggiunti caratteri speciali
     incrementato il font della finestra
-
-    #include <Windows.h>
-
-    Sleep(number of milliseconds);
 
     -difficoltà: danno dei nemici, punti e bonus, piattaforme
     -come si muovono i nemici, tipi diversi dei nemici

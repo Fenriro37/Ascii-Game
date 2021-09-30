@@ -2,7 +2,14 @@
 #include <string>
 
 room::room(){
+    for (int i=0;i<roomHeight;i++){
+        if(i%2 == 0)
+            freeRow[i].available = false;
+        else
+            freeRow[i].available = true;
+    }
     nextLevelPos();
+    roomGenerator();
 }
 
 room::room(int lvl){
@@ -23,11 +30,12 @@ void room::generateRow(int currentLevel){
         platforms[i] = PLATFORM;
     int holes = 0; //variabile per contare quanti buchi dovremo creare
     int random = 0;
+
     //Doppia condizione per evitare che si creino troppi buchi
     while(currentLevel != 0 && holes <= 5){ 
         random = rand()%roomWidth;
         //evitare muro
-        if(platforms[random] == PLATFORM ){
+        if(platforms[random] == PLATFORM && random!=0 && random!=1 && random!=roomWidth-1 && random!=roomWidth-2){
             platforms[random] = BLANK;
             holes++;
             currentLevel--;
@@ -41,7 +49,7 @@ void room::roomGenerator(){
         generateRow(getRoomNum());
         for (int col = 0; col < roomWidth; col++) {
             //caso tetto
-            if (row == 0 && col != 0 && col != roomWidth-1){ 
+            if (row == 0){ 
                 view[roomWidth * row + col] = ROOF;
             }
             //pavimento
@@ -49,11 +57,11 @@ void room::roomGenerator(){
                 view[roomWidth * row + col] = FLOOR;
             }
             //caso Muro
-            else if (col == 0 && row != roomHeight - 2 || col == roomWidth - 1 && row != roomHeight - 2){ 
+            else if (col == 0 || col == roomWidth - 1){ 
             view[roomWidth * row + col] = WALL;
             }
             //caso piattaforme
-            else if ((row%2==0) && row!=0 && row != roomHeight - 1){ 
+            else if (row%2==0 && row!=0){ 
                 view[roomWidth * row + col] = platforms[col];
             }
             else {
@@ -77,7 +85,7 @@ void room::roomGenerator(){
 }
 
 //Funzione per inizializzare gli item della stanza corrente
-//Quanti nemici contemporaneamente?
+//Quanti nemici contemporaneamente?1K
 void room::initializeItems(int currentLevel){
     // O mettiamo un certo numero di bonus fissi per incentivare lo spostamento o ci affidiamo al caso
     int numOfBonus = rand()%4+1; //currentLevel / 3 + 1 || 

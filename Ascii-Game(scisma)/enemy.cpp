@@ -19,6 +19,7 @@ enemy::enemy(){
         break;    
     }
 }
+
 void enemy::setLife(int newLife){
     life = newLife;
 }

@@ -1,6 +1,5 @@
 #pragma once
 #include "windows.h"
-#include "Cast.hpp"
 #include "hero.hpp"
 #include "time.h" 
 #include "stdlib.h"
@@ -26,9 +25,9 @@
 #define BULLET (char)9
 
 //roomWidth anche in cast.cpp
-const int roomWidth = 40;
-const int roomHeight = 17;
-const int consoleWidth = 70;
+const int roomWidth = 60;
+const int roomHeight = 13;
+const int consoleWidth = roomWidth+30;
 const int consoleHeight = roomHeight;
 
 const int maxNumOfBonus = 5;
