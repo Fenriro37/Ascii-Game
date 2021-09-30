@@ -8,10 +8,10 @@ room::room(){
 room::room(int lvl){
     roomNum = lvl;
     for (int i=0;i<roomHeight;i++){
-        if(i%2 == 0){
-            freeRow[i] = false;
-        }
-        freeRow[i] = true;
+        if(i%2 == 0)
+            freeRow[i].available = false;
+        else
+            freeRow[i].available = true;
     }
     roomGenerator();
 }
@@ -115,14 +115,24 @@ void room::initializeEnemies(int currentLevel){
     }
 }
 
-bool room::isEmpty(int x, int y){
+bool room::isAvailable(int x, int y, cast rookie){
     /*Controlliamo che non sia in una riga pari per non sovrascrivere uno spazio bianco dedica 
     a un "buco" e che il nuovo elemento si trovi sopra una piattaforma
     Spawniamo prima i nemici e 
     */
-    if(freeRow[x] && view[roomWidth * x + y] == BLANK && view[roomWidth * (x+1) + y] != BLANK
-        && roomWidth*x+y != (roomWidth*roomHeight-2) && roomWidth*x+y != (roomWidth*roomHeight-2)+roomWidth-1){  
-        freeRow[x] = false; 
+    if(freeRow[x].available && view[roomWidth * x + y] == BLANK && view[roomWidth * (x+1) + y] != BLANK
+        && roomWidth * x + y != roomWidth * (roomHeight-2)){  
+        if(x == roomHeight-2 && y >= roomWidth/2 && y != roomWidth-1){
+            freeRow[x].available = false;
+        }
+        else if(rookie.getFigure() != MONSTER && x != roomHeight-2 && !freeRow[x].thereIsMonster){
+            freeRow[x].available = false;
+        }
+        else if(rookie.getFigure() == MONSTER && x != roomHeight-2){
+            freeRow[x].thereIsMonster = true;
+        }
+        else 
+            return false;
         return true;
     }
     return false;
@@ -136,7 +146,7 @@ void room::spawnItems(){
         if(!iter->Bonus.getTaken()){
             x = rand()%roomHeight;
             y = rand()%roomWidth;
-            if(isEmpty(x,y)){
+            if(isAvailable(x,y, iter->Bonus)){
                 iter->Bonus.setRowPos(x);
                 iter->Bonus.setColPos(y);
                 view[roomWidth * x + y] = iter->Bonus.getFigure();
@@ -157,7 +167,7 @@ void room::spawnEnemies(){
         if(!iter->monster.getAlive()){
             x = rand()%roomHeight;
             y = rand()%roomWidth;
-            if(isEmpty(x,y)){
+            if(isAvailable(x,y,iter->monster)){
                 iter->monster.setRowPos(x);
                 iter->monster.setColPos(y);
                 view[roomWidth * x + y] = iter->monster.getFigure();

@@ -22,10 +22,15 @@ struct bulletNode{
     bulletNode* prev = NULL;
 };
 
+struct control{
+    bool available;
+    bool thereIsMonster;
+};
+
 class room {
 protected:
     int roomNum = 1;
-    bool freeRow[roomHeight];
+    control freeRow[roomHeight];
     char platforms [roomWidth];
     char view[roomHeight*roomWidth];
 
@@ -53,7 +58,7 @@ public:
     void initializeItems(int currentLevel);
     void initializeEnemies(int currentLevel);
     /*Funzione per controllare che la cella sia vuota*/
-    bool isEmpty(int x, int y);
+    bool isAvailable(int x, int y, cast rookie);
     void spawnItems();
     void spawnEnemies();
 
