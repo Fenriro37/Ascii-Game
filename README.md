@@ -8,11 +8,6 @@ Situazione attuale:
     i nemici non spawnano su una piattaforma singola
     (Cambiare nome al booleano di enemy: alive) 
     Gestione punti e danno (playerCollision() e nextRoom() primo if)
-    
-     # # # # # # # #
-    # # # BLOCCO # # #
-     # # # # # # # #
-     
     Miglioramenti : Rimuovere nodi da liste
                     Caduta personaggio caso buco 
                     Schermata Iniziale
