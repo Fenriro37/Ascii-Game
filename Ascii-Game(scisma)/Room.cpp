@@ -25,21 +25,27 @@ room::room(int lvl){
 
 //Funzione per creare randomicamente una serie di piattaforme
 void room::generateRow(int currentLevel){
-    // Inizializzare l'array con "-" per indicare che la piattaforma è usabile
-    for(int i=0; i<roomWidth; i++)
+    // Inizializzare l'array con PLATFORM per indicare che la piattaforma è usabile
+    for(int i=0; i<roomWidth; i++){
         platforms[i] = PLATFORM;
-    int holes = 0; //variabile per contare quanti buchi dovremo creare
-    int random = 0;
+    }
+    
+    //variabile per contare quanti buchi dovremo creare
+    int holes = 0; 
+    int position = 0;
 
     //Doppia condizione per evitare che si creino troppi buchi
-    while(currentLevel != 0 && holes <= 5){ 
-        random = rand()%roomWidth;
-        //evitare muro
-        if(platforms[random] == PLATFORM && random!=0 && random!=1 && random!=roomWidth-1 && random!=roomWidth-2){
-            platforms[random] = BLANK;
+    while(currentLevel != 0 && holes < 5){ 
+        position = rand()%roomWidth;
+        //primo buco
+        if(platforms[position] == PLATFORM && position!=0 && position!=1 && position!=roomWidth-1 && position!=roomWidth-2){
+            platforms[position] = BLANK;
             holes++;
-            currentLevel--;
-        } 
+        }
+        if(position-1>1)
+            platforms[position-1] = BLANK;
+        if(position+1 < roomWidth-2)
+            platforms[position+1] = BLANK;
     }
 }
 
@@ -397,6 +403,7 @@ void room::bulletMove(){
                 view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                 iter->ammo.setAlive();
             }
+            //caso proiettile appena generato
             else if (view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] == HERO 
                      || view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] == TURRET){
                 iter->ammo.setColPos(iter->ammo.getColPos() + offSet);

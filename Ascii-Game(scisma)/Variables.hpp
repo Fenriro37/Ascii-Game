@@ -38,7 +38,7 @@ const int startColPos = 1;
 const int endRowPos = roomHeight-2;
 const int endColPos = roomWidth-2;
 
-const int fireRate = 15;
+const int fireRate = 30;
 //Qui partono le variabili contenute in Variables.cpp
 //Colori
 extern WORD DEF_COLORFOREGROUND;

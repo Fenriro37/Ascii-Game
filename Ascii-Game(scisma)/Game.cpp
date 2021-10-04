@@ -45,7 +45,7 @@ game::game() {
     font.dwFontSize.Y = 35;
     SetCurrentConsoleFontEx(hStdout, false, &font);
 
-    currentroom = new roomList(10);
+    currentroom = new roomList(1);
     //currentroom->myRoom.roomGenerator();
     score = 0;
 }
