@@ -3,7 +3,6 @@
     collisione proiettile proiettile
     bug torrette invisibili
     generazione buchi nelle piattaforme **GP**
-    proiettile con hero che scompare **MATTIA**
     (Cambiare nome al booleano di enemy: alive) 
     Gestione punti e danno (playerCollision() e nextRoom() primo if) **LOLLO**
 ### Miglioramenti:
