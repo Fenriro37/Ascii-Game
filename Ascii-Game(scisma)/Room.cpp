@@ -142,7 +142,9 @@ bool room::isAvailable(int x, int y, cast rookie){
         else if(rookie.getFigure() != MONSTER && x != roomHeight-2 && !freeRow[x].thereIsMonster){
             freeRow[x].available = false;
         }
-        else if(rookie.getFigure() == MONSTER && x != roomHeight-2){
+        //controlliamo che ci siano delle piattaforme a sinistra e a destra per dare un senso di movimento
+        else if(rookie.getFigure() == MONSTER && x != roomHeight-2 && view[roomWidth * (x+1) + y-1] == PLATFORM
+                && view[roomWidth * (x+1) + y+1] == PLATFORM){
             freeRow[x].thereIsMonster = true;
         }
         else 
@@ -382,6 +384,7 @@ bool room::bulletCollision(int x, int y){
     return false;
 }
 
+//forse conviene ridividere nei due casi. Quando torni conta quanti casi andrebbero aggiunti
 void room::bulletMove(){
     int offSet;
     bulletNode* iter = currentAmmo;
@@ -389,12 +392,12 @@ void room::bulletMove(){
         if(iter->ammo.getAlive()){
             offSet = (iter->ammo.getDirection() == LEFT) ? -1 : 1; 
             //caso muro sinistro, il proiettile sparisce e viene settato a false
-            if(roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()-1 == roomWidth * iter->ammo.getRowPos()){
+            if(offSet==-1 && roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()-1 == roomWidth * iter->ammo.getRowPos()){
                 view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                 iter->ammo.setAlive();
             }
             //caso muro destro
-            else if(roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()+1 == roomWidth * (iter->ammo.getRowPos()) + roomWidth-1){
+            else if(offSet==1 && roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()+1 == roomWidth * (iter->ammo.getRowPos()) + roomWidth-1){
                 view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
                 iter->ammo.setAlive();
             }
