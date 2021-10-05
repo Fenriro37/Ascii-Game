@@ -4,7 +4,6 @@
     bug torrette invisibili
     generazione buchi nelle piattaforme **GP**
     proiettile con hero che scompare **MATTIA**
-    i nemici non spawnano su una piattaforma singola **MATTIA**
     (Cambiare nome al booleano di enemy: alive) 
     Gestione punti e danno (playerCollision() e nextRoom() primo if) **LOLLO**
 ### Miglioramenti:
