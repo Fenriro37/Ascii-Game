@@ -6,7 +6,8 @@
     (Cambiare nome al booleano di enemy: alive) 
     Gestione punti e danno (playerCollision() e nextRoom() primo if) **LOLLO**
 ### Miglioramenti:
-    Rimuovere nodi da liste
+    Modificare isAvailable cercando prima la x e dopo la y (questione di probabilità)
+    Rimuovere nodi da liste(possiamo pulire le liste al cambio di livello)
     Caduta personaggio caso buco 
     Schermata Iniziale
     Schermata Finale mostrando score finale
