@@ -1,0 +1,75 @@
+Situazione attuale:
+    //Per ora i nemici devono avere una singola vita altrimenti succedono cose strane. Risolvere o lasciare così
+    collisione proiettile proiettile
+    bug torrette invisibili
+    fire ratio torretta
+    generazione buchi nelle piattaforme
+    proiettile con hero che scompare
+    i nemici non spawnano su una piattaforma singola
+
+    bulletmove
+    bulletcollision
+    generatebullet
+    enemymove
+    
+     
+    (Cambiare nome al booleano di enemy: alive) 
+    Gestione punti e danno (playerCollision() e nextRoom() primo if)
+
+    Miglioramenti : Rimuovere nodi da liste
+                    Caduta personaggio caso buco 
+                    Schermata Iniziale
+                    Schermata Finale mostrando score finale
+                    scivere relazione e registrare video
+                    commentare le funzioni
+
+23/09
+aggiustati parzialmente i proiettili
+dafare: Valutare spostare checkroba da game a room 
+
+22/09
+aggiunte un po' di cose sui proiettili
+dafare: proiettili, rendere protetto view, aggiustare rowgenerator()
+
+21/09
+aggiustato array view[][] -> view[] tramite (roomWidth * row + column), creati bullet
+dafare: rendere protetto view, aggiustare rowgenerator(), finire di implementare i proiettili
+
+#20/9
+aggiustato i bug del 18/9 (grafica)
+dafare: rendere protected view[][], bullets, bonus e malus
+
+#18/9
+fatto: fottuto tutto
+dafare: mettere a posto il prevroom() e rendere protected view[][] e aggiustare tocharinfo
+
+#17/9:
+fatto: fixato la stampa dei campi, divisi i compiti per la gestione del punteggio e altre statistiche
+dafare: funzioni per il calcolo dei campi
+
+#16/9:
+fatto: variabile globale per il colore del foreground, riadattata dimensione della console,
+    miglioramento del pattern orizzontale dei nemici, primi tentativi di scrivere gli score sulla console,
+    risultato, tutto tabbato a destra + carattere casuale
+
+#15/9:
+fatto: costruttore di item, aggiustato lo switch + aggiunti caratteri speciali
+    incrementato il font della finestra
+
+    -difficoltà: danno dei nemici, punti e bonus, piattaforme
+    -come si muovono i nemici, tipi diversi dei nemici
+    -cercare come creare il quanto di tempo
+
+
+
+
+
+
+
+
+
+
+
+
+       
+
