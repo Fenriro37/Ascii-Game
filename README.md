@@ -1,6 +1,5 @@
 ### Situazione attuale:
     Per ora i nemici devono avere una singola vita altrimenti succedono cose strane. Risolvere o lasciare così
-    Modificare isAvailable cercando prima la x e dopo la y (questione di probabilità)
     Score non si aggiorna (mettere score in hero?)
     collisione proiettile proiettile
     bug torrette infliggono doppio danno se attaccato
