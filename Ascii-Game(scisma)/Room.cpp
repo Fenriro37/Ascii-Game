@@ -234,6 +234,7 @@ bool room::enemyCollision(enemyNode* currentEnemy){
     if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == HERO){
         currentEnemy->monster.setAlive();
         protagonist.decreaseLife();
+        protagonist.setScore(-10);
         return true;
     }
     else if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == BULLET){
@@ -393,6 +394,7 @@ bool room::bulletCollision(int x, int y){
         }
         else if(view[roomWidth * x + y] == HERO){
             protagonist.decreaseLife();
+            protagonist.setScore(-10);
         }
         //i bonus se vengono colpiti sono distrutti
         else if(view[roomWidth * x + y] == HEART || view[roomWidth * x + y] == COIN || view[roomWidth * x + y] == MAGAZINE) {

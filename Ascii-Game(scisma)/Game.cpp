@@ -107,7 +107,7 @@ void game::logic(){
         move(getch());
         if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2){
             nextRoom();
-            score+=50; 
+            protagonist.setScore(50);
         }
         if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
             prevRoom(); 
@@ -220,8 +220,8 @@ void game::playerCollision(int row, int col){
         //caso collisione enemy
         if(!checkNear(row, col, MONSTER) || !checkNear(row, col, TURRET)){
             protagonist.decreaseLife();
-            if(score - 10 > 0){
-                score-=10;
+            if(score - 10 > 0){    
+                protagonist.setScore(-10);
             }
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
             enemyNode* iter;
@@ -234,6 +234,7 @@ void game::playerCollision(int row, int col){
             iter = currentroom->myRoom.findAmmo(row, col);
             iter->ammo.setAlive();
             protagonist.decreaseLife();
+            protagonist.setScore(-10);
         }
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
@@ -248,7 +249,7 @@ void game::playerCollision(int row, int col){
             }
             else if(!checkNear(row, col, COIN)){
                 int value = findItem(row, col);
-                score+=10;
+                protagonist.setScore(10);
                
             }
         }
@@ -293,7 +294,7 @@ void game::toCharInfo() {
             else if (row == 4 && col == roomWidth+10){
                 char field[13] = {'S','C','O','R','E',':',BLANK};
                 char value[6]; //fino a 999.999
-                _itoa(score , value, 10);
+                _itoa(protagonist.getScore() , value, 10);
                 strcat(field, value);
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
@@ -307,7 +308,7 @@ void game::toCharInfo() {
                 paste(field, size, count, col);
             }
             else if (row == 9 && col == roomWidth+10){
-                char field[8] = {'A','M','M','O',':',BLANK};
+                char field[8] = {'A','M','M','X',':',BLANK};
                 char value[3]; //fino a 99
                 _itoa(protagonist.getBullet(), value, 10);
                 strcat(field, value);

@@ -5,18 +5,15 @@ class hero : public cast{
 protected: 
     int life;
     int bullet;
-    bool delay;
-
+    int score;
 public:
-
     hero();
     void decreaseLife();
     void setLife(int newLife);
     void setBullet(int newBullet);
+    void setScore(int newScore);
     void decreaseBullet();
     int getLife();
     int getBullet();
-    void changeDelay();
-    void setDelay(bool newDelay);
-    bool getDelay();
+    int getScore();
 };

@@ -6,8 +6,8 @@ hero::hero(){
     cast::setColPos(startColPos);
     cast::setFigure(HERO);
     setLife(3);
-    setBullet(200);
-    delay = false;
+    setBullet(9);
+    setScore(50);
 }
 
 int hero::getLife(){
@@ -19,7 +19,8 @@ int hero::getBullet(){
 }
 
 void hero::decreaseLife(){
-    life -=1;
+    if(life!=0)
+        life -=1;
 }
 
 void hero::decreaseBullet(){
@@ -31,16 +32,18 @@ void hero::setBullet(int newBullet){
 }
 
 void hero::setLife(int newLife){
-    life = newLife;
+    if(life+newLife > 0)
+        life+=newLife;
+    else 
+        life = 0;
 }
 
-void hero::changeDelay(){
-    delay = !delay;
+int hero::getScore(){
+    return score;
 }
-void hero::setDelay(bool newDelay){
-    delay = newDelay;
-}
-
-bool hero::getDelay(){
-    return delay;
+void hero::setScore(int newScore){
+    if(score+newScore > 0)
+        score+=newScore;
+    else 
+        score = 0;
 }
