@@ -47,7 +47,7 @@ game::game() {
 
     currentroom = new roomList(1);
     //currentroom->myRoom.roomGenerator();
-    score = 0;
+    score = 50;
 }
 
 /*Otteniamo la posizione della cella da cambiare e la sostituiamo con figure
@@ -105,8 +105,10 @@ void game::logic(){
     //currentroom->myRoom.bulletMove();
     if(kbhit()){
         move(getch());
-        if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)
-            nextRoom(); 
+        if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2){
+            nextRoom();
+            score+=50; 
+        }
         if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
             prevRoom(); 
     }
@@ -188,29 +190,23 @@ void game::move(char input){
 int game::getScore(){
     return score;
 }
-
 void game::setScore(int newScore){
-    if (newScore < 0){
-        if(score+newScore > 0)
-            score=score+newScore;
-        else 
-            score = 0;
-    }
+    if(score+newScore > 0)
+        score+=newScore;
+    else 
+        score = 0;
 }
 
 int game::findItem(int row, int col){
     itemNode* iter = currentroom->myRoom.getCurrentBonus();
-    ////////////////////////////////////////////////
-    //while true non troppo carino ma variabile booleana non ha senso
-    //decidere quale usare
-    ///////////////////////////////////////////////
-    while(true){
+    while(iter!= NULL){
         if(iter->Bonus.getRowPos() == row && iter->Bonus.getColPos() == col){
             iter->Bonus.setTaken();
             return iter->Bonus.getValue();
         }
         iter = iter->next;
         }
+    return NULL; 
 }
 
 ////////////////////////////////////////
@@ -224,7 +220,9 @@ void game::playerCollision(int row, int col){
         //caso collisione enemy
         if(!checkNear(row, col, MONSTER) || !checkNear(row, col, TURRET)){
             protagonist.decreaseLife();
-            setScore(-10);
+            if(score - 10 > 0){
+                score-=10;
+            }
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
             enemyNode* iter;
             iter = currentroom->myRoom.findMoster(row, col);
@@ -248,9 +246,10 @@ void game::playerCollision(int row, int col){
                 int value = findItem(row, col);
                 protagonist.setBullet(protagonist.getBullet() + value);           
             }
-            else if(checkNear(row, col, COIN)){
+            else if(!checkNear(row, col, COIN)){
                 int value = findItem(row, col);
-                setScore(value);
+                score+=10;
+               
             }
         }
     }
@@ -288,14 +287,13 @@ void game::toCharInfo() {
                 */
                 _itoa(currentroom->myRoom.getRoomNum(), value, 10);
                 strcat(field, value);
-
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
             else if (row == 4 && col == roomWidth+10){
                 char field[13] = {'S','C','O','R','E',':',BLANK};
                 char value[6]; //fino a 999.999
-                _itoa(score, value, 10);
+                _itoa(score , value, 10);
                 strcat(field, value);
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
