@@ -94,7 +94,7 @@ void room::roomGenerator(){
 //Quanti nemici contemporaneamente?1K
 void room::initializeItems(int currentLevel){
     // O mettiamo un certo numero di bonus fissi per incentivare lo spostamento o ci affidiamo al caso
-    int numOfBonus = rand()%3+1; //currentLevel / 3 + 1 || 
+    int numOfBonus = rand()%2+1; //currentLevel / 3 + 1 || 
     int count = 1;
     item newItem;
     currentBonus = new itemNode();
@@ -134,8 +134,8 @@ bool room::isAvailable(int x, int y, cast rookie){
     a un "buco" e che il nuovo elemento si trovi sopra una piattaforma
     Spawniamo prima i nemici e 
     */
-    if(freeRow[x].available && view[roomWidth * x + y] == BLANK && view[roomWidth * (x+1) + y] != BLANK
-        && roomWidth * x + y != roomWidth * (roomHeight-2)){  
+    if(view[roomWidth * x + y] == BLANK && view[roomWidth * (x+1) + y] != BLANK){  
+        //caso ultima riga
         if(x == roomHeight-2 && y >= roomWidth/2 && y != roomWidth-1){
             freeRow[x].available = false;
         }
@@ -146,30 +146,46 @@ bool room::isAvailable(int x, int y, cast rookie){
                 && view[roomWidth * (x+1) + y-1] == PLATFORM
                 && view[roomWidth * (x+1) + y+1] == PLATFORM
                 ){
+            freeRow[x].available = false;        
             freeRow[x].thereIsMonster = true;
         }
-        else 
-            return false;
-        return true;
+        else {
+            return true;
+        }
+
+        return false;
     }
-    return false;
+    return true;
+}
+
+bool room::checkRow(int row, cast character){
+    if(freeRow[row].available || character.getFigure() == MONSTER  && freeRow[row].thereIsMonster)
+        return false;
+    else 
+        return true;
 }
 
 void room::spawnItems(){
     int x, y;
     itemNode* iter = currentBonus;
+    int empty[6] = {1,3,5,7,9,11};
     while(iter != NULL){
         //remind il booleano taken parte sempre come falso
         if(!iter->Bonus.getTaken()){
-            x = rand()%roomHeight;
-            y = rand()%roomWidth;
-            if(isAvailable(x,y, iter->Bonus)){
-                iter->Bonus.setRowPos(x);
-                iter->Bonus.setColPos(y);
-                view[roomWidth * x + y] = iter->Bonus.getFigure();
-                iter = iter->next;
+            //fissiamo la x
+            do{
+                x = empty[rand()%6];
+            }while(checkRow(x, iter->Bonus));
+            //fissiamo la y
+            do{
+                y = rand()%roomWidth;
+            }while(isAvailable(x,y, iter->Bonus));
+
+            iter->Bonus.setRowPos(x);
+            iter->Bonus.setColPos(y);
+            view[roomWidth * x + y] = iter->Bonus.getFigure();
+            iter = iter->next;
             }
-        }
         else
             iter = iter->next;
     }
@@ -178,18 +194,23 @@ void room::spawnItems(){
 void room::spawnEnemies(){
     int x, y;
     enemyNode* iter = currentMonsters;
+    int empty[6] = {1,3,5,7,9,11};
     while(iter != NULL){
         //remind i mostri partono sempre con il bool alive = true
         //torretta si prende una riga per sè
         if(!iter->monster.getAlive()){
-            x = rand()%roomHeight;
-            y = rand()%roomWidth;
-            if(isAvailable(x,y,iter->monster)){
-                iter->monster.setRowPos(x);
-                iter->monster.setColPos(y);
-                view[roomWidth * x + y] = iter->monster.getFigure();
-                iter = iter->next; 
-            }
+            do{
+                x = empty[rand()%6];
+            }while(checkRow(x, iter->monster));
+            
+            do{
+                y = rand()%roomWidth;
+            }while(isAvailable(x,y, iter->monster));
+
+            iter->monster.setRowPos(x);
+            iter->monster.setColPos(y);
+            view[roomWidth * x + y] = iter->monster.getFigure();
+            iter = iter->next; 
         }
         else
             iter = iter->next;

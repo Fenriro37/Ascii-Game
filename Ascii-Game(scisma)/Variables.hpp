@@ -25,7 +25,7 @@
 #define BULLET (char)9
 
 //roomWidth anche in cast.cpp
-const int roomWidth = 60;
+const int roomWidth = 40;
 const int roomHeight = 13;
 const int consoleWidth = roomWidth+30;
 const int consoleHeight = roomHeight;

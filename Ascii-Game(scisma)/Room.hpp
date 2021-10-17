@@ -58,6 +58,7 @@ public:
     void initializeItems(int currentLevel);
     void initializeEnemies(int currentLevel);
     /*Funzione per controllare che la cella sia vuota*/
+    bool checkRow(int row, cast character);
     bool isAvailable(int x, int y, cast rookie);
     void spawnItems();
     void spawnEnemies();
@@ -78,4 +79,6 @@ public:
     void bulletMove();
     bool enemyCollision(enemyNode* currentEnemy);
     void enemyMove();
+
+
 };
