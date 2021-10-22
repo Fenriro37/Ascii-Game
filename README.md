@@ -2,8 +2,8 @@
     
     collisione proiettile proiettile
     generazione buchi nelle piattaforme **GP**
-    Mettere il massimo quantitativo raggiungibile di ammo-vita?-coin
     Gestione punti e danno (playerCollision() e nextRoom() primo if) **LOLLO**
+    Mettere il massimo quantitativo raggiungibile di ammo-vita?-coin
     (Cambiare nome al booleano di enemy: alive) 
     Per ora i nemici devono avere una singola vita altrimenti succedono cose strane. Risolvere o lasciare così
 
