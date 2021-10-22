@@ -9,10 +9,11 @@ protected:
 public:
     hero();
     void decreaseLife();
+    void decreaseBullet();
+    void decreaseScore(int damage);
     void setLife(int newLife);
     void setBullet(int newBullet);
     void setScore(int newScore);
-    void decreaseBullet();
     int getLife();
     int getBullet();
     int getScore();

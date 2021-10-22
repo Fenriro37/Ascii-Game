@@ -72,6 +72,7 @@ bool game::checkNear(int row, int col, char figure){
 void game::nextRoom(){
         changeCellOfView(protagonist.getPos(), BLANK);
         if (currentroom->next == NULL){
+            protagonist.setScore(50);
             currentroom->next = new roomList(currentroom->myRoom.getRoomNum() + 1);
             currentroom->next->prev = currentroom;
 
@@ -107,7 +108,6 @@ void game::logic(){
         move(getch());
         if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2){
             nextRoom();
-            protagonist.setScore(50);
         }
         if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
             prevRoom(); 
@@ -308,7 +308,7 @@ void game::toCharInfo() {
                 paste(field, size, count, col);
             }
             else if (row == 9 && col == roomWidth+10){
-                char field[8] = {'A','M','M','X',':',BLANK};
+                char field[8] = {'A','M','M','O',':',BLANK};
                 char value[3]; //fino a 99
                 _itoa(protagonist.getBullet(), value, 10);
                 strcat(field, value);

@@ -18,32 +18,44 @@ int hero::getBullet(){
     return bullet;
 }
 
+int hero::getScore(){
+    return score;
+}
+
 void hero::decreaseLife(){
     //if(life!=0)
         life -=1;
 }
 
 void hero::decreaseBullet(){
-    bullet -= 1;
+    //if(bullet!=0)
+        bullet -= 1;
+}
+
+void hero::decreaseScore(int damage){
+    if(score - damage > 0)
+        score -= damage;
+    else
+        score = 0; 
 }
 
 void hero::setBullet(int newBullet){
-    bullet = newBullet;
+    if(bullet + newBullet > maxAmmo)
+        bullet = maxAmmo;
+    else 
+        bullet += newBullet;
 }
 
 void hero::setLife(int newLife){
-    if(life+newLife > 0)
-        life+=newLife;
+    if(life + newLife > maxHp)
+        life = maxHp;
     else 
-        life = 0;
+        life += newLife;
 }
 
-int hero::getScore(){
-    return score;
-}
 void hero::setScore(int newScore){
-    if(score+newScore > 0)
-        score+=newScore;
+    if(score + newScore > maxScore)
+        score = maxScore;
     else 
-        score = 0;
+        score += newScore;
 }
