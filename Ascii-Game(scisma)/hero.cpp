@@ -19,7 +19,7 @@ int hero::getBullet(){
 }
 
 void hero::decreaseLife(){
-    if(life!=0)
+    //if(life!=0)
         life -=1;
 }
 

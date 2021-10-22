@@ -249,7 +249,7 @@ void game::playerCollision(int row, int col){
             }
             else if(!checkNear(row, col, COIN)){
                 int value = findItem(row, col);
-                protagonist.setScore(10);
+                protagonist.setScore(10 ); //room.getlevel* 10
                
             }
         }

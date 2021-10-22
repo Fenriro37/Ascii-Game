@@ -369,14 +369,15 @@ void room::generateBullet(bool direction, cast shooter){
     newBullet->ammo = newAmmo;
     newBullet->ammo.setColPos(shooter.getColPos());
     newBullet->ammo.setRowPos(shooter.getRowPos());
-    if(currentAmmo == NULL){
-        currentAmmo = newBullet;
-    }
-    else{
-        addToList(newBullet);
-    }
     int offSet = (direction == LEFT) ? -1 : 1;
-    bulletCollision(newBullet->ammo.getRowPos(), newBullet->ammo.getColPos() + offSet);
+    if(!bulletCollision(newBullet->ammo.getRowPos(), newBullet->ammo.getColPos() + offSet)){
+        if(currentAmmo == NULL){
+            currentAmmo = newBullet;
+        }
+        else{
+            addToList(newBullet);
+        }
+    } 
 }
 
 bool room::bulletCollision(int x, int y){
@@ -388,8 +389,6 @@ bool room::bulletCollision(int x, int y){
             view[roomWidth * x + y] = BLANK;  
         }
         else if(view[roomWidth * x + y] == BULLET){
-            bulletNode* foundAmmo = findAmmo(x, y);
-            foundAmmo->ammo.setAlive();
             view[roomWidth * x + y] = BLANK;
         }
         else if(view[roomWidth * x + y] == HERO){
