@@ -1,7 +1,6 @@
 ### Situazione attuale:
     
     collisione proiettile proiettile
-    bug torrette infliggono doppio danno se attaccato
     generazione buchi nelle piattaforme **GP**
     Mettere il massimo quantitativo raggiungibile di ammo-vita?-coin
     Gestione punti e danno (playerCollision() e nextRoom() primo if) **LOLLO**
