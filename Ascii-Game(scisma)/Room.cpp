@@ -30,22 +30,26 @@ void room::generateRow(int currentLevel){
         platforms[i] = PLATFORM;
     }
     
-    //variabile per contare quanti buchi dovremo creare
+    /* variabile per contare quanti buchi dovremo creare
+    * quante piattaforme possiamo avere
+    */
     int holes = 0; 
     int position = 0;
+    int maxHoles = currentLevel/5 +2;
+    if (maxHoles > 5) maxHoles = 5;
 
     //Doppia condizione per evitare che si creino troppi buchi
-    while(currentLevel != 0 && holes < 5){ 
+    while(currentLevel != 0 && holes < maxHoles){ 
         position = rand()%roomWidth;
-        //primo buco
+        //primo buco, position != da: prima, seconda, ultima, penultima colonna
         if(platforms[position] == PLATFORM && position!=0 && position!=1 && position!=roomWidth-1 && position!=roomWidth-2){
             platforms[position] = BLANK;
             holes++;
-        }
-        if(position-1>1)
-            platforms[position-1] = BLANK;
-        if(position+1 < roomWidth-2)
-            platforms[position+1] = BLANK;
+            if(position-1>1)
+                platforms[position-1] = BLANK;
+            if(position+1 < roomWidth-2)
+                platforms[position+1] = BLANK;
+        }        
     }
 }
 
