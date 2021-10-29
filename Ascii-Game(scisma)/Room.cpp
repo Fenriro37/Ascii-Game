@@ -35,8 +35,8 @@ void room::generateRow(int currentLevel){
     */
     int holes = 0; 
     int position = 0;
-    int maxHoles = currentLevel/5 +2;
-    if (maxHoles > 5) maxHoles = 5;
+    int maxHoles = currentLevel/5 + 2;
+    if (maxHoles > 5) maxHoles = 5; 
 
     //Doppia condizione per evitare che si creino troppi buchi
     while(currentLevel != 0 && holes < maxHoles){ 
@@ -98,7 +98,7 @@ void room::roomGenerator(){
 //Quanti nemici contemporaneamente?1K
 void room::initializeItems(int currentLevel){
     // O mettiamo un certo numero di bonus fissi per incentivare lo spostamento o ci affidiamo al caso
-    int numOfBonus = rand()%2+1; //currentLevel / 3 + 1 || 
+    int numOfBonus =  2;//rand()%2+1; //currentLevel / 3 + 1 || 
     int count = 1;
     item newItem;
     currentBonus = new itemNode();
@@ -116,7 +116,7 @@ void room::initializeItems(int currentLevel){
 }
 
 void room::initializeEnemies(int currentLevel){
-    int numOfEnemies = rand()%3+1;
+    int numOfEnemies = 4;//rand()%3+1;
     int count = 1;
     enemy monster;
     currentMonsters = new enemyNode();
@@ -238,13 +238,14 @@ bool room::enemyCollision(enemyNode* currentEnemy){
     if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == HERO){
         currentEnemy->monster.setAlive();
         protagonist.decreaseLife();
-        protagonist.setScore(-10);
+        protagonist.setScore(-(roomNum * roomNum * 0.01 + 20));
         return true;
     }
     else if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == BULLET){
         bulletNode* currentAmmo = findAmmo(currentEnemy->monster.getRowPos(), currentEnemy->monster.getColPos() + offSet);
         currentEnemy->monster.setAlive();
         currentAmmo->ammo.setAlive();
+        protagonist.setScore(5 * roomNum + 50);
         view[currentAmmo->ammo.getPos()] = BLANK;
 
         return true;
@@ -389,7 +390,7 @@ bool room::bulletCollision(int x, int y){
         if(view[roomWidth * x + y] == MONSTER || view[roomWidth * x + y] == TURRET){
             enemyNode* foundMonster = findMoster(x, y);
             foundMonster->monster.setAlive();
-            //caso nemico ucciso
+            protagonist.setScore( 5* roomNum + 50);
             view[roomWidth * x + y] = BLANK;  
         }
         else if(view[roomWidth * x + y] == BULLET){
@@ -397,7 +398,7 @@ bool room::bulletCollision(int x, int y){
         }
         else if(view[roomWidth * x + y] == HERO){
             protagonist.decreaseLife();
-            protagonist.setScore(-10);
+            protagonist.setScore(-(roomNum * roomNum * 0.01 + 20));
         }
         //i bonus se vengono colpiti sono distrutti
         else if(view[roomWidth * x + y] == HEART || view[roomWidth * x + y] == COIN || view[roomWidth * x + y] == MAGAZINE) {

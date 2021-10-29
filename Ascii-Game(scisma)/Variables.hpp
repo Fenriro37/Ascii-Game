@@ -40,7 +40,7 @@ const int endColPos = roomWidth-2;
 
 const int fireRate = 30;
 
-const int maxHp = 10;
+const int maxHp = 3;
 const int maxScore = 999999;
 const int maxAmmo = 20;
 //Qui partono le variabili contenute in Variables.cpp

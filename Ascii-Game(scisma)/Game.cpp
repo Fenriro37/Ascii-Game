@@ -103,7 +103,7 @@ void game::stampView() {
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 */
 void game::logic(){
-    //currentroom->myRoom.bulletMove();
+
     if(kbhit()){
         move(getch());
         if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2){
@@ -113,6 +113,7 @@ void game::logic(){
             prevRoom(); 
     }
     Sleep(50);
+
     currentroom->myRoom.bulletMove();
     currentroom->myRoom.enemyMove();
 
@@ -187,16 +188,6 @@ void game::move(char input){
     }
 }
 
-int game::getScore(){
-    return score;
-}
-void game::setScore(int newScore){
-    if(score+newScore > 0)
-        score+=newScore;
-    else 
-        score = 0;
-}
-
 int game::findItem(int row, int col){
     itemNode* iter = currentroom->myRoom.getCurrentBonus();
     while(iter!= NULL){
@@ -219,10 +210,9 @@ void game::playerCollision(int row, int col){
     if(checkNear(row, col, BLANK)){
         //caso collisione enemy
         if(!checkNear(row, col, MONSTER) || !checkNear(row, col, TURRET)){
-            protagonist.decreaseLife();
-            if(score - 10 > 0){    
-                protagonist.setScore(-10);
-            }
+            protagonist.decreaseLife();   
+            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * currentroom->myRoom.getRoomNum() * 0.01 + 20));
+            
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
             enemyNode* iter;
             iter = currentroom->myRoom.findMoster(row, col);
@@ -234,14 +224,14 @@ void game::playerCollision(int row, int col){
             iter = currentroom->myRoom.findAmmo(row, col);
             iter->ammo.setAlive();
             protagonist.decreaseLife();
-            protagonist.setScore(-10);
+            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * currentroom->myRoom.getRoomNum() * 0.01 + 20));
         }
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
         else{
             if(!checkNear(row, col, HEART)){
                 int value = findItem(row, col);
-                protagonist.setLife(protagonist.getLife() + value);
+                protagonist.setLife(protagonist.getLife() + 1);
             }
             else if(!checkNear(row, col, MAGAZINE)){
                 int value = findItem(row, col);
@@ -249,7 +239,7 @@ void game::playerCollision(int row, int col){
             }
             else if(!checkNear(row, col, COIN)){
                 int value = findItem(row, col);
-                protagonist.setScore(10 ); //room.getlevel* 10
+                protagonist.setScore(10* currentroom->myRoom.getRoomNum() + 20); 
                
             }
         }
