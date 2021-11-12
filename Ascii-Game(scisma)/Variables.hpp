@@ -30,8 +30,8 @@ const int roomHeight = 13;
 const int consoleWidth = roomWidth+30;
 const int consoleHeight = roomHeight;
 
-const int maxNumOfBonus = 5;
-const int maxNumOfEnemies = 4;
+const int maxNumOfBonus = 3;
+const int maxNumOfEnemies = 6;
 
 const int startRowPos = roomHeight-2;
 const int startColPos = 1;

@@ -9,4 +9,4 @@ Bonus (spawn - frequenza dei vari bonus e punti)
 X   Coin
 X   Cambio di livello
 
-
+room.cpp GenerateRow da ricreare

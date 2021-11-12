@@ -7,6 +7,7 @@ room::room(){
             freeRow[i].available = false;
         else
             freeRow[i].available = true;
+        freeRow[i].numberOfMonsters = 0;            
     }
     nextLevelPos();
     roomGenerator();
@@ -16,20 +17,35 @@ room::room(int lvl){
     roomNum = lvl;
     for (int i=0;i<roomHeight;i++){
         if(i%2 == 0)
-            freeRow[i].available = false;
+            freeRow[i].available = false;        
         else
-            freeRow[i].available = true;
+            freeRow[i].available = true;        
+         
+        freeRow[i].numberOfMonsters = 0;
     }
     roomGenerator();
 }
 
 //Funzione per creare randomicamente una serie di piattaforme
 void room::generateRow(int currentLevel){
-    // Inizializzare l'array con PLATFORM per indicare che la piattaforma è usabile
-    for(int i=0; i<roomWidth; i++){
-        platforms[i] = PLATFORM;
-    }
+    //Ogni piattaforma e' piena
     
+    for (int row = 2; row < roomHeight-1; row+=2) {
+        for (int col = 1; col < roomWidth-1; col++) {
+            if(freeRow[row-1].available){
+                //riga bianca
+            } 
+            else {
+                if (freeRow[row-1].thereIsMonster){
+                    //caso 1 o 2 mostri
+                }
+                else {
+                    //caso bonus o torretta
+                }
+            }
+        }
+    }
+
     /* variabile per contare quanti buchi dovremo creare
     * quante piattaforme possiamo avere
     */
@@ -56,7 +72,6 @@ void room::generateRow(int currentLevel){
 //funzione per creare una stanza in maniera casuale
 void room::roomGenerator(){
     for (int row = 0; row < roomHeight; row++) {
-        generateRow(getRoomNum());
         for (int col = 0; col < roomWidth; col++) {
             //caso tetto
             if (row == 0){ 
@@ -71,8 +86,8 @@ void room::roomGenerator(){
             view[roomWidth * row + col] = WALL;
             }
             //caso piattaforme
-            else if (row%2==0 && row!=0){ 
-                view[roomWidth * row + col] = platforms[col];
+            else if (row%2==0){ 
+                view[roomWidth * row + col] = PLATFORM;
             }
             else {
                 view[roomWidth * row + col] = BLANK;
@@ -87,11 +102,14 @@ void room::roomGenerator(){
     //inserimento protagonista
     view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
-    initializeItems(getRoomNum());
+    //initializeItems(getRoomNum());
     initializeEnemies(getRoomNum());
 
-    spawnItems();
+    //spawnItems();
     spawnEnemies();
+
+    //bucare
+    
 }
 
 //Funzione per inizializzare gli item della stanza corrente
@@ -116,13 +134,13 @@ void room::initializeItems(int currentLevel){
 }
 
 void room::initializeEnemies(int currentLevel){
-    int numOfEnemies = 4;//rand()%3+1;
+    int numOfEnemies = 5;//rand()%3+1;
     int count = 1;
     enemy monster;
     currentMonsters = new enemyNode();
     currentMonsters->monster = monster;
     currentMonsters->next = NULL;
-    while((numOfEnemies-1)!=0 && count!=maxNumOfEnemies){
+    while((numOfEnemies-1)>0 && count<=maxNumOfEnemies){
         //inserimento in testa in una lista
         enemyNode* tmp = new enemyNode();
         enemy newEnemy;
@@ -149,9 +167,11 @@ bool room::isAvailable(int x, int y, cast rookie){
         else if(rookie.getFigure() == MONSTER && x != roomHeight-2 
                 && view[roomWidth * (x+1) + y-1] == PLATFORM
                 && view[roomWidth * (x+1) + y+1] == PLATFORM
+                && freeRow[x].numberOfMonsters < 2
                 ){
             freeRow[x].available = false;        
             freeRow[x].thereIsMonster = true;
+            freeRow[x].numberOfMonsters++;
         }
         else {
             return true;

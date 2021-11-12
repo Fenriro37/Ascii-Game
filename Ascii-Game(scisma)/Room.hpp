@@ -25,13 +25,13 @@ struct bulletNode{
 struct control{
     bool available;
     bool thereIsMonster;
+    int numberOfMonsters;
 };
 
 class room {
 protected:
     int roomNum = 1;
     control freeRow[roomHeight];
-    char platforms [roomWidth];   /*togliamo gli estremi che sono occupati dalle pareti*/
     char view[roomHeight*roomWidth];
 
     itemNode* currentBonus;
