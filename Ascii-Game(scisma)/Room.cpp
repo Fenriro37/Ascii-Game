@@ -7,7 +7,8 @@ room::room(){
             freeRow[i].available = false;
         else
             freeRow[i].available = true;
-        freeRow[i].numberOfMonsters = 0;            
+        freeRow[i].thereIsMonster = false;
+        freeRow[i].numberOfMonsters = 0;          
     }
     nextLevelPos();
     roomGenerator();
@@ -19,54 +20,140 @@ room::room(int lvl){
         if(i%2 == 0)
             freeRow[i].available = false;        
         else
-            freeRow[i].available = true;        
-         
+            freeRow[i].available = true;
+        freeRow[i].thereIsMonster = false;
         freeRow[i].numberOfMonsters = 0;
     }
     roomGenerator();
 }
 
-//Funzione per creare randomicamente una serie di piattaforme
-void room::generateRow(int currentLevel){
-    //Ogni piattaforma e' piena
-    
+//Funzione per bucare randomicamente una serie di piattaforme
+void room::drillRow(const int currentLevel){
+
     for (int row = 2; row < roomHeight-1; row+=2) {
-        for (int col = 1; col < roomWidth-1; col++) {
-            if(freeRow[row-1].available){
-                //riga bianca
-            } 
-            else {
-                if (freeRow[row-1].thereIsMonster){
-                    //caso 1 o 2 mostri
-                }
-                else {
-                    //caso bonus o torretta
+
+        int holes = 0; 
+        int position = 0;
+        int maxHoles = currentLevel/5 + 2;
+        if (maxHoles > 5) maxHoles = 5;
+
+        /* Riga vuota
+        */
+        if(freeRow[row-1].available){
+            while(holes < maxHoles){
+                position = rand()%roomWidth;
+                //primo buco, position != da: prima, seconda, ultima, penultima colonna
+                if(view[roomWidth * row + position] == PLATFORM && position!=1 && position!=roomWidth-2){
+                    view[roomWidth * row + position] = BLANK;
+                    holes++;
+                    if(position-1>1)
+                        view[roomWidth * row + position-1] = BLANK;
+                    if(position+1 < roomWidth-2)
+                        view[roomWidth * row + position+1] = BLANK;
                 }
             }
         }
+        /* Riga occupata da qualcosa
+        */
+        else {
+            /* Caso 1 o 2 mostri
+            itero sulla riga per cercare i due mostri
+            struct sese
+            */
+            if (freeRow[row-1].thereIsMonster){
+
+            }
+            /* Caso bonus o torretta
+            divido la riga in 4 parti, buco quelle dove non c'è il qualcosa
+            */
+            else {
+                int yOccupied = findYinRow(row);    //posizione del qualcosa
+                int section = (roomWidth-4)/4;      //grandezza dei quarti di riga
+                int whichSection = rand()%4;        //in quale sezione tentiamo di scrivere
+
+                while(holes < maxHoles){
+                    position = rand()%roomWidth;
+                    if(position >= 2 && position <= 2+section){
+                        if(!(yOccupied >= 2 && yOccupied <= 2+section)){
+                            // cerchiamo di bucare nel  PRIMO quarto
+                            //something non è nel PRIMO quarto
+                            if(view[roomWidth * row + position] == PLATFORM){
+                                view[roomWidth * row + position] = BLANK;
+                                holes++;
+                                if(position-1>1)
+                                    view[roomWidth * row + position-1] = BLANK;
+                                if(position+1 <= 2+section)
+                                    view[roomWidth * row + position+1] = BLANK;
+                            }
+                        }                        
+                    }
+                    else if(position >= 2+section+1 && position <= 2+2*section+1){
+                        if(!(yOccupied >= 2+section+1 && yOccupied <= 2+2*section+1)){
+                            // cerchiamo di bucare nel SECONDO quarto
+                            //something non è nel SECONDO quarto
+                            if(view[roomWidth * row + position] == PLATFORM){
+                                view[roomWidth * row + position] = BLANK;
+                                holes++;
+                                if(position-1 >= 2+section+1)
+                                    view[roomWidth * row + position-1] = BLANK;
+                                if(position+1 <= 2+2*section+1)
+                                    view[roomWidth * row + position+1] = BLANK;
+                            }
+                        }                        
+                    }
+                    else if(position >= 2+2*section+1 && position <= 2+3*section+1){
+                        if(!(yOccupied >= 2+2*section+1 && yOccupied <= 2+3*section+1)){
+                            // cerchiamo di bucare nel TERZO quarto
+                            //something non è nel TERZO quarto
+                            if(view[roomWidth * row + position] == PLATFORM){
+                                view[roomWidth * row + position] = BLANK;
+                                holes++;
+                                if(position-1 >= 2+2*section+1)
+                                    view[roomWidth * row + position-1] = BLANK;
+                                if(position+1 <= 2+3*section+1)
+                                    view[roomWidth * row + position+1] = BLANK;
+                            }
+                        }                        
+                    }
+                    else if(position >= 2+3*section+1 && position <= 2+4*section){
+                        if(!(yOccupied >= 2+3*section+1 && yOccupied <= 2+4*section)){
+                            // cerchiamo di bucare nel QUARTO quarto
+                            //something non è nel QUARTO quarto
+                            if(view[roomWidth * row + position] == PLATFORM){
+                                view[roomWidth * row + position] = BLANK;
+                                holes++;
+                                if(position-1 >= 2+3*section+1)
+                                    view[roomWidth * row + position-1] = BLANK;
+                                if(position+1 <= 2+4*section)
+                                    view[roomWidth * row + position+1] = BLANK;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }    
+}
+
+/* funzione ausiliaria per cercare nelle liste di enemy e di item 
+*/
+int room::findYinRow(int row){
+    enemyNode* iterEnemy = currentMonsters;
+    while(iterEnemy != NULL){
+        if(iterEnemy->monster.getRowPos() == row){
+            return iterEnemy->monster.getColPos();
+        }
+        iterEnemy = iterEnemy->next;
     }
 
-    /* variabile per contare quanti buchi dovremo creare
-    * quante piattaforme possiamo avere
-    */
-    int holes = 0; 
-    int position = 0;
-    int maxHoles = currentLevel/5 + 2;
-    if (maxHoles > 5) maxHoles = 5; 
-
-    //Doppia condizione per evitare che si creino troppi buchi
-    while(currentLevel != 0 && holes < maxHoles){ 
-        position = rand()%roomWidth;
-        //primo buco, position != da: prima, seconda, ultima, penultima colonna
-        if(platforms[position] == PLATFORM && position!=0 && position!=1 && position!=roomWidth-1 && position!=roomWidth-2){
-            platforms[position] = BLANK;
-            holes++;
-            if(position-1>1)
-                platforms[position-1] = BLANK;
-            if(position+1 < roomWidth-2)
-                platforms[position+1] = BLANK;
-        }        
+    itemNode* iterItem = currentBonus;
+    while(iterItem != NULL){
+        if(iterItem->Bonus.getRowPos() == row){
+            return iterItem->Bonus.getColPos();
+        }
+        iterItem = iterItem->next;
     }
+    return 5;
 }
 
 //funzione per creare una stanza in maniera casuale
@@ -102,13 +189,13 @@ void room::roomGenerator(){
     //inserimento protagonista
     view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
-    //initializeItems(getRoomNum());
-    initializeEnemies(getRoomNum());
+    initializeItems(getRoomNum());
+    //initializeEnemies(getRoomNum());
 
-    //spawnItems();
-    spawnEnemies();
+    spawnItems();
+    //spawnEnemies();
 
-    //bucare
+    drillRow(roomNum);
     
 }
 
@@ -116,7 +203,7 @@ void room::roomGenerator(){
 //Quanti nemici contemporaneamente?1K
 void room::initializeItems(int currentLevel){
     // O mettiamo un certo numero di bonus fissi per incentivare lo spostamento o ci affidiamo al caso
-    int numOfBonus =  2;//rand()%2+1; //currentLevel / 3 + 1 || 
+    int numOfBonus =  5;//rand()%2+1; //currentLevel / 3 + 1 || 
     int count = 1;
     item newItem;
     currentBonus = new itemNode();
@@ -156,22 +243,19 @@ bool room::isAvailable(int x, int y, cast rookie){
     a un "buco" e che il nuovo elemento si trovi sopra una piattaforma
     Spawniamo prima i nemici e 
     */
-    if(view[roomWidth * x + y] == BLANK && view[roomWidth * (x+1) + y] != BLANK){  
-        //caso ultima riga
+    if(view[roomWidth * x + y] == BLANK){  
+        //caso ultima riga (oltre la prima meta')
         if(x == roomHeight-2 && y >= roomWidth/2 && y != roomWidth-1){
             freeRow[x].available = false;
         }
+        //non ultima riga, non mostro, riga senza mostri
         else if(rookie.getFigure() != MONSTER && x != roomHeight-2 && !freeRow[x].thereIsMonster){
             freeRow[x].available = false;
         }
-        else if(rookie.getFigure() == MONSTER && x != roomHeight-2 
-                && view[roomWidth * (x+1) + y-1] == PLATFORM
-                && view[roomWidth * (x+1) + y+1] == PLATFORM
-                && freeRow[x].numberOfMonsters < 2
-                ){
+        //caso mostro, non ultima riga
+        else if(rookie.getFigure() == MONSTER && x != roomHeight-2){
             freeRow[x].available = false;        
             freeRow[x].thereIsMonster = true;
-            freeRow[x].numberOfMonsters++;
         }
         else {
             return true;
@@ -183,10 +267,16 @@ bool room::isAvailable(int x, int y, cast rookie){
 }
 
 bool room::checkRow(int row, cast character){
-    if(freeRow[row].available || character.getFigure() == MONSTER  && freeRow[row].thereIsMonster)
+    if(freeRow[row].available){
+        if(character.getFigure() == MONSTER)
+            freeRow[row].numberOfMonsters++;
         return false;
-    else 
-        return true;
+    }
+    else if (character.getFigure() == MONSTER && freeRow[row].thereIsMonster && freeRow[row].numberOfMonsters < 2){
+        freeRow[row].numberOfMonsters++;
+        return false;
+    }
+    else return true;
 }
 
 void room::spawnItems(){

@@ -46,7 +46,6 @@ game::game() {
     SetCurrentConsoleFontEx(hStdout, false, &font);
 
     currentroom = new roomList(1);
-    //currentroom->myRoom.roomGenerator();
     score = 50;
 }
 
@@ -115,7 +114,7 @@ void game::logic(){
     Sleep(50);
 
     currentroom->myRoom.bulletMove();
-    currentroom->myRoom.enemyMove();
+    //currentroom->myRoom.enemyMove();
 
     toCharInfo();
     stampView();

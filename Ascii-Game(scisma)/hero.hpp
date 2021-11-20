@@ -8,6 +8,7 @@ protected:
     int score;
 public:
     hero();
+    
     void decreaseLife();
     void decreaseBullet();
     void decreaseScore(int damage);

@@ -51,7 +51,8 @@ public:
     char* getView();
 
     void initializeView();
-    void generateRow(int currentLevel); //funzione per interagire con platforms
+    void drillRow(const int currentLevel); //funzione per interagire con platforms
+    int findYinRow(int row);
     void roomGenerator();
     int sizeofArray(char charArray[]);
 

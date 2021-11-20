@@ -6,17 +6,14 @@ enemy::enemy(){
     bool alive = false;
     //cast::figure = MONSTER;
     //direction = rand()%2;
-    switch (rand()%3)
-    {
-    case 0:    
-    case 1:   // corridore
-        cast::figure = MONSTER;
-        direction = rand()%2;
-        break;
-    case 2:    //torretta
+    if(rand()%10 < 2){
+        //torretta
         cast::figure = TURRET;
         fireDelay = 0;
-        break;    
+    }
+    else {
+        cast::figure = MONSTER;
+        direction = rand()%2;
     }
 }
 
