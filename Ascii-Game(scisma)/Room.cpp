@@ -1,17 +1,10 @@
 #include "Room.hpp"
 #include <string>
+#include "iostream"
 
 room::room(){
-    for (int i=0;i<roomHeight;i++){
-        if(i%2 == 0)
-            freeRow[i].available = false;
-        else
-            freeRow[i].available = true;
-        freeRow[i].thereIsMonster = false;
-        freeRow[i].numberOfMonsters = 0;          
-    }
+
     nextLevelPos();
-    roomGenerator();
 }
 
 room::room(int lvl){
@@ -24,6 +17,8 @@ room::room(int lvl){
         freeRow[i].thereIsMonster = false;
         freeRow[i].numberOfMonsters = 0;
     }
+    currentMonsters = NULL;
+    currentBonus = NULL;
     roomGenerator();
 }
 
@@ -61,80 +56,88 @@ void room::drillRow(const int currentLevel){
             struct sese
             */
             if (freeRow[row-1].thereIsMonster){
+                if(freeRow[row-1].numberOfMonsters == 1){
+                    thirdCase(row, holes, position, maxHoles);  
+                }
+
+                //caso due nemici
 
             }
             /* Caso bonus o torretta
             divido la riga in 4 parti, buco quelle dove non c'è il qualcosa
             */
             else {
-                int yOccupied = findYinRow(row);    //posizione del qualcosa
-                int section = (roomWidth-4)/4;      //grandezza dei quarti di riga
-                int whichSection = rand()%4;        //in quale sezione tentiamo di scrivere
-
-                while(holes < maxHoles){
-                    position = rand()%roomWidth;
-                    if(position >= 2 && position <= 2+section){
-                        if(!(yOccupied >= 2 && yOccupied <= 2+section)){
-                            // cerchiamo di bucare nel  PRIMO quarto
-                            //something non è nel PRIMO quarto
-                            if(view[roomWidth * row + position] == PLATFORM){
-                                view[roomWidth * row + position] = BLANK;
-                                holes++;
-                                if(position-1>1)
-                                    view[roomWidth * row + position-1] = BLANK;
-                                if(position+1 <= 2+section)
-                                    view[roomWidth * row + position+1] = BLANK;
-                            }
-                        }                        
-                    }
-                    else if(position >= 2+section+1 && position <= 2+2*section+1){
-                        if(!(yOccupied >= 2+section+1 && yOccupied <= 2+2*section+1)){
-                            // cerchiamo di bucare nel SECONDO quarto
-                            //something non è nel SECONDO quarto
-                            if(view[roomWidth * row + position] == PLATFORM){
-                                view[roomWidth * row + position] = BLANK;
-                                holes++;
-                                if(position-1 >= 2+section+1)
-                                    view[roomWidth * row + position-1] = BLANK;
-                                if(position+1 <= 2+2*section+1)
-                                    view[roomWidth * row + position+1] = BLANK;
-                            }
-                        }                        
-                    }
-                    else if(position >= 2+2*section+1 && position <= 2+3*section+1){
-                        if(!(yOccupied >= 2+2*section+1 && yOccupied <= 2+3*section+1)){
-                            // cerchiamo di bucare nel TERZO quarto
-                            //something non è nel TERZO quarto
-                            if(view[roomWidth * row + position] == PLATFORM){
-                                view[roomWidth * row + position] = BLANK;
-                                holes++;
-                                if(position-1 >= 2+2*section+1)
-                                    view[roomWidth * row + position-1] = BLANK;
-                                if(position+1 <= 2+3*section+1)
-                                    view[roomWidth * row + position+1] = BLANK;
-                            }
-                        }                        
-                    }
-                    else if(position >= 2+3*section+1 && position <= 2+4*section){
-                        if(!(yOccupied >= 2+3*section+1 && yOccupied <= 2+4*section)){
-                            // cerchiamo di bucare nel QUARTO quarto
-                            //something non è nel QUARTO quarto
-                            if(view[roomWidth * row + position] == PLATFORM){
-                                view[roomWidth * row + position] = BLANK;
-                                holes++;
-                                if(position-1 >= 2+3*section+1)
-                                    view[roomWidth * row + position-1] = BLANK;
-                                if(position+1 <= 2+4*section)
-                                    view[roomWidth * row + position+1] = BLANK;
-                            }
-                        }
-                    }
-                }
+                thirdCase(row, holes, position, maxHoles);                   
             }
         }
     }    
 }
 
+//caso con un solo elemento nella riga
+void room::thirdCase(int row, int holes, int position, int maxHoles){
+    int yOccupied = findYinRow(row-1);    //posizione del qualcosa
+    int section = (roomWidth-4)/4;      //grandezza dei quarti di riga
+
+    while(holes < maxHoles){
+        position = rand()%roomWidth;
+        if(position >= 2 && position <= 1+section){
+            if(yOccupied == 1 || yOccupied > 1+section){
+                // cerchiamo di bucare nel  PRIMO quarto
+                //something non è nel PRIMO quarto
+                if(view[roomWidth * row + position] == PLATFORM){
+                    view[roomWidth * row + position] = BLANK;
+                    holes++;
+                    if(position-1 >= 2)
+                        view[roomWidth * row + position-1] = BLANK;
+                    if(position+1 <= 1+section)
+                        view[roomWidth * row + position+1] = BLANK;
+                }
+            }                        
+        }
+        else if(position >= 2+section && position <= 1+2*section){
+            if(yOccupied < 2+section || yOccupied > 1+2*section){
+                // cerchiamo di bucare nel SECONDO quarto
+                //something non è nel SECONDO quarto
+                if(view[roomWidth * row + position] == PLATFORM){
+                    view[roomWidth * row + position] = BLANK;
+                    holes++;
+                    if(position-1 >= 2+section)
+                        view[roomWidth * row + position-1] = BLANK;
+                    if(position+1 <= 1+2*section)
+                        view[roomWidth * row + position+1] = BLANK;
+                }
+            }                        
+        }
+        else if(position >= 2+2*section && position <= 3*section+1){
+            if(yOccupied < 2+2*section || yOccupied > 3*section+1){
+                // cerchiamo di bucare nel TERZO quarto
+                //something non è nel TERZO quarto
+                if(view[roomWidth * row + position] == PLATFORM){
+                    view[roomWidth * row + position] = BLANK;
+                    holes++;
+                    if(position-1 >= 2+2*section)
+                        view[roomWidth * row + position-1] = BLANK;
+                    if(position+1 <= 3*section+1)
+                        view[roomWidth * row + position+1] = BLANK;
+                }
+            }                        
+        }
+        else if(position >= 2+3*section && position <= 1+4*section){
+            if(yOccupied < 2+3*section || yOccupied == 2+4*section){
+                // cerchiamo di bucare nel QUARTO quarto
+                //something non è nel QUARTO quarto
+                if(view[roomWidth * row + position] == PLATFORM){
+                    view[roomWidth * row + position] = BLANK;
+                    holes++;
+                    if(position-1 >= 2+3*section)
+                        view[roomWidth * row + position-1] = BLANK;
+                    if(position+1 <= 1+4*section)
+                        view[roomWidth * row + position+1] = BLANK;
+                }
+            }
+        }
+    }
+}
 /* funzione ausiliaria per cercare nelle liste di enemy e di item 
 */
 int room::findYinRow(int row){
@@ -148,12 +151,12 @@ int room::findYinRow(int row){
 
     itemNode* iterItem = currentBonus;
     while(iterItem != NULL){
-        if(iterItem->Bonus.getRowPos() == row){
+        if(iterItem->Bonus.getRowPos() == row){            
             return iterItem->Bonus.getColPos();
         }
         iterItem = iterItem->next;
     }
-    return 5;
+    return 0;
 }
 
 //funzione per creare una stanza in maniera casuale
@@ -190,10 +193,10 @@ void room::roomGenerator(){
     view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
     initializeItems(getRoomNum());
-    //initializeEnemies(getRoomNum());
+    initializeEnemies(getRoomNum());
 
     spawnItems();
-    //spawnEnemies();
+    spawnEnemies();
 
     drillRow(roomNum);
     
@@ -203,7 +206,7 @@ void room::roomGenerator(){
 //Quanti nemici contemporaneamente?1K
 void room::initializeItems(int currentLevel){
     // O mettiamo un certo numero di bonus fissi per incentivare lo spostamento o ci affidiamo al caso
-    int numOfBonus =  5;//rand()%2+1; //currentLevel / 3 + 1 || 
+    int numOfBonus =  2;//rand()%2+1; //currentLevel / 3 + 1 || 
     int count = 1;
     item newItem;
     currentBonus = new itemNode();
@@ -221,7 +224,7 @@ void room::initializeItems(int currentLevel){
 }
 
 void room::initializeEnemies(int currentLevel){
-    int numOfEnemies = 5;//rand()%3+1;
+    int numOfEnemies = 3;//rand()%3+1;
     int count = 1;
     enemy monster;
     currentMonsters = new enemyNode();

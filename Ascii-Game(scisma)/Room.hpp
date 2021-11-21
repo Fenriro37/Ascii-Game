@@ -51,6 +51,7 @@ public:
     char* getView();
 
     void initializeView();
+    void thirdCase(int row, int holes, int position, int maxHoles); 
     void drillRow(const int currentLevel); //funzione per interagire con platforms
     int findYinRow(int row);
     void roomGenerator();
