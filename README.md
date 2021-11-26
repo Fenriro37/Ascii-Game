@@ -1,6 +1,7 @@
 ### Situazione attuale:
     Gestione spawn dei nemici e dei bonus e ritoccare costruttore di item
     collisione proiettile proiettile
+    Freccia sinistra spara a destra
     (Cambiare nome al booleano di enemy: alive) 
 
 ### Miglioramenti:
