@@ -1,0 +1,12 @@
+Nemici (spawn - frequenza torrette-monster)
+    torrette
+    mostri
+X   perdità punti e vita
+
+Bonus (spawn - frequenza dei vari bonus e punti)
+    Vita
+    Ammo
+X   Coin
+X   Cambio di livello
+
+room.cpp GenerateRow da ricreare
