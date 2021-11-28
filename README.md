@@ -2,6 +2,18 @@
     Gestione spawn dei nemici e dei bonus e ritoccare costruttore di item
     collisione proiettile proiettile
     (Cambiare nome al booleano di enemy: alive) 
+    
+    
+Funzioni che interagiscono con proiettili
+
+XbulletCollision(int x, int y)
+XgenerateBullet(bool direction, cast shooter)
+-bulletMove()
+-deleteNodes()
+XaddToList(bulletNode* newNode)
+-findAmmo(int x, int y) (ricontrallere bene questa)
+-enemyCollision(enemyNode* currentEnemy)
+- enemyMove()
 
 ### Miglioramenti:
     Generazione buchi nelle piattaforme
