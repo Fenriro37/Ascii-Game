@@ -6,13 +6,13 @@
     
 Funzioni che interagiscono con proiettili
 
-XbulletCollision(int x, int y)
-XgenerateBullet(bool direction, cast shooter)
--bulletMove()
--deleteNodes()
-XaddToList(bulletNode* newNode)
--findAmmo(int x, int y) (ricontrallere bene questa)
--enemyCollision(enemyNode* currentEnemy)
+- XbulletCollision(int x, int y)
+- XgenerateBullet(bool direction, cast shooter)
+- bulletMove()
+- deleteNodes()
+- XaddToList(bulletNode* newNode)
+- findAmmo(int x, int y) (ricontrallere bene questa)
+- enemyCollision(enemyNode* currentEnemy)
 - enemyMove()
 
 ### Miglioramenti:
