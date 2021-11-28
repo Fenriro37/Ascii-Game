@@ -1,5 +1,6 @@
 ### Situazione attuale:
     Gestione spawn dei nemici e dei bonus e ritoccare costruttore di item
+    Aggiustare sezioni drill case 3
     collisione proiettile proiettile
     (Cambiare nome al booleano di enemy: alive) 
     
