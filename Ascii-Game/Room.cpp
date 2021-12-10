@@ -349,11 +349,11 @@ bool room::isAvailable(int x, int y, cast rookie){
             freeRow[x].available = false;
         }
         //non ultima riga, non mostro, riga senza mostri
-        else if(rookie.getFigure() != MONSTER && x != roomHeight-2 && !freeRow[x].thereIsMonster){
+        else if(rookie.getFigure() != MONSTER && x != roomHeight-2 && !freeRow[x].thereIsMonster && y > 1 && y < roomWidth-2){
             freeRow[x].available = false;
         }
         //caso mostro, non ultima riga
-        else if(rookie.getFigure() == MONSTER && x != roomHeight-2){
+        else if(rookie.getFigure() == MONSTER && x != roomHeight-2 && y > 1 && y < roomWidth-2){
             freeRow[x].available = false;        
             freeRow[x].thereIsMonster = true;
         }
@@ -524,7 +524,7 @@ itemNode* room::findBonus(int x, int y){
 bulletNode* room::findAmmo(int x, int y){
     bulletNode* iter = currentAmmo;
     while(iter != NULL){
-        if(iter->ammo.getRowPos() == x && iter->ammo.getColPos() == y){
+        if(iter->ammo.getRowPos() == x && iter->ammo.getColPos() == y && !iter->ammo.getAlive()){
             return iter;
         }
         iter = iter->next;
@@ -651,7 +651,7 @@ void room::bulletMove(){
             else if(bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
                 iter->ammo.setAlive();                  
                 //if (view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] != TURRET)
-                    view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
+                view[roomWidth * iter->ammo.getRowPos() + iter->ammo.getColPos()] = BLANK;
             }
             //Proiettile si muove di uno
             else{

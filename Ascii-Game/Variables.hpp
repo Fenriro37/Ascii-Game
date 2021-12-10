@@ -42,7 +42,7 @@ const int fireRate = 30;
 
 const int maxHp = 3;
 const int maxScore = 999999;
-const int maxAmmo = 20;
+const int maxAmmo = 90;
 //Qui partono le variabili contenute in Variables.cpp
 //Colori
 extern WORD DEF_COLORFOREGROUND;
