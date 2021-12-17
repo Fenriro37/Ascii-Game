@@ -6,7 +6,6 @@
 
 
 ### Miglioramenti:
-    Rimuovere nodi da liste(possiamo pulire le liste al cambio di livello)
     Pausa    
     Schermata Iniziale
     Schermata Finale mostrando score finale
