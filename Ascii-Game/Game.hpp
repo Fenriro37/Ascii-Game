@@ -43,4 +43,8 @@ public:
 
     void playerCollision(int row, int col);
     int findItem(int row, int col);
+    void clearBonus();
+    void clearEnemy();
+    void clearAmmo();
+    void clearList();
 };

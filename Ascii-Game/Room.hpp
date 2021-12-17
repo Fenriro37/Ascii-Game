@@ -46,8 +46,11 @@ public:
     void setRoomNum(int newRoomNum);
     int getRoomNum();
     itemNode* getCurrentBonus();
+    void setCurrentBonus(itemNode* newHead);
     enemyNode* getCurrentMonsters();
+    void setCurrentMonster(enemyNode* newHead);
     bulletNode* getCurrentAmmo();
+    void setCurrentAmmo(bulletNode* newHead);
     char* getView();
 
     void initializeView();

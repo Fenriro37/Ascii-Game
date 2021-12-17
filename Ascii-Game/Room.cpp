@@ -286,6 +286,8 @@ void room::roomGenerator(){
     view[roomWidth-1] = TOPRIGHT;
     view[roomWidth * (roomHeight-2)] = BLANK;
     view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
+    if(roomNum == 1)
+        view[roomWidth*(roomHeight-2)] = WALL;
     //inserimento protagonista
     view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
@@ -687,12 +689,24 @@ itemNode* room::getCurrentBonus(){
     return currentBonus;
 }
 
+void room::setCurrentBonus(itemNode* newHead){
+    currentBonus = newHead;
+}
+
 enemyNode* room::getCurrentMonsters(){
     return currentMonsters;
 }
 
+void room::setCurrentMonster(enemyNode* newHead){
+    currentMonsters = newHead;
+}
+
 bulletNode* room::getCurrentAmmo(){
     return currentAmmo;
+}
+
+void room::setCurrentAmmo(bulletNode* newHead){
+    currentAmmo = newHead;
 }
 
 
