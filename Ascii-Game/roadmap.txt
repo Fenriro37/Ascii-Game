@@ -1,12 +1,8 @@
-Nemici (spawn - frequenza torrette-monster)
-    torrette
-    mostri
-X   perdità punti e vita
+difficoltà: 
+    dec dei punti       -> livello  parte molto basso, diventando il pericolo principale
+    dec dei cuori       -> fisso    
 
-Bonus (spawn - frequenza dei vari bonus e punti)
-    Vita
-    Ammo
-X   Coin
-X   Cambio di livello
-
-room.cpp GenerateRow da ricreare
+vantaggi:
+    bonus               -> livello  
+    uccisione nemici    -> livello  
+    cambio stanza       -> fisso    

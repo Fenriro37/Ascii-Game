@@ -286,8 +286,10 @@ void room::roomGenerator(){
     view[roomWidth-1] = TOPRIGHT;
     view[roomWidth * (roomHeight-2)] = BLANK;
     view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
-    if(roomNum == 1)
+    if(roomNum == 1){
         view[roomWidth*(roomHeight-2)] = WALL;
+        view[roomWidth*(roomHeight-1)] = BOTTOMLEFT;
+    }
     //inserimento protagonista
     view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
@@ -302,10 +304,8 @@ void room::roomGenerator(){
 }
 
 //Funzione per inizializzare gli item della stanza corrente
-//Quanti nemici contemporaneamente?1K
 void room::initializeItems(int currentLevel){
-    // O mettiamo un certo numero di bonus fissi per incentivare lo spostamento o ci affidiamo al caso
-    int numOfBonus =  2;//rand()%2+1; //currentLevel / 3 + 1 || 
+    int numOfBonus = rand()%3;
     int count = 1;
     item newItem;
     currentBonus = new itemNode();

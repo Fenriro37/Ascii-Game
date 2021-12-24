@@ -247,8 +247,9 @@ void game::logic(){
     currentroom->myRoom.bulletMove();
     currentroom->myRoom.enemyMove();
 
-    toCharInfo();
+    gameOver();
     stampView();
+    while(1){int i;}
 }
 
 //Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello
@@ -318,16 +319,16 @@ void game::move(char input){
     }
 }
 
-int game::findItem(int row, int col){
+//trova l'item raccolto dal protagonista nella lista degli item, chiama setTaken()
+void game::findItem(int row, int col){
     itemNode* iter = currentroom->myRoom.getCurrentBonus();
     while(iter!= NULL){
         if(iter->Bonus.getRowPos() == row && iter->Bonus.getColPos() == col){
             iter->Bonus.setTaken();
-            return iter->Bonus.getValue();
+            break;
         }
         iter = iter->next;
-        }
-    return NULL; 
+    }
 }
 
 //Funzione per controllare l'interazione con mostri e items
@@ -346,7 +347,8 @@ void game::playerCollision(int row, int col){
             iter = currentroom->myRoom.findMoster(row, col);
             iter->monster.setAlive();
         }
-        //caso bullet //aggiungere proiettile nemico
+        //caso bullet 
+        //aggiungere proiettile nemico
         else if(!checkNear(row, col, BULLET)){
             bulletNode* iter;
             iter = currentroom->myRoom.findAmmo(row, col);
@@ -358,15 +360,15 @@ void game::playerCollision(int row, int col){
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
         else{
             if(!checkNear(row, col, HEART)){
-                int value = findItem(row, col);
+                findItem(row, col);
                 protagonist.setLife(protagonist.getLife() + 1);
             }
             else if(!checkNear(row, col, MAGAZINE)){
-                int value = findItem(row, col);
-                protagonist.setBullet(protagonist.getBullet() + value);           
+                findItem(row, col);
+                protagonist.setBullet(protagonist.getBullet() + 3);           //########### NB
             }
             else if(!checkNear(row, col, COIN)){
-                int value = findItem(row, col);
+                findItem(row, col);
                 protagonist.setScore(10* currentroom->myRoom.getRoomNum() + 20); 
                
             }
@@ -385,8 +387,7 @@ void game::paste (char arrayToPaste[], int size, int &count, int &col){
 }
 
 //funzione per convertire da char a charinfo per poter essere rappresentato tramite la libreria windows.h
-void game::toCharInfo() {    
-
+void game::toCharInfo() {   
     int count = 0;
     for (int row = 0; row < consoleHeight; row++) {
         for (int col = 0; col < consoleWidth; col++, count++) {
@@ -441,3 +442,66 @@ void game::toCharInfo() {
     }
 }
 
+void game::gameOver() {   
+    int count = 0;
+    for (int row = 0; row < consoleHeight; row++) {
+        for (int col = 0; col < consoleWidth; col++, count++) {
+            int myRow = 2;
+            if (row == myRow++ && col == 3){
+                char field[10] = {' ',' ',' ','_','_','_','_','_','_'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[28] = {' ',' ','/',' ','_','_','_','_','/','_','_','_',' ','_','_','_','_','_',' ','_','_','_',' ',' ','_','_','_'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[29] = {' ','/',' ','/',' ','_','_','/',' ','_','_',' ','`','/',' ','_','_',' ','`','_','_',' ','K','/',' ','_',' ','K'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[29] = {'/',' ','/','_','/',' ','/',' ','/','_','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ',' ','_','_','/'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[28] = {'K','_','_','_','_','/','K','_','_',',','_','/','_','/',' ','/','_','/',' ','/','_','/','K','_','_','_','/'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+
+            if (row == myRow++ && col == 3){
+                char field[8] = {' ',' ',' ','_','_','_','_'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[25] = {' ',' ','/',' ','_','_',' ','K','_',' ',' ',' ','_','_','_','_','_',' ',' ','_','_','_','_','_'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[25] = {' ','/',' ','/',' ','/',' ','/',' ','|',' ','/',' ','/',' ','_',' ','K','/',' ','_','_','_','/'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[21] = {'/',' ','/','_','/',' ','/','|',' ','|','/',' ','/',' ',' ','_','_','/',' ','/'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            if (row == myRow++ && col == 3){
+                char field[19] = {'K','_','_','_','_','/',' ','|','_','_','_','/','K','_','_','_','/','_','/'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            else { 
+                CIview[count].Char.AsciiChar = BLANK;
+                CIview[count].Attributes = DEF_COLORFOREGROUND;
+            }
+        }
+    }
+}

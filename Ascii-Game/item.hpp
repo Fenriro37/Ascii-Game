@@ -3,15 +3,12 @@
 
 class item : public cast{
 protected:
-    int value; //Variabile per indicare quanti punti varrà il bonus
     bool taken;
 
 public:
     //vari costruttori per vari bonus?
     item();
-    void setValue(int newValue);
     void setTaken();
-    int getValue();
     bool getTaken();
 };
 

@@ -4,9 +4,7 @@
 enemy::enemy(){
     int life = 1;
     bool alive = false;
-    //cast::figure = MONSTER;
-    //direction = rand()%2;
-    if( rand()%10 <2){
+    if(rand()%10 <1){
         //torretta
         cast::figure = TURRET;
         fireDelay = 0;

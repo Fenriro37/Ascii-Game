@@ -8,6 +8,7 @@
 #define RIGHT 1
 #define TOPLEFT (char)201
 #define TOPRIGHT (char)187
+#define BOTTOMLEFT (char)200
 #define BLANK ' '
 #define ROOF (char)205
 #define FLOOR (char)205

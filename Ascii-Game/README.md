@@ -13,3 +13,18 @@
     Schermata Finale mostrando score finale
     scivere relazione e registrare video
     commentare le funzioni
+
+
+    
+   ______                   
+  / ____/___ _____ ___  ___ 
+ / / __/ __ `/ __ `__ \/ _ \
+/ /_/ / /_/ / / / / / /  __/
+\____/\__,_/_/ /_/ /_/\___/ 
+   ____                 
+  / __ \_   _____  _____
+ / / / / | / / _ \/ ___/
+/ /_/ /| |/ /  __/ /    
+\____/ |___/\___/_/                                                   
+
+

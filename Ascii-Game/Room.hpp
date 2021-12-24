@@ -84,6 +84,4 @@ public:
     void bulletMove();
     bool enemyCollision(enemyNode* currentEnemy);
     void enemyMove();
-
-
 };
