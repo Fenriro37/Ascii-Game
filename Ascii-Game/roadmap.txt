@@ -1,0 +1,8 @@
+difficoltà: 
+    dec dei punti       -> livello  parte molto basso, diventando il pericolo principale
+    dec dei cuori       -> fisso    
+
+vantaggi:
+    bonus               -> livello  
+    uccisione nemici    -> livello  
+    cambio stanza       -> fisso    

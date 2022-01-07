@@ -1,42 +1,26 @@
 #include "item.hpp"
-
+#include "Variables.hpp"
 item::item(){
     taken = false;
-    
-    switch (rand()%3)
-    {
-    case 0:    //1 vita in più
-        setValue(1);
-        cast::setFigure((char)3);   //♥
-        break;
-    case 1:   //Più 2 proiettili
-        setValue(2);
-        cast::setFigure((char)207); //¤
-        break;
-    case 2:    //Score più 10 punti
-        setValue(10);
-        cast::setFigure((char)184); //©
-        break;    
+    int random = rand()%10;
+    if (random<5) {
+        cast::setFigure(HEART);   //♥
     }
-}
-
-void item::setValue(int newValue){
-    value = newValue;
+    else if (random<9){
+        cast::setFigure(MAGAZINE); //®
+    }
+    else {
+        cast::setFigure(COIN); //©
+    }
 }
 
 //Non abbiamo un metodo per passare da true a false perchè dopo che un bonus è stato preso non sarà
 //più prendibile
 
 void item::setTaken(){
-    if(!taken)
-        taken = true;
+    taken = true;
 }
 
 bool item::getTaken(){
     return taken;
 }
-
-int item::getValue(){
-    return value;
-}
-

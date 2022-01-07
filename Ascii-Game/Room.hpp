@@ -4,6 +4,7 @@
 #include "hero.hpp"
 #include "item.hpp"
 #include "enemy.hpp"
+#include "bullet.hpp"
 
 struct itemNode {
     item Bonus;
@@ -15,44 +16,72 @@ struct enemyNode{
     enemyNode* next;
 };
 
+struct bulletNode{
+    bullet ammo;
+    bulletNode* next = NULL;
+    //bulletNode* prev = NULL;
+};
+
+struct control{
+    bool available;
+    bool thereIsMonster;
+    int numberOfMonsters;
+};
+
 class room {
 protected:
     int roomNum = 1;
-    char platforms [roomWidth];
-   
+    control freeRow[roomHeight];
+    char view[roomHeight*roomWidth];
+
     itemNode* currentBonus;
     enemyNode* currentMonsters;
-
+    bulletNode* currentAmmo;
+       
 public:
-    char view[roomHeight][roomWidth];   // da capire come rendere protected
-    
+       // da capire come rendere protected
     room();
+    room(int lvl);
 
     void setRoomNum(int newRoomNum);
     int getRoomNum();
     itemNode* getCurrentBonus();
+    void setCurrentBonus(itemNode* newHead);
     enemyNode* getCurrentMonsters();
-    room* getNext();
-    room* getPrev();
+    void setCurrentMonster(enemyNode* newHead);
+    bulletNode* getCurrentAmmo();
+    void setCurrentAmmo(bulletNode* newHead);
+    char* getView();
 
-
-    void setView(char newView[roomHeight][roomWidth]);
     void initializeView();
-    void generateRow(int currentLevel); //funzione per interagire con platforms
+    void thirdCase(int row, int holes, int position, int maxHoles); 
+    void drillRow(const int currentLevel); //funzione per interagire con platforms
+    int findYinRow(int row, int second);
     void roomGenerator();
     int sizeofArray(char charArray[]);
 
     void initializeItems(int currentLevel);
     void initializeEnemies(int currentLevel);
     /*Funzione per controllare che la cella sia vuota*/
-    bool isEmpty(int x, int y);
+    bool checkRow(int row, cast character);
+    bool isAvailable(int x, int y, cast rookie);
     void spawnItems();
     void spawnEnemies();
+
+    enemyNode* findMoster(int x, int y);
+    itemNode* findBonus(int x, int y);
+    bulletNode* findAmmo(int x, int y);
     /*Funzione per riposizionare il personaggio all'inizio di ogni livello*/
     void nextLevelPos();
     /*Funzione per riposizionare il personaggio in caso di ritorno al livello precedente*/
     void prevLevelPos();
 
     //Cast IA
+    void addToList(bulletNode* newNode);
+    void deleteNodes();
+    void generateBullet(bool direction, cast shooter);
+    bool bulletCollision(int x, int y);
+    void bulletMove();
+    bool enemyCollision(enemyNode* currentEnemy);
     void enemyMove();
 };

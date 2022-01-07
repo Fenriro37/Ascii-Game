@@ -1,17 +1,9 @@
 #pragma once
-#include <iostream>
-
-using namespace std;
-
 class cast{
     
     protected:
     int rowPos;
     int colPos;
-    /*idea precedente di aggiornare con la posizione precedente l'array view
-    per ora scartata. I set e i get ci sono ma probabilmente saranno da rimuovere
-    int prevRowPos, prevColPos;
-    */
     char figure;
     
     public:
@@ -32,6 +24,7 @@ class cast{
     */
     int getRowPos();
     int getColPos();
+    int getPos();
     /*
     int getPrevRowPos();
     int getPrevColPos();

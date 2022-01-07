@@ -5,14 +5,17 @@ class hero : public cast{
 protected: 
     int life;
     int bullet;
-    int experience;
-
+    int score;
 public:
-
     hero();
+    
     void decreaseLife();
-    void setLife(int newLife);
+    void decreaseBullet();
+    void decreaseScore(int damage);
+    void increaseLife();
     void setBullet(int newBullet);
+    void setScore(int newScore);
     int getLife();
     int getBullet();
+    int getScore();
 };

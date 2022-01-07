@@ -6,17 +6,19 @@ protected:
     int life;
     bool alive;
     bool direction;
+    int fireDelay;
 
 public:
     enemy();
     void setLife(int newLife);
+    void decreaseLife();
     void setAlive();
     int  getLife();
     bool getAlive();
     bool getDirection();
     void setDirection();
-
-    //IA and types
+    int getFireDelay();
+    void increaseFireDelay();
+    void resetFireDelay();
 
 };
-
