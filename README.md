@@ -6,8 +6,6 @@
 
 
 ### Miglioramenti:
-
-    Pausa  
     Pulizia liste
     scivere relazione e registrare video
     commentare le funzioni
