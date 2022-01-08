@@ -1,6 +1,8 @@
 #include "Game.hpp"
 #include "conio.h"
 #include "string.h"
+#include <iostream>
+
 game::game() {
 
     /* Console stuff
@@ -39,14 +41,13 @@ game::game() {
     /* Set the screen's buffer size */
     SetConsoleScreenBufferSize(hStdout, bufferSize);
 
-    CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};//CONSOLE_FONT_INFOEX is defined in some windows header
-    GetCurrentConsoleFontEx(hStdout, false, &font);//PCONSOLE_FONT_INFOEX is the same as CONSOLE_FONT_INFOEX*
+    CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};   //CONSOLE_FONT_INFOEX is defined in some windows header
+    GetCurrentConsoleFontEx(hStdout, false, &font); //PCONSOLE_FONT_INFOEX is the same as CONSOLE_FONT_INFOEX*
     font.dwFontSize.X = 24;
     font.dwFontSize.Y = 35;
     SetCurrentConsoleFontEx(hStdout, false, &font);
 
-    currentroom = new roomList(1);
-    score = 50;
+    currentroom = new roomList(0);
 }
 
 /*Otteniamo la posizione della cella da cambiare e la sostituiamo con figure
@@ -75,13 +76,12 @@ void game::clearBonus(){
         if (bonus->Bonus.getTaken() && prev == bonus){
             if(bonus->next != NULL){                                
                 bonus = bonus->next;
-                //delete prev;
+                delete prev;
                 prev = bonus;
-
             }
             //testa unico nodo
             else {
-                //delete bonus;
+                delete bonus;
                 currentroom->myRoom.setCurrentBonus(NULL);
                 bonus = NULL;
                 prev = NULL;
@@ -95,7 +95,7 @@ void game::clearBonus(){
         //se devo eliminare un nodo che non è in testa
         else if (bonus->Bonus.getTaken() && prev != bonus){
             prev->next = bonus->next;
-            //delete bonus;
+            delete bonus;
             bonus = prev->next;
         }
         //se non devo eliminare un nodo non in testa
@@ -117,11 +117,10 @@ void game::clearEnemy(){
                 enemy = enemy->next;
                 //delete prev;
                 prev = enemy;
-
             }
             //testa unico nodo
             else {
-                //delete bonus;
+                //delete enemy;
                 currentroom->myRoom.setCurrentMonster(NULL);
                 enemy = NULL;
                 prev = NULL;
@@ -135,14 +134,14 @@ void game::clearEnemy(){
         //se devo eliminare un nodo che non è in testa
         else if (enemy->monster.getAlive() && prev != enemy){
             prev->next = enemy->next;
-            //delete bonus;
+            //delete enemy;
             enemy = prev->next;
         }
         //se non devo eliminare un nodo non in testa
         else{
             prev = enemy;
             enemy = enemy->next;
-        }   
+        }
     }
 }
 
@@ -155,13 +154,12 @@ void game::clearAmmo(){
         if (bullet->ammo.getAlive() && prev == bullet){
             if(bullet->next != NULL){                                
                 bullet = bullet->next;
-                //delete prev;
+                delete prev;
                 prev = bullet;
-
             }
             //testa unico nodo
             else {
-                //delete bonus;
+                delete bullet;
                 currentroom->myRoom.setCurrentAmmo(NULL);
                 bullet = NULL;
                 prev = NULL;
@@ -175,7 +173,7 @@ void game::clearAmmo(){
         //se devo eliminare un nodo che non è in testa
         else if (bullet->ammo.getAlive() && prev != bullet){
             prev->next = bullet->next;
-            //delete bonus;
+            delete bullet;
             bullet = prev->next;
         }
         //se non devo eliminare un nodo non in testa
@@ -185,22 +183,22 @@ void game::clearAmmo(){
         }   
     }
 }
-/*Controlla che la posizione sia uguale a figure
-*/
+
+//Controlla che la posizione sia uguale a figure
 bool game::checkNear(int row, int col, char figure){
     char* PtoArray = currentroom->myRoom.getView();
-    PtoArray += roomWidth*row+col;
+    PtoArray += roomWidth*row+col;  //aritmetica degli array .-.
     return (*PtoArray != figure);
 }
 
 void game::nextRoom(){
 
-    //qui aggiorniamo le liste rimuovendo i nodi settati a true (morti o raccolti)
-    clearList();
+    //qui aggiornavamo le liste rimuovendo i nodi settati a true (morti o raccolti)
+    //clearList();
 
     changeCellOfView(protagonist.getPos(), BLANK);
     if (currentroom->next == NULL){
-        protagonist.setScore(50);
+        protagonist.setScore(50);   //+50 pti per il cambio stanza
         currentroom->next = new roomList(currentroom->myRoom.getRoomNum() + 1);
         currentroom->next->prev = currentroom;
 
@@ -215,7 +213,8 @@ void game::nextRoom(){
 
 //Quando il personaggio vuole tornare indietro
 void game::prevRoom(){
-    clearList();
+    
+    //clearList();
 
     if (currentroom->prev != NULL){
         changeCellOfView(protagonist.getPos(), BLANK);
@@ -229,27 +228,25 @@ void game::stampView() {
     WriteConsoleOutputA(hStdout, CIview, characterBufferSize, characterPosition, &consoleSize);
 }
 
-/*
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
-*/
 void game::logic(){
-
-    if(kbhit()){
-        move(getch());
-        if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2){
-            nextRoom();
+    while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
+        if(kbhit()){
+            move(getch());
+            if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)
+                nextRoom();
+            if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
+                prevRoom(); 
         }
-        if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
-            prevRoom(); 
+        Sleep(50);
+
+        currentroom->myRoom.bulletMove();
+        currentroom->myRoom.enemyMove();
+
+        toCharInfo();
+        stampView();
     }
-    Sleep(50);
-
-    currentroom->myRoom.bulletMove();
-    currentroom->myRoom.enemyMove();
-
     gameOver();
-    stampView();
-    while(1){int i;}
 }
 
 //Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello
@@ -262,7 +259,7 @@ void game::move(char input){
                      checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setRowPos(protagonist.getRowPos()-2);   //sale di piattaforma -> -2
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure());
                     } 
             break;
@@ -271,7 +268,7 @@ void game::move(char input){
                      checkNear(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) ){
                         changeCellOfView(protagonist.getPos(), BLANK);  
                         protagonist.setRowPos(protagonist.getRowPos()+2);
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 1);
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure());
                     }
             break;
@@ -284,7 +281,7 @@ void game::move(char input){
                         protagonist.setColPos(protagonist.getColPos()-1);
                         //controlliamo la posizione su cui ci spostiamo
                         //se impattiamo contro porta
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
                         //altrimente se ci siamo scontrati con nulla o con item o nemici 
                     }
@@ -294,7 +291,7 @@ void game::move(char input){
                      checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setColPos(protagonist.getColPos()+1);
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos());
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
                         changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
                     } 
             break;
@@ -333,43 +330,44 @@ void game::findItem(int row, int col){
 
 //Funzione per controllare l'interazione con mostri e items
 //Gestisce le vite e lo score
-//Aggiornare con le collisioni dei proiettili o aggiungere un'altra funzione
-//Funzioni findMonster() e findBonus() da utilizzare al posto del while
-void game::playerCollision(int row, int col){
+void game::playerCollision(int row, int col, int cameFromAbove){
     if(checkNear(row, col, BLANK)){
         //caso collisione enemy
         if(!checkNear(row, col, MONSTER) || !checkNear(row, col, TURRET)){
-            protagonist.decreaseLife();   
-            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * currentroom->myRoom.getRoomNum() * 0.01 + 20));
-            
+            if(cameFromAbove){
+                protagonist.setScore(currentroom->myRoom.getRoomNum() * BONUS_KILL_MULT);   // y=3x bonus da uccisione mostro
+            }
+            else {
+                protagonist.decreaseLife();
+                protagonist.setScore(-(currentroom->myRoom.getRoomNum() * COLLISION_DMG_MULT));  // y=4x danno da collisione con mostro
+            }            
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
             enemyNode* iter;
             iter = currentroom->myRoom.findMoster(row, col);
             iter->monster.setAlive();
         }
         //caso bullet 
-        //aggiungere proiettile nemico
         else if(!checkNear(row, col, BULLET)){
             bulletNode* iter;
             iter = currentroom->myRoom.findAmmo(row, col);
             iter->ammo.setAlive();
             protagonist.decreaseLife();
-            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * currentroom->myRoom.getRoomNum() * 0.01 + 20));
+            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * BULLET_DMG_MULT));  // y=2x danno da collisione con proiettile
         }
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
         else{
             if(!checkNear(row, col, HEART)){
                 findItem(row, col);
-                protagonist.setLife(protagonist.getLife() + 1);
+                protagonist.increaseLife();
             }
             else if(!checkNear(row, col, MAGAZINE)){
                 findItem(row, col);
-                protagonist.setBullet(protagonist.getBullet() + 3);           //########### NB
+                protagonist.setBullet(protagonist.getBullet() + BULLET_BONUS);
             }
             else if(!checkNear(row, col, COIN)){
                 findItem(row, col);
-                protagonist.setScore(10* currentroom->myRoom.getRoomNum() + 20); 
+                protagonist.setScore(currentroom->myRoom.getRoomNum() * COIN_MULT); 
                
             }
         }
@@ -399,7 +397,7 @@ void game::toCharInfo() {
             }
             /*
             * lvl, hp, score, ammo */
-            else if (row == 2 && col == roomWidth+10){
+            else if (row == 1 && col == roomWidth+10){
                 char field[8] = {'L','V','L',':',BLANK};
                 char value[3];
                 /* _itoa() funzione che converte il primo argomento (intero) in stringa
@@ -410,7 +408,7 @@ void game::toCharInfo() {
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == 4 && col == roomWidth+10){
+            else if (row == 3 && col == roomWidth+10){
                 char field[13] = {'S','C','O','R','E',':',BLANK};
                 char value[6]; //fino a 999.999
                 _itoa(protagonist.getScore() , value, 10);
@@ -418,7 +416,7 @@ void game::toCharInfo() {
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == 7 && col == roomWidth+10){
+            else if (row == 6 && col == roomWidth+10){
                 char field[6] = {'H','P',':',BLANK};
                 char value[2]; //fino a 99
                 _itoa(protagonist.getLife(), value, 10);
@@ -426,7 +424,7 @@ void game::toCharInfo() {
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == 9 && col == roomWidth+10){
+            else if (row == 8 && col == roomWidth+10){
                 char field[8] = {'A','M','M','O',':',BLANK};
                 char value[3]; //fino a 99
                 _itoa(protagonist.getBullet(), value, 10);
@@ -444,64 +442,75 @@ void game::toCharInfo() {
 
 void game::gameOver() {   
     int count = 0;
+    int myCol = 6;
     for (int row = 0; row < consoleHeight; row++) {
         for (int col = 0; col < consoleWidth; col++, count++) {
-            int myRow = 2;
-            if (row == myRow++ && col == 3){
-                char field[10] = {' ',' ',' ','_','_','_','_','_','_'};
+            int myRow = 1;
+            if (row == myRow++ && col == myCol){
+                char field[9] = {' ',' ',' ','_','_','_','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[28] = {' ',' ','/',' ','_','_','_','_','/','_','_','_',' ','_','_','_','_','_',' ','_','_','_',' ',' ','_','_','_'};
+            else if (row == myRow++ && col == myCol){
+                char field[27] = {' ',' ','/',' ','_','_','_','_','/','_','_','_',' ','_','_','_','_','_',' ','_','_','_',' ',' ','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[29] = {' ','/',' ','/',' ','_','_','/',' ','_','_',' ','`','/',' ','_','_',' ','`','_','_',' ','K','/',' ','_',' ','K'};
+            else if (row == myRow++ && col == myCol){
+                char field[28] = {' ','/',' ','/',' ','_','_','/',' ','_','_',' ','`','/',' ','_','_',' ','`','_','_',' ','\\','/',' ','_',' ','\\'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[29] = {'/',' ','/','_','/',' ','/',' ','/','_','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ',' ','_','_','/'};
+            else if (row == myRow++ && col == myCol){
+                char field[28] = {'/',' ','/','_','/',' ','/',' ','/','_','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ',' ','_','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[28] = {'K','_','_','_','_','/','K','_','_',',','_','/','_','/',' ','/','_','/',' ','/','_','/','K','_','_','_','/'};
+            else if (row == myRow++ && col == myCol){
+                char field[27] = {'\\','_','_','_','_','/','\\','_','_',',','_','/','_','/',' ','/','_','/',' ','/','_','/','\\','_','_','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
 
-            if (row == myRow++ && col == 3){
-                char field[8] = {' ',' ',' ','_','_','_','_'};
+            else if (row == myRow++ && col == myCol){
+                char field[7] = {' ',' ',' ','_','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[25] = {' ',' ','/',' ','_','_',' ','K','_',' ',' ',' ','_','_','_','_','_',' ',' ','_','_','_','_','_'};
+            else if (row == myRow++ && col == myCol){
+                char field[24] = {' ',' ','/',' ','_','_',' ','\\','_',' ',' ',' ','_','_','_','_','_',' ',' ','_','_','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[25] = {' ','/',' ','/',' ','/',' ','/',' ','|',' ','/',' ','/',' ','_',' ','K','/',' ','_','_','_','/'};
+            else if (row == myRow++ && col == myCol){
+                char field[24] = {' ','/',' ','/',' ','/',' ','/',' ','|',' ','/',' ','/',' ','_',' ','\\','/',' ','_','_','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[21] = {'/',' ','/','_','/',' ','/','|',' ','|','/',' ','/',' ',' ','_','_','/',' ','/'};
+            else if (row == myRow++ && col == myCol){
+                char field[20] = {'/',' ','/','_','/',' ','/','|',' ','|','/',' ','/',' ',' ','_','_','/',' ','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            if (row == myRow++ && col == 3){
-                char field[19] = {'K','_','_','_','_','/',' ','|','_','_','_','/','K','_','_','_','/','_','/'};
+            else if (row == myRow++ && col == myCol){
+                char field[19] = {'\\','_','_','_','_','/',' ','|','_','_','_','/','\\','_','_','_','/','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else { 
-                CIview[count].Char.AsciiChar = BLANK;
-                CIview[count].Attributes = DEF_COLORFOREGROUND;
+            else if (row == 10 && col == roomWidth+10){
+                char field[9] = {'p','r','e','s','s',' ','E','S','C'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            else if (row == 11 && col == roomWidth+10){
+                char field[10] = {'t','o',' ','e','x','i','t','.','.','.'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
             }
         }
+    }
+    stampView();
+    while(1){
+        if(getch() == (char)27) break;
     }
 }

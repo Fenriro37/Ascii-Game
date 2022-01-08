@@ -12,7 +12,7 @@ public:
     void decreaseLife();
     void decreaseBullet();
     void decreaseScore(int damage);
-    void setLife(int newLife);
+    void increaseLife();
     void setBullet(int newBullet);
     void setScore(int newScore);
     int getLife();

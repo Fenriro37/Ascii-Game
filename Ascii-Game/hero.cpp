@@ -5,8 +5,8 @@ hero::hero(){
     cast::setRowPos(startRowPos);
     cast::setColPos(startColPos);
     cast::setFigure(HERO);
-    setLife(3);
-    setBullet(99);
+    life = 3;
+    setBullet(5);
     setScore(50);
 }
 
@@ -46,11 +46,9 @@ void hero::setBullet(int newBullet){
         bullet += newBullet;
 }
 
-void hero::setLife(int newLife){
-    if(life + newLife > maxHp)
-        life = maxHp;
-    else 
-        life += newLife;
+void hero::increaseLife(){
+    if(life +1 <= maxHp)
+        life++;
 }
 
 void hero::setScore(int newScore){

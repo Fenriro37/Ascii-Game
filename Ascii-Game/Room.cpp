@@ -258,49 +258,101 @@ int room::findYinRow(int row, int second){
 
 //funzione per creare una stanza in maniera casuale
 void room::roomGenerator(){
-    for (int row = 0; row < roomHeight; row++) {
-        for (int col = 0; col < roomWidth; col++) {
-            //caso tetto
-            if (row == 0){ 
-                view[roomWidth * row + col] = ROOF;
+    //prima stanza con istruzioni
+    if (roomNum == 0){
+        for (int row = 0; row < roomHeight; row++) {
+            for (int col = 0; col < roomWidth; col++) {
+                //Istruzioni
+                if (row == 2 && col == 3){
+                    char field[13] = {'w','a','s','d',' ','t','o',' ','m','o','v','e', BLANK};
+                    for(int i=0; i<13; i++, col++)
+                        view[roomWidth * row + col] = field[i];
+                }
+                if (row == 4 && col == 3){
+                    char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
+                    for(int i=0; i<12; i++, col++)
+                        view[roomWidth * row + col] = field[i];
+                }
+                if (row == 6 && col == 3){
+                    char field[15] = {'b','o','n','u','s','e','s',':',' ', HEART,' ', COIN, ' ', MAGAZINE, BLANK};
+                    for(int i=0; i<15; i++, col++)
+                        view[roomWidth * row + col] = field[i];
+                }
+                if (row == 8 && col == 3){
+                    char field[12] = {'e','n','e','m','i','e','s',':',' ', TURRET,' ', MONSTER};
+                    for(int i=0; i<12; i++, col++)
+                        view[roomWidth * row + col] = field[i];
+                }
+                //caso tetto
+                else if (row == 0){ 
+                    view[roomWidth * row + col] = ROOF;
+                }
+                //pavimento
+                else if(row == roomHeight-1){
+                    view[roomWidth * row + col] = FLOOR;
+                }
+                //caso Muro
+                else if (col == 0 || col == roomWidth-1){ 
+                    view[roomWidth * row + col] = WALL;
+                }
+                else if (row == roomHeight-3 && (col == 5 || col == 6 || col == 7 || col == 8)){
+                    view[roomWidth * row + col] = PLATFORM;
+                }
+                else {
+                    view[roomWidth * row + col] = BLANK;
+                }
             }
-            //pavimento
-            else if(row == roomHeight-1){
-                view[roomWidth * row + col] = FLOOR;
-            }
-            //caso Muro
-            else if (col == 0 || col == roomWidth - 1){ 
-            view[roomWidth * row + col] = WALL;
-            }
-            //caso piattaforme
-            else if (row%2==0){ 
-                view[roomWidth * row + col] = PLATFORM;
-            }
-            else {
-                view[roomWidth * row + col] = BLANK;
-            }    
         }
-    }
-    //modifiche manuali per angoli e "porte"
-    view[0] = TOPLEFT;
-    view[roomWidth-1] = TOPRIGHT;
-    view[roomWidth * (roomHeight-2)] = BLANK;
-    view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
-    if(roomNum == 1){
+        //modifiche manuali per angoli e "porte"
+        view[0] = TOPLEFT;
+        view[roomWidth-1] = TOPRIGHT;
+        view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
         view[roomWidth*(roomHeight-2)] = WALL;
         view[roomWidth*(roomHeight-1)] = BOTTOMLEFT;
+        view[roomWidth*8 +15] = BLANK;
+        //inserimento protagonista
+        view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
     }
-    //inserimento protagonista
-    view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
+    else {
+        for (int row = 0; row < roomHeight; row++) {
+            for (int col = 0; col < roomWidth; col++) {
+                //caso tetto
+                if (row == 0){ 
+                    view[roomWidth * row + col] = ROOF;
+                }
+                //pavimento
+                else if(row == roomHeight-1){
+                    view[roomWidth * row + col] = FLOOR;
+                }
+                //caso Muro
+                else if (col == 0 || col == roomWidth - 1){ 
+                view[roomWidth * row + col] = WALL;
+                }
+                //caso piattaforme
+                else if (row%2==0){ 
+                    view[roomWidth * row + col] = PLATFORM;
+                }
+                else {
+                    view[roomWidth * row + col] = BLANK;
+                }    
+            }
+        }
+        //modifiche manuali per angoli e "porte"
+        view[0] = TOPLEFT;
+        view[roomWidth-1] = TOPRIGHT;
+        view[roomWidth * (roomHeight-2)] = BLANK;
+        view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
+        //inserimento protagonista
+        view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
-    initializeItems(getRoomNum());
-    initializeEnemies(getRoomNum());
+        initializeItems(getRoomNum());
+        initializeEnemies(getRoomNum());
 
-    spawnItems();
-    spawnEnemies();
+        spawnItems();
+        spawnEnemies();
 
-    drillRow(roomNum);
-    
+        drillRow(roomNum);
+    }
 }
 
 //Funzione per inizializzare gli item della stanza corrente
@@ -323,13 +375,29 @@ void room::initializeItems(int currentLevel){
 }
 
 void room::initializeEnemies(int currentLevel){
-    int numOfEnemies = 10;//rand()%3+1;
+    
+    int numOfEnemies=0;
+    if (roomNum<5) numOfEnemies = 2;
+    else if (roomNum<15) numOfEnemies = 3;
+    else if (roomNum<22) numOfEnemies = 4;
+    else numOfEnemies = 5;
+    
     int count = 1;
-    enemy monster;
+    enemy monster(true);    //MONSTER
     currentMonsters = new enemyNode();
     currentMonsters->monster = monster;
     currentMonsters->next = NULL;
-    while((numOfEnemies-1)>0 && count<maxNumOfEnemies){
+
+    if(numOfEnemies == 5){
+        enemy monster(true);    //MONSTER
+        enemyNode* newMonster = new enemyNode();
+        newMonster->monster = monster;
+        newMonster->next = currentMonsters;
+        currentMonsters = newMonster;
+        count++;
+    }
+    
+    while((numOfEnemies-1)>0){
         //inserimento in testa in una lista
         enemyNode* tmp = new enemyNode();
         enemy newEnemy;
@@ -450,14 +518,14 @@ bool room::enemyCollision(enemyNode* currentEnemy){
     if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == HERO){
         currentEnemy->monster.setAlive();
         protagonist.decreaseLife();
-        protagonist.setScore(-(roomNum * roomNum * 0.01 + 20));
+        protagonist.setScore(-(roomNum * COLLISION_DMG_MULT)); 
         return true;
     }
     else if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == BULLET){
         bulletNode* currentAmmo = findAmmo(currentEnemy->monster.getRowPos(), currentEnemy->monster.getColPos() + offSet);
         currentEnemy->monster.setAlive();
         currentAmmo->ammo.setAlive();
-        protagonist.setScore(5 * roomNum + 50);
+        protagonist.setScore(roomNum * BONUS_KILL_MULT);
         view[currentAmmo->ammo.getPos()] = BLANK;
 
         return true;
@@ -543,43 +611,6 @@ void room::addToList(bulletNode* newNode){
     //newNode->prev = iter;
 }
 
-/* void room::deleteNodes(){
-    if(currentAmmo!= NULL){
-        bulletNode* iter = currentAmmo;
-        while(iter->next!=NULL){
-            //delete nodo non in testa
-            if(!iter->ammo.getAlive()){
-                bulletNode* tmp = iter;
-                if(iter->prev!=NULL){
-                    iter->prev->next = iter->next;
-                    iter->next->prev = iter->prev;
-                }
-                else{
-                    iter->next->prev = NULL;
-                }
-                iter = iter->next;
-                delete tmp;
-                tmp = NULL; 
-            }
-            else{
-                iter = iter->next;
-            }
-        }
-        //delete nodo testa
-        if (iter->prev == NULL && !iter->ammo.getAlive()){
-            delete currentAmmo;
-            currentAmmo = NULL;
-            iter = NULL;
-        }
-        //delete nodo coda
-        else if(!iter->ammo.getAlive()){
-            iter->prev->next = NULL;
-            delete iter;
-            iter = NULL;
-        }
-    }
-} */
-
 void room::generateBullet(bool direction, cast shooter){
     bullet newAmmo(direction);
     bulletNode* newBullet = new bulletNode();
@@ -602,7 +633,7 @@ bool room::bulletCollision(int x, int y){
         if(view[roomWidth * x + y] == MONSTER || view[roomWidth * x + y] == TURRET){
             enemyNode* foundMonster = findMoster(x, y);
             foundMonster->monster.setAlive();
-            protagonist.setScore( 5* roomNum + 50);
+            protagonist.setScore(roomNum * BONUS_KILL_MULT);
             view[roomWidth * x + y] = BLANK;  
         }
         else if(view[roomWidth * x + y] == BULLET){
@@ -612,7 +643,7 @@ bool room::bulletCollision(int x, int y){
         }
         else if(view[roomWidth * x + y] == HERO){
             protagonist.decreaseLife();
-            protagonist.setScore(-(roomNum * roomNum * 0.01 + 20));
+            protagonist.setScore(-(roomNum * BULLET_DMG_MULT));
         }
         //i bonus se vengono colpiti sono distrutti
         else if(view[roomWidth * x + y] == HEART || view[roomWidth * x + y] == COIN || view[roomWidth * x + y] == MAGAZINE) {

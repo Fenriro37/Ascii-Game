@@ -21,7 +21,6 @@ protected:
     _COORD characterBufferSize, characterPosition;
     CHAR_INFO CIview[consoleHeight * consoleWidth];
 
-    int score;
     roomList* currentroom;
 
 public:
@@ -37,11 +36,7 @@ public:
     void toCharInfo();
     void paste(char arrayToPaste[], int size, int &count, int &col);
 
-    
-    int getScore();
-    void setScore(int newScore);
-
-    void playerCollision(int row, int col);
+    void playerCollision(int row, int col, int cameFromAbove);
     void findItem(int row, int col);
     void clearBonus();
     void clearEnemy();

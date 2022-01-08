@@ -15,6 +15,14 @@ enemy::enemy(){
     }
 }
 
+//costruttore truccato, sempre MONSTER
+enemy::enemy(bool rigged){
+    int life = 1;
+    bool alive = false;
+    cast::figure = MONSTER;
+    direction = rand()%2;
+}
+
 void enemy::setLife(int newLife){
     life = newLife;
 }

@@ -10,6 +10,7 @@ protected:
 
 public:
     enemy();
+    enemy(bool rigged);
     void setLife(int newLife);
     void decreaseLife();
     void setAlive();
