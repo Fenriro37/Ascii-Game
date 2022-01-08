@@ -6,19 +6,15 @@
 
 
 ### Miglioramenti:
-     
-    Schermata Iniziale
-    Schermata Finale mostrando score finale
 
     Pausa  
+    Pulizia liste
     scivere relazione e registrare video
     commentare le funzioni
     
     Caduta personaggio caso buco 
 
     Autocolpirsi spostandosi subito dopo aver sparato
-    Per ora i nemici devono avere una singola vita altrimenti succedono cose strane. Risolvere o lasciare così
-
 
      ______                   
     / ____/___ _____ ___  ___ 
