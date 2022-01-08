@@ -268,17 +268,22 @@ void room::roomGenerator(){
                     for(int i=0; i<13; i++, col++)
                         view[roomWidth * row + col] = field[i];
                 }
-                if (row == 4 && col == 3){
+                else if (row == 4 && col == 3){
                     char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
                     for(int i=0; i<12; i++, col++)
                         view[roomWidth * row + col] = field[i];
                 }
-                if (row == 6 && col == 3){
+                else if (row == 4 && col == 22){
+                    char field[10] = {'p',' ','t','o',' ','p','a','u','s','e'};
+                    for(int i=0; i<10; i++, col++)
+                        view[roomWidth * row + col] = field[i];
+                }
+                else if (row == 6 && col == 3){
                     char field[15] = {'b','o','n','u','s','e','s',':',' ', HEART,' ', COIN, ' ', MAGAZINE, BLANK};
                     for(int i=0; i<15; i++, col++)
                         view[roomWidth * row + col] = field[i];
                 }
-                if (row == 8 && col == 3){
+                else if (row == 8 && col == 3){
                     char field[12] = {'e','n','e','m','i','e','s',':',' ', TURRET,' ', MONSTER};
                     for(int i=0; i<12; i++, col++)
                         view[roomWidth * row + col] = field[i];
@@ -310,6 +315,7 @@ void room::roomGenerator(){
         view[roomWidth*(roomHeight-2)] = WALL;
         view[roomWidth*(roomHeight-1)] = BOTTOMLEFT;
         view[roomWidth*8 +15] = BLANK;
+        view[roomWidth*4 +32] = BLANK;
         //inserimento protagonista
         view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
     }
@@ -423,7 +429,10 @@ bool room::isAvailable(int x, int y, cast rookie){
             freeRow[x].available = false;
         }
         //caso mostro, non ultima riga
-        else if(rookie.getFigure() == MONSTER && x != roomHeight-2 && y > 1 && y < roomWidth-2){
+        else if(rookie.getFigure() == MONSTER && x != roomHeight-2 
+        && y > 1 && y < roomWidth-2 
+        && view[roomWidth * x + (y+1)] != MONSTER && view[roomWidth * x + (y+2)] != MONSTER  
+        && view[roomWidth * x + (y-1)] != MONSTER && view[roomWidth * x + (y-2)] != MONSTER){
             freeRow[x].available = false;        
             freeRow[x].thereIsMonster = true;
         }

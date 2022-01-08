@@ -61,128 +61,6 @@ void game::changeCellOfView(int position, char figure){
     }
 }
 
-void game::clearList(){
-    clearBonus();
-    clearEnemy();
-    clearAmmo();
-}
-
-void game::clearBonus(){
-    itemNode* bonus  = currentroom->myRoom.getCurrentBonus();
-    itemNode* prev;
-    prev = bonus;
-    while(bonus != NULL){
-        //caso testa. La condizione ci permette di controllare se siamo ancora la testa
-        if (bonus->Bonus.getTaken() && prev == bonus){
-            if(bonus->next != NULL){                                
-                bonus = bonus->next;
-                delete prev;
-                prev = bonus;
-            }
-            //testa unico nodo
-            else {
-                delete bonus;
-                currentroom->myRoom.setCurrentBonus(NULL);
-                bonus = NULL;
-                prev = NULL;
-            }
-        }
-        //se non devo eliminare il primo sposto di uno bonus da prev
-        else if (!bonus->Bonus.getTaken() && prev == bonus){  
-            currentroom->myRoom.setCurrentBonus(bonus);
-            bonus = bonus->next;
-        }
-        //se devo eliminare un nodo che non è in testa
-        else if (bonus->Bonus.getTaken() && prev != bonus){
-            prev->next = bonus->next;
-            delete bonus;
-            bonus = prev->next;
-        }
-        //se non devo eliminare un nodo non in testa
-        else{
-            prev = bonus;
-            bonus = bonus->next;
-        }   
-    }
-}
-
-void game::clearEnemy(){
-    enemyNode* enemy  = currentroom->myRoom.getCurrentMonsters();
-    enemyNode* prev;
-    prev = enemy;
-    while(enemy != NULL){
-        //caso testa. La condizione ci permette di controllare se siamo ancora la testa
-        if (enemy->monster.getAlive() && prev == enemy){
-            if(enemy->next != NULL){                                
-                enemy = enemy->next;
-                //delete prev;
-                prev = enemy;
-            }
-            //testa unico nodo
-            else {
-                //delete enemy;
-                currentroom->myRoom.setCurrentMonster(NULL);
-                enemy = NULL;
-                prev = NULL;
-            }
-        }
-        //se non devo eliminare il primo sposto di uno bonus da prev
-        else if (!enemy->monster.getAlive() && prev == enemy){  
-            currentroom->myRoom.setCurrentMonster(enemy);
-            enemy = enemy->next;
-        }
-        //se devo eliminare un nodo che non è in testa
-        else if (enemy->monster.getAlive() && prev != enemy){
-            prev->next = enemy->next;
-            //delete enemy;
-            enemy = prev->next;
-        }
-        //se non devo eliminare un nodo non in testa
-        else{
-            prev = enemy;
-            enemy = enemy->next;
-        }
-    }
-}
-
-void game::clearAmmo(){
-    bulletNode* bullet  = currentroom->myRoom.getCurrentAmmo();
-    bulletNode* prev;
-    prev = bullet;
-    while(bullet != NULL){
-        //caso testa. La condizione ci permette di controllare se siamo ancora la testa
-        if (bullet->ammo.getAlive() && prev == bullet){
-            if(bullet->next != NULL){                                
-                bullet = bullet->next;
-                delete prev;
-                prev = bullet;
-            }
-            //testa unico nodo
-            else {
-                delete bullet;
-                currentroom->myRoom.setCurrentAmmo(NULL);
-                bullet = NULL;
-                prev = NULL;
-            }
-        }
-        //se non devo eliminare il primo sposto di uno bonus da prev
-        else if (!bullet->ammo.getAlive() && prev == bullet){  
-            currentroom->myRoom.setCurrentAmmo(bullet);
-            bullet = bullet->next;
-        }
-        //se devo eliminare un nodo che non è in testa
-        else if (bullet->ammo.getAlive() && prev != bullet){
-            prev->next = bullet->next;
-            delete bullet;
-            bullet = prev->next;
-        }
-        //se non devo eliminare un nodo non in testa
-        else{
-            prev = bullet;
-            bullet = bullet->next;
-        }   
-    }
-}
 
 //Controlla che la posizione sia uguale a figure
 bool game::checkNear(int row, int col, char figure){
@@ -310,7 +188,30 @@ void game::move(char input){
                     currentroom->myRoom.generateBullet(RIGHT, protagonist);
                   }                  
             break;
-
+        case 'p':
+        case 'P':   CIview[60].Char.AsciiChar = 'P';
+                    CIview[60].Attributes = DEF_COLORFOREGROUND;
+                    CIview[61].Char.AsciiChar = 'A';
+                    CIview[61].Attributes = DEF_COLORFOREGROUND;
+                    CIview[62].Char.AsciiChar = 'U';
+                    CIview[62].Attributes = DEF_COLORFOREGROUND;
+                    CIview[63].Char.AsciiChar = 'S';
+                    CIview[63].Attributes = DEF_COLORFOREGROUND;
+                    CIview[64].Char.AsciiChar = 'E';
+                    CIview[64].Attributes = DEF_COLORFOREGROUND;
+                    stampView();
+                    while(1){
+                    if(getch() == 'p' || getch() == 'P' ){
+                        CIview[60].Char.AsciiChar = BLANK;
+                        CIview[61].Char.AsciiChar = BLANK;
+                        CIview[62].Char.AsciiChar = BLANK;
+                        CIview[63].Char.AsciiChar = BLANK;
+                        CIview[64].Char.AsciiChar = BLANK;
+                        stampView();
+                        break;
+                    } 
+        }
+            break;
         default:    
             break;
     }
