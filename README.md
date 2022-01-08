@@ -9,8 +9,6 @@
     Pulizia liste
     scivere relazione e registrare video
     commentare le funzioni
-    
-    Caduta personaggio caso buco 
 
     Autocolpirsi spostandosi subito dopo aver sparato
 
