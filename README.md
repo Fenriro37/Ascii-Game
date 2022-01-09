@@ -9,6 +9,8 @@
 ### Problemi?:
     Autocolpirsi spostandosi subito dopo aver sparato
 
+###Titolo:
+    Rogue not so like
      ______                   
     / ____/___ _____ ___  ___ 
    / / __/ __ `/ __ `__ \/ _ \
