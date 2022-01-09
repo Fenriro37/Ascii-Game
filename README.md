@@ -6,9 +6,6 @@
 ### Miglioramenti:
     Pulizia liste
 
-### Problemi?:
-    Autocolpirsi spostandosi subito dopo aver sparato
-
 ### Titolo:
     Rogue not so like
     
