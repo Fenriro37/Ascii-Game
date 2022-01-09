@@ -1,0 +1,13 @@
+difficoltà: 
+    dec dei punti       -> livello  parte molto basso, diventando il pericolo principale
+    dec dei cuori       -> fisso    
+
+vantaggi:
+    bonus               -> livello  
+    uccisione nemici    -> livello  
+    cambio stanza       -> fisso    
+
+
+idea per clearlist:
+creo nuova lista con i nodi che sopravvivono
+deleto la precedente
