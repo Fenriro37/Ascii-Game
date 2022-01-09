@@ -3,7 +3,7 @@
 
 enemy::enemy(){
     int life = 1;
-    bool alive = false;
+    bool alive = true;
     if(rand()%10 <1){
         //torretta
         cast::figure = TURRET;
@@ -16,9 +16,10 @@ enemy::enemy(){
 }
 
 //costruttore truccato, sempre MONSTER
+//idea: passare la probabilità al costruttore
 enemy::enemy(bool rigged){
     int life = 1;
-    bool alive = false;
+    bool alive = true;
     cast::figure = MONSTER;
     direction = rand()%2;
 }
@@ -27,31 +28,31 @@ void enemy::setLife(int newLife){
     life = newLife;
 }
 
-void enemy::decreaseLife(){
-    life--;
-    if (life <= 0){
-        alive = true;
-    }
-}
-
 int  enemy::getLife(){
     return life;
 }
 
+void enemy::decreaseLife(){
+    life--;
+    if (life <= 0){
+        alive = false;
+    }
+}
+
 void enemy::setAlive(){
-    alive = true;
+    alive = false;
 }
 
 bool enemy::getAlive(){
     return alive;
 }
 
-bool enemy::getDirection(){
-    return direction;
-}
-
 void enemy::setDirection(){
     direction = !direction;
+}
+
+bool enemy::getDirection(){
+    return direction;
 }
 
 int enemy::getFireDelay(){

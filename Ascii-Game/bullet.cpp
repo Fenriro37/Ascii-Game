@@ -1,14 +1,13 @@
 #include "bullet.hpp"
 
-
 bullet::bullet(){
     cast::setFigure(BULLET);
-    alive = false;
+    alive = true;
 }
 
 bullet::bullet(bool newDirection){
     cast::setFigure(BULLET);
-    alive = false;
+    alive = true;
     direction = newDirection;
 }
 
@@ -21,7 +20,7 @@ bool bullet::getAlive(){
 }
 
 void bullet::setAlive(){
-    alive = true;
+    alive = false;
 }
 
 void bullet::setDirection(){

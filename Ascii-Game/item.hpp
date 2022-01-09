@@ -6,7 +6,6 @@ protected:
     bool taken;
 
 public:
-    //vari costruttori per vari bonus?
     item();
     void setTaken();
     bool getTaken();

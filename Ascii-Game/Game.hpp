@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Room.hpp"
 
 struct roomList {
@@ -23,10 +22,6 @@ protected:
 
     roomList* currentroom;
 
-public:
-
-    game();
-    void logic();
     void nextRoom();
     void prevRoom();
     void stampView();
@@ -37,11 +32,15 @@ public:
     void paste(char arrayToPaste[], int size, int &count, int &col);
 
     void playerCollision(int row, int col, int cameFromAbove);
-    void findItem(int row, int col);
-    void clearBonus();
+
+    /*void clearBonus();
     void clearEnemy();
     void clearAmmo();
-    void clearList();
+    void clearList();*/
 
     void gameOver();
+
+public:
+    game();
+    void logic();
 };

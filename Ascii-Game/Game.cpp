@@ -3,6 +3,14 @@
 #include "string.h"
 #include <iostream>
 
+extern hero protagonist;
+
+// WORDS colori
+//WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN;
+WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN | FOREGROUND_RED;
+WORD RED = FOREGROUND_RED;
+WORD WHITE = FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE;
+
 game::game() {
 
     /* Console stuff
@@ -182,7 +190,7 @@ void game::move(char input){
                   }
             break;
                 //Proiettile destra
-        case 'k':if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
+        case 'k': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
                      roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1){
                     protagonist.decreaseBullet();
                     currentroom->myRoom.generateBullet(RIGHT, protagonist);
@@ -201,31 +209,19 @@ void game::move(char input){
                     CIview[64].Attributes = DEF_COLORFOREGROUND;
                     stampView();
                     while(1){
-                    if(getch() == 'p' || getch() == 'P' ){
-                        CIview[60].Char.AsciiChar = BLANK;
-                        CIview[61].Char.AsciiChar = BLANK;
-                        CIview[62].Char.AsciiChar = BLANK;
-                        CIview[63].Char.AsciiChar = BLANK;
-                        CIview[64].Char.AsciiChar = BLANK;
-                        stampView();
-                        break;
-                    } 
-        }
-            break;
+                        if(getch() == 'p' || getch() == 'P' ){
+                            CIview[60].Char.AsciiChar = BLANK;
+                            CIview[61].Char.AsciiChar = BLANK;
+                            CIview[62].Char.AsciiChar = BLANK;
+                            CIview[63].Char.AsciiChar = BLANK;
+                            CIview[64].Char.AsciiChar = BLANK;
+                            stampView();
+                            break;
+                        } 
+                    }
+                    break;
         default:    
             break;
-    }
-}
-
-//trova l'item raccolto dal protagonista nella lista degli item, chiama setTaken()
-void game::findItem(int row, int col){
-    itemNode* iter = currentroom->myRoom.getCurrentBonus();
-    while(iter!= NULL){
-        if(iter->Bonus.getRowPos() == row && iter->Bonus.getColPos() == col){
-            iter->Bonus.setTaken();
-            break;
-        }
-        iter = iter->next;
     }
 }
 
@@ -258,18 +254,21 @@ void game::playerCollision(int row, int col, int cameFromAbove){
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
         else{
+            itemNode* currentItem;
             if(!checkNear(row, col, HEART)){
-                findItem(row, col);
+                currentItem = currentroom->myRoom.findBonus(row, col);
+                currentItem->Bonus.setTaken();
                 protagonist.increaseLife();
             }
             else if(!checkNear(row, col, MAGAZINE)){
-                findItem(row, col);
+                currentItem = currentroom->myRoom.findBonus(row, col);
+                currentItem->Bonus.setTaken();
                 protagonist.setBullet(protagonist.getBullet() + BULLET_BONUS);
             }
             else if(!checkNear(row, col, COIN)){
-                findItem(row, col);
+                currentItem = currentroom->myRoom.findBonus(row, col);
+                currentItem->Bonus.setTaken();
                 protagonist.setScore(currentroom->myRoom.getRoomNum() * COIN_MULT); 
-               
             }
         }
     }
@@ -294,7 +293,12 @@ void game::toCharInfo() {
                 char* tmp = currentroom->myRoom.getView();
                 tmp += roomWidth * row + col;
                 CIview[count].Char.AsciiChar = *tmp;
-                CIview[count].Attributes = DEF_COLORFOREGROUND;
+                switch (CIview[count].Char.AsciiChar) {
+                    case HEART:
+                    case COIN: 
+                    case MAGAZINE: CIview[count].Attributes = WHITE; break;
+                    default: CIview[count].Attributes = DEF_COLORFOREGROUND; break;
+                }
             }
             /*
             * lvl, hp, score, ammo */

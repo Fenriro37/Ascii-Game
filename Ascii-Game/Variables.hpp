@@ -50,11 +50,3 @@ const int COLLISION_DMG_MULT = 4;
 const int BONUS_KILL_MULT = 2;
 const int COIN_MULT = 8;
 const int BULLET_BONUS = 4;
-
-//Qui partono le variabili contenute in Variables.cpp
-//Colori
-extern WORD DEF_COLORFOREGROUND;
-extern hero protagonist;
-
-
-
