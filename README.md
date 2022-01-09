@@ -9,7 +9,7 @@
 ### Problemi?:
     Autocolpirsi spostandosi subito dopo aver sparato
 
-###Titolo:
+### Titolo:
     Rogue not so like
     
     
