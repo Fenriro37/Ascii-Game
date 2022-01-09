@@ -43,6 +43,7 @@ protected:
 
     //utility
     void drillRow(const int currentLevel); //funzione per bucare  PLATFORMS
+    void newHoles(int row, int position, int &holes, int start, int finish);
     void oneCastCase(int row, int holes, int position, int maxHoles);
     void twoMonstersCase(int row, int holes, int position, int maxHoles);
     int findYinRow(int row, int second);

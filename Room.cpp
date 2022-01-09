@@ -44,13 +44,8 @@ void room::drillRow(const int currentLevel){
             while(numberOfHoles < maxHoles){
                 position = rand()%roomWidth;
                 //primo buco, position != da: prima, seconda, ultima, penultima colonna
-                if(view[toSingleArray(row, position)] == PLATFORM && position!=1 && position!=roomWidth-2){
-                    view[toSingleArray(row, position) ] = BLANK;
-                    numberOfHoles++;
-                    if(position-1>1)
-                        view[toSingleArray(row, position-1)] = BLANK;
-                    if(position+1 < roomWidth-2)
-                        view[toSingleArray(row, position+1)] = BLANK;
+                if(position!=1 && position!=roomWidth-2){
+                    newHoles(row, position, numberOfHoles, 1, roomWidth-2);
                 }
             }
         }
@@ -77,6 +72,17 @@ void room::drillRow(const int currentLevel){
     }    
 }
 
+void room::newHoles(int row, int position, int &holes, int start, int finish){
+    if(view[toSingleArray(row, position)] == PLATFORM){
+        view[toSingleArray(row, position)] = BLANK;
+        holes++;
+        if(position+1 < start)
+            view[toSingleArray(row, position+1)] = BLANK;
+        if(position-1 > finish)
+            view[toSingleArray(row, position-1)] = BLANK;
+}
+}
+
 void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
     int yFirst = findYinRow(row-1, 0);
     int ySecond = findYinRow(row-1, 1);
@@ -87,28 +93,14 @@ void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
     if(righter <= roomWidth/2){
         while(holes < 2){
             position = roomWidth/2 + rand()%(roomWidth/2-2);
-            if(view[toSingleArray(row, position)] == PLATFORM){
-                view[toSingleArray(row, position)] = BLANK;
-                holes++;
-                if(position+1 < roomWidth-2)
-                    view[toSingleArray(row, position+1)] = BLANK;
-                if(position-1 > roomWidth/2)
-                    view[toSingleArray(row, position-1)] = BLANK;
-            }
+            newHoles(row, position, holes, roomWidth-2, roomWidth/2);
         }
     }
     //entrambi sono nella metà di destra
     else if (lefter > roomWidth/2){
         while(holes < 2){
             position = rand()%(roomWidth/2)+2;
-            if(view[toSingleArray(row, position)] == PLATFORM){
-                view[toSingleArray(row, position)] = BLANK;
-                holes++;
-                if(position+1 < roomWidth/2)
-                    view[toSingleArray(row, position+1)] = BLANK;
-                if(position-1 > 2)
-                    view[toSingleArray(row, position-1)] = BLANK;
-            }
+            newHoles(row, position, holes, roomWidth/2, 2);
         }
     }
     //sono in due metà diverse                    
@@ -121,50 +113,22 @@ void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
             //section + 2 per l'offset
             //rand()%(section-1) per non finire nel 3/4
             position = (section + 2) + rand()%(section);
-            if(view[toSingleArray(row, position)] == PLATFORM){
-                view[toSingleArray(row, position)] = BLANK;
-                holes++;
-                if(position-1 >= section + 2)
-                    view[toSingleArray(row, position-1)] = BLANK;
-                if(position+1 <= 1 + 2*section)
-                    view[toSingleArray(row, position+1)] = BLANK;
-            }                            
+            newHoles(row, position, holes, section + 2, 1 + 2*section);                        
         }
         // Buchiamo nel PRIMO quarto
         else if(lefter >= 2+section && lefter <=  1+2*section) {
             position =  2 + rand()%(section);
-            if(view[toSingleArray(row, position)] == PLATFORM){
-                view[toSingleArray(row, position)] = BLANK;
-                holes++;
-                if(position-1 >=  2)
-                    view[toSingleArray(row, position-1)] = BLANK;
-                if(position+1 <= 1+section)
-                    view[toSingleArray(row, position+1)] = BLANK;
-            }  
+            newHoles(row, position, holes, 2, 1 + section);   
         }
         if(righter >= 2+2*section && righter  <= 3*section+1){                                                                
             // Buchiamo nel QUARTO quarto
             position = 2 + 3*section + rand()%(section);
-            if(view[toSingleArray(row, position)] == PLATFORM){
-                view[toSingleArray(row, position)] = BLANK;
-                holes++;
-                if(position-1 >= 2+ 3*section)
-                    view[toSingleArray(row, position-1)] = BLANK;
-                if(position+1 <= 1+ 4*section)
-                    view[toSingleArray(row, position+1)] = BLANK;
-            }                            
+            newHoles(row, position, holes, 2+ 3*section, 1+ 4*section);                            
         }
         else if(righter >= 2+3*section  && righter  <= 2+4*section) {
             // Buchiamo nel TERZO quarto
             position = 2 + 2*section + rand()%(section);
-            if(view[toSingleArray(row, position)] == PLATFORM){
-                view[toSingleArray(row, position)] = BLANK;
-                holes++;
-                if(position-1>= 2+ 2*section)
-                    view[toSingleArray(row, position-1)] = BLANK;
-                if(position+1 <= 1+ 3*section)
-                    view[toSingleArray(row, position+1)] = BLANK;
-            }  
+            newHoles(row, position, holes, 2+ 2*section, 1+ 3*section);    
         }                                                       
     }
 }
@@ -180,56 +144,28 @@ void room::oneCastCase(int row, int holes, int position, int maxHoles){
             if(yOccupied == 1 || yOccupied > 1+section){
                 // cerchiamo di bucare nel  PRIMO quarto
                 //something non è nel PRIMO quarto
-                if(view[toSingleArray(row, position)] == PLATFORM){
-                    view[toSingleArray(row, position)] = BLANK;
-                    holes++;
-                    if(position-1 >= 2)
-                        view[toSingleArray(row, position-1)] = BLANK;
-                    if(position+1 <= 1+section)
-                        view[toSingleArray(row, position+1)] = BLANK;
-                }
+                newHoles(row, position, holes, 2, 1+section);  
             }                        
         }
         else if(position >= 2+section && position <= 1+2*section){
             if(yOccupied < 2+section || yOccupied > 1+2*section){
                 // cerchiamo di bucare nel SECONDO quarto
                 //something non è nel SECONDO quarto
-                if(view[toSingleArray(row, position)] == PLATFORM){
-                    view[toSingleArray(row, position)] = BLANK;
-                    holes++;
-                    if(position-1 >= 2+section)
-                        view[toSingleArray(row, position-1)] = BLANK;
-                    if(position+1 <= 1+2*section)
-                        view[toSingleArray(row, position+1)] = BLANK;
-                }
+                newHoles(row, position, holes, 2+section, 1+ 2*section);  
             }                        
         }
         else if(position >= 2+2*section && position <= 3*section+1){
             if(yOccupied < 2+2*section || yOccupied > 3*section+1){
                 // cerchiamo di bucare nel TERZO quarto
                 //something non è nel TERZO quarto
-                if(view[toSingleArray(row, position)] == PLATFORM){
-                    view[toSingleArray(row, position)] = BLANK;
-                    holes++;
-                    if(position-1 >= 2+2*section)
-                        view[toSingleArray(row, position-1)] = BLANK;
-                    if(position+1 <= 3*section+1)
-                        view[toSingleArray(row, position+1)] = BLANK;
-                }
+                newHoles(row, position, holes, 2+ 2*section, 1+ 3*section);  
             }                        
         }
         else if(position >= 2+3*section && position <= 1+4*section){
             if(yOccupied < 2+3*section || yOccupied == 2+4*section){
                 // cerchiamo di bucare nel QUARTO quarto
                 //something non è nel QUARTO quarto
-                if(view[toSingleArray(row, position)] == PLATFORM){
-                    view[toSingleArray(row, position)] = BLANK;
-                    holes++;
-                    if(position-1 >= 2+3*section)
-                        view[toSingleArray(row, position-1)] = BLANK;
-                    if(position+1 <= 1+4*section)
-                        view[toSingleArray(row, position+1)] = BLANK;
-                }
+                newHoles(row, position, holes, 2+ 3*section, 1+ 4*section);  
             }
         }
     }
