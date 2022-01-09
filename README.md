@@ -1,6 +1,5 @@
 ### Situazione attuale:
     Gestione spawn dei nemici e dei bonus e ritoccare costruttore di item
-    (Cambiare nome al booleano di enemy: alive) 
     
     
 
