@@ -1,14 +1,12 @@
 ### Situazione attuale:
-    Gestione spawn dei nemici e dei bonus e ritoccare costruttore di item
+    Gestione spawn dei nemici e score
+    Commentare le funzioni
+    Scivere relazione e registrare video
     
-    
-
-
 ### Miglioramenti:
     Pulizia liste
-    scivere relazione e registrare video
-    commentare le funzioni
 
+### Problemi?:
     Autocolpirsi spostandosi subito dopo aver sparato
 
      ______                   
