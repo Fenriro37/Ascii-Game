@@ -6,7 +6,7 @@ hero::hero(){
     cast::setColPos(startColPos);
     cast::setFigure(HERO);
     life = 3;
-    setBullet(50);
+    setBullet(99);
     setScore(50);
 }
 

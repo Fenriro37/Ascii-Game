@@ -145,6 +145,7 @@ void game::bulletMove(){
                 toCharInfo();
                 stampView();
                 *now = BLANK;
+                Sleep(1);
                 if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
                     iter->ammo.setAlive(); 
                     char* PtoArray = currentroom->myRoom.getView();

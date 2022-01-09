@@ -80,7 +80,7 @@ void room::newHoles(int row, int position, int &holes, int start, int finish){
             view[toSingleArray(row, position+1)] = BLANK;
         if(position-1 > finish)
             view[toSingleArray(row, position-1)] = BLANK;
-}
+    }
 }
 
 void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
