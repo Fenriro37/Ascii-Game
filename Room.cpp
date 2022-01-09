@@ -604,7 +604,7 @@ bool room::bulletCollision(int x, int y){
     return false;
 }
 
-void room::bulletMove(){
+/* void room::bulletMove(){
     int offSet;
     bulletNode* iter = currentAmmo;
     while(iter != NULL){
@@ -642,7 +642,7 @@ void room::bulletMove(){
         }
         iter = iter->next;
     }
-}
+} */
 
 //ottengo un puntatore all'inizio dell'array
 char* room::getView(){
@@ -670,6 +670,9 @@ int room::getRoomNum(){
 itemNode* room::getCurrentBonus(){
     return currentBonus;
 }
+bulletNode* room::getCurrentAmmo(){
+    return currentAmmo;
+}
 
 /*
 void room::setCurrentBonus(itemNode* newHead){
@@ -684,9 +687,7 @@ void room::setCurrentMonster(enemyNode* newHead){
     currentMonsters = newHead;
 }
 
-bulletNode* room::getCurrentAmmo(){
-    return currentAmmo;
-}
+
 
 void room::setCurrentAmmo(bulletNode* newHead){
     currentAmmo = newHead;

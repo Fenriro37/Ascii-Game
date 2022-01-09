@@ -57,7 +57,7 @@ protected:
     void initializeEnemies(int currentLevel);
 
     void addToList(bulletNode* newNode);
-    bool bulletCollision(int x, int y);
+
     bool enemyCollision(enemyNode* currentEnemy);
 
     int toSingleArray(int x, int y);
@@ -73,6 +73,7 @@ public:
     room(int lvl);
     
     itemNode* getCurrentBonus();
+    bulletNode* getCurrentAmmo();
 
     void setRoomNum(int newRoomNum);
     int getRoomNum();
@@ -90,6 +91,7 @@ public:
     bulletNode* findAmmo(int x, int y);
     
     void generateBullet(bool direction, cast shooter);
-    void bulletMove();
+    bool bulletCollision(int x, int y);
+    //void bulletMove();
     void enemyMove();
 };

@@ -37,7 +37,7 @@ protected:
     void clearEnemy();
     void clearAmmo();
     void clearList();*/
-
+    void bulletMove();
     void gameOver();
 
 public:

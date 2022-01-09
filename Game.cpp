@@ -111,6 +111,79 @@ void game::stampView() {
     WriteConsoleOutputA(hStdout, CIview, characterBufferSize, characterPosition, &consoleSize);
 }
 
+void game::bulletMove(){
+    int offSet;
+    bulletNode* iter = currentroom->myRoom.getCurrentAmmo();
+
+    while(iter != NULL){
+        char* now = currentroom->myRoom.getView();
+        now += iter->ammo.getPos();
+        if(iter->ammo.getAlive()){
+            offSet = (iter->ammo.getDirection() == LEFT) ? -1 : 1; 
+            //caso muro sinistro, il proiettile sparisce e viene settato a false
+            if(iter->ammo.getPos() -1 == roomWidth * iter->ammo.getRowPos()
+                && offSet == -1){
+                iter->ammo.setAlive();
+
+                char* PtoArray = currentroom->myRoom.getView();
+                PtoArray += iter->ammo.getPos();
+                *PtoArray = BLANK;
+            }
+            //caso muro destro
+            else if(iter->ammo.getPos() +1 == roomWidth * (iter->ammo.getRowPos()) + roomWidth-1
+                && offSet == 1){
+                iter->ammo.setAlive();
+                char* PtoArray = currentroom->myRoom.getView();
+                PtoArray += iter->ammo.getPos();
+                *PtoArray = BLANK;
+            }
+            //caso proiettile appena generato
+            else if (*now == HERO){
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                now += offSet;
+                *now = iter->ammo.getFigure();
+                toCharInfo();
+                stampView();
+                *now = BLANK;
+                if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
+                    iter->ammo.setAlive(); 
+                    char* PtoArray = currentroom->myRoom.getView();
+                    PtoArray += iter->ammo.getPos();
+                    *PtoArray = BLANK;                 
+                }
+                else{
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                now += offSet;
+                *now = iter->ammo.getFigure();
+                }
+            }
+            else if (*now == TURRET){
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                now += offSet;
+                *now = iter->ammo.getFigure();
+            }
+            //caso collisione con nemici, bonus, hero e proiettili
+            else if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
+                iter->ammo.setAlive(); 
+                char* PtoArray = currentroom->myRoom.getView();
+                PtoArray += iter->ammo.getPos();
+                *PtoArray = BLANK;                 
+            }
+            //Proiettile si muove di uno
+            else{
+                char* PtoArray = currentroom->myRoom.getView();
+                PtoArray += iter->ammo.getPos();
+                *PtoArray = BLANK;
+
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                PtoArray = currentroom->myRoom.getView();
+                PtoArray += iter->ammo.getPos();
+                *PtoArray = iter->ammo.getFigure();
+            }
+        }
+        iter = iter->next;
+    }
+}
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 void game::logic(){
     while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
@@ -123,7 +196,7 @@ void game::logic(){
         }
         Sleep(50);
 
-        currentroom->myRoom.bulletMove();
+        bulletMove();
         currentroom->myRoom.enemyMove();
 
         toCharInfo();
