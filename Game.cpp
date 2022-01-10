@@ -135,7 +135,6 @@ void game::bulletMove(){
                 posPlusOffset += offSet;
                 *position = iter->ammo.getFigure();
                 toCharInfo();
-                stampView();
                 Sleep(35);
                 *position = BLANK;
 
@@ -240,7 +239,6 @@ void game::logic(){
         enemyMove();
 
         toCharInfo();
-        stampView();
     }
     gameOver();
 }
@@ -307,29 +305,24 @@ void game::move(char input){
                   }                  
             break;
         case 'p':
-        case 'P':   CIview[60].Char.AsciiChar = 'P';
-                    CIview[60].Attributes = DEF_COLORFOREGROUND;
-                    CIview[61].Char.AsciiChar = 'A';
-                    CIview[61].Attributes = DEF_COLORFOREGROUND;
-                    CIview[62].Char.AsciiChar = 'U';
-                    CIview[62].Attributes = DEF_COLORFOREGROUND;
-                    CIview[63].Char.AsciiChar = 'S';
-                    CIview[63].Attributes = DEF_COLORFOREGROUND;
-                    CIview[64].Char.AsciiChar = 'E';
-                    CIview[64].Attributes = DEF_COLORFOREGROUND;
+        case 'P':  { char pause[] = {'P','A','U','S','E'};
+                    for(int i = 60, j = 0; i<65; i++, j++){
+                        CIview[i].Char.AsciiChar = pause[j];
+                        CIview[i].Attributes = DEF_COLORFOREGROUND;
+                    }
+                        
                     stampView();
                     while(1){
                         if(getch() == 'p' || getch() == 'P' ){
-                            CIview[60].Char.AsciiChar = BLANK;
-                            CIview[61].Char.AsciiChar = BLANK;
-                            CIview[62].Char.AsciiChar = BLANK;
-                            CIview[63].Char.AsciiChar = BLANK;
-                            CIview[64].Char.AsciiChar = BLANK;
+                            for(int i = 60; i<65; i++){
+                                CIview[i].Char.AsciiChar = BLANK;
+                            }
                             stampView();
                             break;
                         } 
                     }
                     break;
+                }
         default:    
             break;
     }
@@ -455,6 +448,7 @@ void game::toCharInfo() {
             }
         }
     }
+    stampView();
 }
 
 void game::gameOver() {   
