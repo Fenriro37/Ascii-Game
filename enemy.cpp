@@ -4,7 +4,7 @@
 enemy::enemy(){
     int life = 1;
     bool alive = true;
-    if(rand()%10 <1){
+    if(rand()%10 <4){
         //torretta
         cast::figure = TURRET;
         fireDelay = 0;

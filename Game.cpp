@@ -116,70 +116,109 @@ void game::bulletMove(){
     bulletNode* iter = currentroom->myRoom.getCurrentAmmo();
 
     while(iter != NULL){
-        char* now = currentroom->myRoom.getView();
-        now += iter->ammo.getPos();
+        char* position = currentroom->myRoom.getView();
+        char* posPlusOffset = currentroom->myRoom.getView();
+        position += iter->ammo.getPos();
+       
         if(iter->ammo.getAlive()){
-            offSet = (iter->ammo.getDirection() == LEFT) ? -1 : 1; 
-            //caso muro sinistro, il proiettile sparisce e viene settato a false
-            if(iter->ammo.getPos() -1 == roomWidth * iter->ammo.getRowPos()
-                && offSet == -1){
+            offSet = (iter->ammo.getDirection() == LEFT) ? -1 : 1;
+            posPlusOffset += iter->ammo.getPos() +  offSet; 
+            //caso muro 
+            if(*posPlusOffset == WALL){
                 iter->ammo.setAlive();
-
-                char* PtoArray = currentroom->myRoom.getView();
-                PtoArray += iter->ammo.getPos();
-                *PtoArray = BLANK;
-            }
-            //caso muro destro
-            else if(iter->ammo.getPos() +1 == roomWidth * (iter->ammo.getRowPos()) + roomWidth-1
-                && offSet == 1){
-                iter->ammo.setAlive();
-                char* PtoArray = currentroom->myRoom.getView();
-                PtoArray += iter->ammo.getPos();
-                *PtoArray = BLANK;
+                *position = BLANK;
             }
             //caso proiettile appena generato
-            else if (*now == HERO){
+            else if (*position == HERO){
                 iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
-                now += offSet;
-                *now = iter->ammo.getFigure();
+                position += offSet;
+                posPlusOffset += offSet;
+                *position = iter->ammo.getFigure();
                 toCharInfo();
                 stampView();
-                *now = BLANK;
-                Sleep(1);
-                if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
-                    iter->ammo.setAlive(); 
-                    char* PtoArray = currentroom->myRoom.getView();
-                    PtoArray += iter->ammo.getPos();
-                    *PtoArray = BLANK;                 
+                Sleep(35);
+                *position = BLANK;
+
+                if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet) || *posPlusOffset == WALL){
+                    iter->ammo.setAlive();                
                 }
                 else{
                 iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
-                now += offSet;
-                *now = iter->ammo.getFigure();
+                *posPlusOffset = iter->ammo.getFigure();
                 }
             }
-            else if (*now == TURRET){
+            else if (*position == TURRET){
                 iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
-                now += offSet;
-                *now = iter->ammo.getFigure();
+                *posPlusOffset = iter->ammo.getFigure();
             }
             //caso collisione con nemici, bonus, hero e proiettili
             else if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
                 iter->ammo.setAlive(); 
-                char* PtoArray = currentroom->myRoom.getView();
-                PtoArray += iter->ammo.getPos();
-                *PtoArray = BLANK;                 
+                *position = BLANK;                 
             }
             //Proiettile si muove di uno
             else{
-                char* PtoArray = currentroom->myRoom.getView();
-                PtoArray += iter->ammo.getPos();
-                *PtoArray = BLANK;
-
+                *position = BLANK;
                 iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
-                PtoArray = currentroom->myRoom.getView();
-                PtoArray += iter->ammo.getPos();
-                *PtoArray = iter->ammo.getFigure();
+                *posPlusOffset = iter->ammo.getFigure();
+            }
+        }
+        iter = iter->next;
+    }
+}
+
+void game::enemyMove(){ 
+    enemyNode* iter = currentroom->myRoom.getCurrentMonsters();
+    int offSet;
+    while(iter != NULL){
+        if(iter->monster.getAlive()){
+            //caso TURRET
+            if(iter->monster.getFigure() == TURRET){
+                //caso sparo a sinistra
+                if(protagonist.getColPos()<= iter->monster.getColPos() && iter->monster.getFireDelay() == fireRate){
+                    currentroom->myRoom.generateBullet(LEFT, iter->monster);
+                    iter->monster.resetFireDelay();
+                }
+                //caso sparo a destra
+                else if (iter->monster.getFireDelay()== fireRate){
+                    currentroom->myRoom.generateBullet(RIGHT, iter->monster);
+                    iter->monster.resetFireDelay();
+                }
+                //caso attesa
+                else{
+                    iter->monster.increaseFireDelay();
+                }
+            }
+            //caso MONSTER
+            else if(iter->monster.getFigure() == MONSTER){
+                //if ternario : se condizione è vera -1, altrimenti 1
+                offSet = (iter->monster.getDirection()==LEFT) ? -1 : 1;
+
+                char* posBelow = currentroom->myRoom.getView();
+                posBelow +=  currentroom->myRoom.toSingleArray(iter->monster.getRowPos()+1, iter->monster.getColPos() + offSet);
+                char* posPlusOffset = currentroom->myRoom.getView();
+                posPlusOffset += iter->monster.getPos() + offSet;
+
+                if(*posBelow != BLANK 
+                    && *posPlusOffset != WALL
+                    && *posPlusOffset != MONSTER
+                    && iter->monster.getPos()+ offSet != currentroom->myRoom.toSingleArray(roomHeight-2, 0)
+                    && iter->monster.getPos() + offSet != currentroom->myRoom.toSingleArray(roomHeight-2, roomWidth-1)){
+                        //serve per rendere BLANK la posizione attuale
+                        posPlusOffset -= offSet;
+                        if(currentroom->myRoom.enemyCollision(iter)){
+                            *posPlusOffset = BLANK;
+                        }
+                        else{
+                            *posPlusOffset = BLANK;
+                            iter->monster.setColPos(iter->monster.getColPos() + offSet);
+                            posPlusOffset += offSet;
+                            *posPlusOffset = iter->monster.getFigure();
+                        }
+                }
+                else {
+                    iter->monster.setDirection();
+                }
             }
         }
         iter = iter->next;
@@ -198,7 +237,7 @@ void game::logic(){
         Sleep(50);
 
         bulletMove();
-        currentroom->myRoom.enemyMove();
+        enemyMove();
 
         toCharInfo();
         stampView();

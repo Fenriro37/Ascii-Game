@@ -492,7 +492,7 @@ bool room::enemyCollision(enemyNode* currentEnemy){
     return false;
 }
 
-void room::enemyMove(){ 
+/* void room::enemyMove(){ 
     enemyNode* iter = currentMonsters;
     int offSet;
     while(iter != NULL){
@@ -540,7 +540,7 @@ void room::enemyMove(){
         }
         iter = iter->next;
     }
-}
+} */
 
 bulletNode* room::findAmmo(int x, int y){
     bulletNode* iter = currentAmmo;
@@ -674,14 +674,16 @@ bulletNode* room::getCurrentAmmo(){
     return currentAmmo;
 }
 
+enemyNode* room::getCurrentMonsters(){
+    return currentMonsters;
+}
+
 /*
 void room::setCurrentBonus(itemNode* newHead){
     currentBonus = newHead;
 }
 
-enemyNode* room::getCurrentMonsters(){
-    return currentMonsters;
-}
+
 
 void room::setCurrentMonster(enemyNode* newHead){
     currentMonsters = newHead;

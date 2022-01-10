@@ -58,14 +58,13 @@ protected:
 
     void addToList(bulletNode* newNode);
 
-    bool enemyCollision(enemyNode* currentEnemy);
 
-    int toSingleArray(int x, int y);
+
 /*       
     void setCurrentBonus(itemNode* newHead);
     void setCurrentMonster(enemyNode* newHead);
     void setCurrentAmmo(bulletNode* newHead);
-    enemyNode* getCurrentMonsters();
+
     bulletNode* getCurrentAmmo();
 */
 public:
@@ -74,11 +73,14 @@ public:
     
     itemNode* getCurrentBonus();
     bulletNode* getCurrentAmmo();
+    enemyNode* getCurrentMonsters();
 
     void setRoomNum(int newRoomNum);
     int getRoomNum();
 
     char* getView();
+    
+    int toSingleArray(int x, int y);
     //Funzione per riposizionare il personaggio all'inizio di ogni livello
     void nextLevelPos();
     //Funzione per riposizionare il personaggio in caso di ritorno al livello precedente
@@ -93,5 +95,6 @@ public:
     void generateBullet(bool direction, cast shooter);
     bool bulletCollision(int x, int y);
     //void bulletMove();
-    void enemyMove();
+    //void enemyMove();
+    bool enemyCollision(enemyNode* currentEnemy);
 };
