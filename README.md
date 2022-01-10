@@ -3,6 +3,9 @@
     Commentare le funzioni
     Scivere relazione e registrare video
     
+### Problemi:
+    controllare bene spawn proiettili
+
 ### Miglioramenti:
     Pulizia liste
 
