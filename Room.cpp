@@ -217,12 +217,12 @@ void room::roomGenerator(){
                     for(int i=0; i<13; i++, col++)
                         view[toSingleArray(row, col)] = field[i];
                 }
-                else if (row == 4 && col == 3){
+                /*   else if (row == 4 && col == 22){
                     char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
                     for(int i=0; i<12; i++, col++)
                         view[toSingleArray(row, col)] = field[i];
-                }
-                else if (row == 4 && col == 22){
+                } */
+                else if (row == 4 && col == 3){
                     char field[10] = {'p',' ','t','o',' ','p','a','u','s','e'};
                     for(int i=0; i<10; i++, col++)
                         view[toSingleArray(row, col)] = field[i];
@@ -263,11 +263,9 @@ void room::roomGenerator(){
         view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
         view[roomWidth*(roomHeight-2)] = WALL;
         view[roomWidth*(roomHeight-1)] = BOTTOMLEFT;
-        view[roomWidth*8 +15] = BLANK;
-        view[roomWidth*4 +32] = BLANK;
         //inserimento protagonista
         view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
-        initializeEnemies(getRoomNum());
+        initializeEnemies();
     }
     //stanze casuali
     else {
@@ -302,8 +300,8 @@ void room::roomGenerator(){
         //inserimento protagonista
         view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
-        initializeItems(getRoomNum());
-        initializeEnemies(getRoomNum());
+        initializeItems();
+        initializeEnemies();
 
         spawnItems();
         spawnEnemies();
@@ -313,7 +311,7 @@ void room::roomGenerator(){
 }
 
 //Funzione per inizializzare gli item della stanza corrente
-void room::initializeItems(int currentLevel){
+void room::initializeItems(){
     int numOfBonus = rand()%3;
     int count = 1;
     item newItem;
@@ -331,7 +329,7 @@ void room::initializeItems(int currentLevel){
     }
 }
 
-void room::initializeEnemies(int currentLevel){
+void room::initializeEnemies(){
 
     if(roomNum == 0){
         enemy monster(true);    //MONSTER

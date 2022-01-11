@@ -214,13 +214,17 @@ void game::enemyMove(){
 
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 void game::logic(){
-
-    while(currentroom->myRoom.getRoomNum() != 0){
-        
-        
-    }
-
+    bool first = true;
     while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
+        if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) && first){
+            first = false;
+            int position = roomWidth * 4 + 22;
+            char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
+            for(int i = position,j = 0; i<position+12; i++, j++){
+                changeCellOfView(i, field[j]);
+            }
+            toCharInfo();
+        }
         if(kbhit()){
             move(getch());
             if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)

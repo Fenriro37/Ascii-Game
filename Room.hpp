@@ -53,8 +53,8 @@ protected:
        
     void spawnItems();
     void spawnEnemies();
-    void initializeItems(int currentLevel);
-    void initializeEnemies(int currentLevel);
+    void initializeItems();
+    void initializeEnemies();
 
     void addToList(bulletNode* newNode);
 
