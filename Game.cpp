@@ -4,56 +4,46 @@
 extern hero protagonist;
 
 // WORDS colori
-//WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN;
-WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN | FOREGROUND_RED;
-WORD RED = FOREGROUND_RED;
+WORD PLAYER =  FOREGROUND_GREEN;
+WORD ENEMIES = FOREGROUND_RED | FOREGROUND_GREEN ;
+WORD BONUS =  FOREGROUND_GREEN | FOREGROUND_BLUE;
 WORD WHITE = FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE;
+WORD DEF_COLORFOREGROUND = WHITE;
 
 game::game() {
 
-    /* Console stuff
-        ############################
-    */ 
-
-    /* Window size coordinates, be sure to start index at zero! */
+    /* Dimensione console */
     consoleSize = { 0, 0, consoleWidth - 1, consoleHeight - 1 };
-
-    /* A COORD struct for specificying the console's screen buffer dimensions */
+    /*dimensione screen buffer della console */
     COORD bufferSize = { consoleWidth, consoleHeight };
-
-    /* Setting up different variables for passing to WriteConsoleOutput */
+    /* variabili per WriteConsoleOutput */
     characterBufferSize = { consoleWidth, consoleHeight };
     characterPosition = { 0, 0 };
-    //SMALL_RECT consoleWriteArea = {0, 0, consoleWidth - 1, consoleHeight - 1};
-
-    /* A CHAR_INFO structure containing data about a single character */
+    /* CHAR_INFO: struttura contenente informazioni riguardanti un singolo carattere */
     CHAR_INFO consoleBuffer[consoleWidth * consoleHeight];
 
-    /* initialize handles */
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    hStdin = GetStdHandle(STD_INPUT_HANDLE);
 
-    /* Set the console's title */
-    //SetConsoleTitle("Our shiny new title!");
 	CONSOLE_CURSOR_INFO cursor;
 	GetConsoleCursorInfo(hStdout, &cursor);
-	//infoCursore.bVisible = visible;
+	//Cursore invisibile
     cursor.bVisible = false;
 	SetConsoleCursorInfo(hStdout, &cursor);
 
-    /* Set the window size */
+    /*Dimensione della console */
     SetConsoleWindowInfo(hStdout, TRUE, &consoleSize);
 
-    /* Set the screen's buffer size */
+    /*Dimensione del buffer */
     SetConsoleScreenBufferSize(hStdout, bufferSize);
 
-    CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};   //CONSOLE_FONT_INFOEX is defined in some windows header
-    GetCurrentConsoleFontEx(hStdout, false, &font); //PCONSOLE_FONT_INFOEX is the same as CONSOLE_FONT_INFOEX*
+    CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};   
+    GetCurrentConsoleFontEx(hStdout, false, &font); 
     font.dwFontSize.X = 24;
     font.dwFontSize.Y = 35;
     SetCurrentConsoleFontEx(hStdout, false, &font);
 
     currentroom = new roomList(0);
+    toCharInfo();
 }
 
 /*Otteniamo la posizione della cella da cambiare e la sostituiamo con figure
@@ -78,7 +68,6 @@ bool game::checkFigure(int row, int col, char figure){
 }
 
 void game::nextRoom(){
-    //clearList();
 
     changeCellOfView(protagonist.getPos(), BLANK);
     if (currentroom->next == NULL){
@@ -98,7 +87,6 @@ void game::nextRoom(){
 //Quando il personaggio vuole tornare indietro
 void game::prevRoom(){
     
-    //clearList();
     if (currentroom->prev != NULL){
         changeCellOfView(protagonist.getPos(), BLANK);
         currentroom = currentroom->prev;
@@ -223,8 +211,15 @@ void game::enemyMove(){
         iter = iter->next;
     }
 }
+
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 void game::logic(){
+
+    while(currentroom->myRoom.getRoomNum() != 0){
+        
+        
+    }
+
     while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
         if(kbhit()){
             move(getch());
@@ -236,7 +231,7 @@ void game::logic(){
         Sleep(50);
 
         bulletMove();
-        enemyMove();
+        if(currentroom->myRoom.getRoomNum() != 0)enemyMove();
 
         toCharInfo();
     }
@@ -291,18 +286,20 @@ void game::move(char input){
             break;
         
         case 'j': //Proiettile sinistra
-        case 'J': if(protagonist.getBullet() > 0 && checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && 
-                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()-1 != roomWidth*(roomHeight-2)){
-                    protagonist.decreaseBullet();
-                    currentroom->myRoom.generateBullet(LEFT, protagonist);
-                  }
+        case 'J':    if(protagonist.getBullet() > 0 && checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && 
+                        roomWidth*protagonist.getRowPos()+protagonist.getColPos()-1 != roomWidth*(roomHeight-2))
+                            if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){ 
+                                protagonist.decreaseBullet();
+                                currentroom->myRoom.generateBullet(LEFT, protagonist);
+                            }
             break;
                 //Proiettile destra
-        case 'k': if(protagonist.getBullet() > 0  && checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
-                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1){
-                    protagonist.decreaseBullet();
-                    currentroom->myRoom.generateBullet(RIGHT, protagonist);
-                  }                  
+        case 'k':   if(protagonist.getBullet() > 0  && checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
+                        roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1)
+                            if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){
+                                protagonist.decreaseBullet();
+                                currentroom->myRoom.generateBullet(RIGHT, protagonist);
+                            }                  
             break;
         case 'p':
         case 'P':  { char pause[] = {'P','A','U','S','E'};
@@ -336,11 +333,11 @@ void game::playerCollision(int row, int col, int cameFromAbove){
         if(!checkFigure(row, col, MONSTER) || !checkFigure(row, col, TURRET)){
             //se siamo arrivati da sopra non subiamo danno
             if(cameFromAbove){
-                protagonist.setScore(currentroom->myRoom.getRoomNum() * BONUS_KILL_MULT);   // y=3x bonus da uccisione mostro
+                protagonist.setScore(currentroom->myRoom.getRoomNum() * BONUS_KILL_MULT);   
             }
             else {
                 protagonist.decreaseLife();
-                protagonist.setScore(-(currentroom->myRoom.getRoomNum() * COLLISION_DMG_MULT));  // y=4x danno da collisione con mostro
+                protagonist.setScore(-(currentroom->myRoom.getRoomNum() * COLLISION_DMG_MULT));  
             }            
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
             enemyNode* iter;
@@ -353,7 +350,7 @@ void game::playerCollision(int row, int col, int cameFromAbove){
             iter = currentroom->myRoom.findAmmo(row, col);
             iter->ammo.setAlive();
             protagonist.decreaseLife();
-            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * BULLET_DMG_MULT));  // y=2x danno da collisione con proiettile
+            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * BULLET_DMG_MULT));  
         }
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
@@ -367,7 +364,7 @@ void game::playerCollision(int row, int col, int cameFromAbove){
             else if(!checkFigure(row, col, MAGAZINE)){
                 currentItem = currentroom->myRoom.findBonus(row, col);
                 currentItem->Bonus.setTaken();
-                protagonist.setBullet(protagonist.getBullet() + BULLET_BONUS);
+                protagonist.setBullet(BULLET_BONUS);
             }
             else if(!checkFigure(row, col, COIN)){
                 currentItem = currentroom->myRoom.findBonus(row, col);
@@ -401,7 +398,11 @@ void game::toCharInfo() {
                 switch (CIview[count].Char.AsciiChar) {
                     case HEART:
                     case COIN: 
-                    case MAGAZINE: CIview[count].Attributes = WHITE; break;
+                    case MAGAZINE: CIview[count].Attributes = BONUS; break;
+                    case BULLET:
+                    case MONSTER:
+                    case TURRET: CIview[count].Attributes = ENEMIES ; break;
+                    case HERO: CIview[count].Attributes = PLAYER ; break;
                     default: CIview[count].Attributes = DEF_COLORFOREGROUND; break;
                 }
             }
@@ -451,6 +452,7 @@ void game::toCharInfo() {
     stampView();
 }
 
+//funzione che scrive gameover in caso di perdita
 void game::gameOver() {   
     int count = 0;
     int myCol = 6;

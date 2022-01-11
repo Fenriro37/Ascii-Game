@@ -3,10 +3,10 @@
 item::item(){
     taken = false;
     int random = rand()%10;
-    if (random<5) {
+    if (random<4) {
         cast::setFigure(HEART);   //♥
     }
-    else if (random<9){
+    else if (random<8){
         cast::setFigure(MAGAZINE); //®
     }
     else {
