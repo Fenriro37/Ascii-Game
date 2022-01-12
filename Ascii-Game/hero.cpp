@@ -6,7 +6,7 @@ hero::hero(){
     cast::setColPos(startColPos);
     cast::setFigure(HERO);
     life = 3;
-    setBullet(5);
+    setBullet(10);
     setScore(50);
 }
 
@@ -23,12 +23,12 @@ int hero::getScore(){
 }
 
 void hero::decreaseLife(){
-    //if(life!=0)
+    if(life!=0)
         life -=1;
 }
 
 void hero::decreaseBullet(){
-    //if(bullet!=0)
+    if(bullet!=0)
         bullet -= 1;
 }
 
@@ -39,12 +39,12 @@ void hero::decreaseScore(int damage){
         score = 0; 
 }
 
-void hero::setBullet(int newBullet){
+ void hero::setBullet(int newBullet){
     if(bullet + newBullet > maxAmmo)
         bullet = maxAmmo;
     else 
         bullet += newBullet;
-}
+} 
 
 void hero::increaseLife(){
     if(life +1 <= maxHp)

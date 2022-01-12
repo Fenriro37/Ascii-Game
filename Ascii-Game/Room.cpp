@@ -24,6 +24,11 @@ room::room(int lvl){
     roomGenerator();
 }
 
+int room::toSingleArray(int x, int y){
+    int total = roomWidth * x + y;
+    return total;
+}
+
 //Funzione per bucare una serie di piattaforme
 void room::drillRow(const int currentLevel){
 
@@ -39,13 +44,8 @@ void room::drillRow(const int currentLevel){
             while(numberOfHoles < maxHoles){
                 position = rand()%roomWidth;
                 //primo buco, position != da: prima, seconda, ultima, penultima colonna
-                if(view[roomWidth * row + position] == PLATFORM && position!=1 && position!=roomWidth-2){
-                    view[roomWidth * row + position] = BLANK;
-                    numberOfHoles++;
-                    if(position-1>1)
-                        view[roomWidth * row + position-1] = BLANK;
-                    if(position+1 < roomWidth-2)
-                        view[roomWidth * row + position+1] = BLANK;
+                if(position!=1 && position!=roomWidth-2){
+                    newHoles(row, position, numberOfHoles, 1, roomWidth-2, 0);
                 }
             }
         }
@@ -72,6 +72,27 @@ void room::drillRow(const int currentLevel){
     }    
 }
 
+void room::newHoles(int row, int position, int &holes, int start, int finish, bool alsoEqual){
+    if(view[toSingleArray(row, position)] == PLATFORM){
+        view[toSingleArray(row, position)] = BLANK;
+        holes++;
+        if(alsoEqual){
+            if(position-1 >= start)
+                view[toSingleArray(row, position-1)] = BLANK;
+            if(position+1 <= finish)
+                view[toSingleArray(row, position+1)] = BLANK;
+
+        }
+        else{
+            if(position-1 > start)
+                view[toSingleArray(row, position-1)] = BLANK;
+            if(position+1 < finish)
+                view[toSingleArray(row, position+1)] = BLANK;
+
+        }
+    }
+}
+
 void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
     int yFirst = findYinRow(row-1, 0);
     int ySecond = findYinRow(row-1, 1);
@@ -82,28 +103,14 @@ void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
     if(righter <= roomWidth/2){
         while(holes < 2){
             position = roomWidth/2 + rand()%(roomWidth/2-2);
-            if(view[roomWidth * row + position] == PLATFORM){
-                view[roomWidth * row + position] = BLANK;
-                holes++;
-                if(position+1 < roomWidth-2)
-                    view[roomWidth * row + position+1] = BLANK;
-                if(position-1 > roomWidth/2)
-                    view[roomWidth * row + position-1] = BLANK;
-            }
+            newHoles(row, position, holes, roomWidth-2, roomWidth/2, 0);
         }
     }
     //entrambi sono nella metà di destra
     else if (lefter > roomWidth/2){
         while(holes < 2){
             position = rand()%(roomWidth/2)+2;
-            if(view[roomWidth * row + position] == PLATFORM){
-                view[roomWidth * row + position] = BLANK;
-                holes++;
-                if(position+1 < roomWidth/2)
-                    view[roomWidth * row + position+1] = BLANK;
-                if(position-1 > 2)
-                    view[roomWidth * row + position-1] = BLANK;
-            }
+            newHoles(row, position, holes, roomWidth/2, 2, 0);
         }
     }
     //sono in due metà diverse                    
@@ -116,50 +123,22 @@ void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
             //section + 2 per l'offset
             //rand()%(section-1) per non finire nel 3/4
             position = (section + 2) + rand()%(section);
-            if(view[roomWidth * row + position] == PLATFORM){
-                view[roomWidth * row + position] = BLANK;
-                holes++;
-                if(position-1 >= section + 2)
-                    view[roomWidth * row + position-1] = BLANK;
-                if(position+1 <= 1 + 2*section)
-                    view[roomWidth * row + position+1] = BLANK;
-            }                            
+            newHoles(row, position, holes, section + 2, 1 + 2*section, 1);                        
         }
         // Buchiamo nel PRIMO quarto
         else if(lefter >= 2+section && lefter <=  1+2*section) {
             position =  2 + rand()%(section);
-            if(view[roomWidth * row + position] == PLATFORM){
-                view[roomWidth * row + position] = BLANK;
-                holes++;
-                if(position-1 >=  2)
-                    view[roomWidth * row + position-1] = BLANK;
-                if(position+1 <= 1+section)
-                    view[roomWidth * row + position+1] = BLANK;
-            }  
+            newHoles(row, position, holes, 2, 1 + section, 1);   
         }
         if(righter >= 2+2*section && righter  <= 3*section+1){                                                                
             // Buchiamo nel QUARTO quarto
             position = 2 + 3*section + rand()%(section);
-            if(view[roomWidth * row + position] == PLATFORM){
-                view[roomWidth * row + position] = BLANK;
-                holes++;
-                if(position-1 >= 2+ 3*section)
-                    view[roomWidth * row + position-1] = BLANK;
-                if(position+1 <= 1+ 4*section)
-                    view[roomWidth * row + position+1] = BLANK;
-            }                            
+            newHoles(row, position, holes, 2+ 3*section, 1+ 4*section, 1);                            
         }
         else if(righter >= 2+3*section  && righter  <= 2+4*section) {
             // Buchiamo nel TERZO quarto
             position = 2 + 2*section + rand()%(section);
-            if(view[roomWidth * row + position] == PLATFORM){
-                view[roomWidth * row + position] = BLANK;
-                holes++;
-                if(position-1>= 2+ 2*section)
-                    view[roomWidth * row + position-1] = BLANK;
-                if(position+1 <= 1+ 3*section)
-                    view[roomWidth * row + position+1] = BLANK;
-            }  
+            newHoles(row, position, holes, 2+ 2*section, 1+ 3*section, 1);    
         }                                                       
     }
 }
@@ -175,56 +154,28 @@ void room::oneCastCase(int row, int holes, int position, int maxHoles){
             if(yOccupied == 1 || yOccupied > 1+section){
                 // cerchiamo di bucare nel  PRIMO quarto
                 //something non è nel PRIMO quarto
-                if(view[roomWidth * row + position] == PLATFORM){
-                    view[roomWidth * row + position] = BLANK;
-                    holes++;
-                    if(position-1 >= 2)
-                        view[roomWidth * row + position-1] = BLANK;
-                    if(position+1 <= 1+section)
-                        view[roomWidth * row + position+1] = BLANK;
-                }
+                newHoles(row, position, holes, 2, 1+section, 1);  
             }                        
         }
         else if(position >= 2+section && position <= 1+2*section){
             if(yOccupied < 2+section || yOccupied > 1+2*section){
                 // cerchiamo di bucare nel SECONDO quarto
                 //something non è nel SECONDO quarto
-                if(view[roomWidth * row + position] == PLATFORM){
-                    view[roomWidth * row + position] = BLANK;
-                    holes++;
-                    if(position-1 >= 2+section)
-                        view[roomWidth * row + position-1] = BLANK;
-                    if(position+1 <= 1+2*section)
-                        view[roomWidth * row + position+1] = BLANK;
-                }
+                newHoles(row, position, holes, 2+section, 1+ 2*section, 1);  
             }                        
         }
         else if(position >= 2+2*section && position <= 3*section+1){
             if(yOccupied < 2+2*section || yOccupied > 3*section+1){
                 // cerchiamo di bucare nel TERZO quarto
                 //something non è nel TERZO quarto
-                if(view[roomWidth * row + position] == PLATFORM){
-                    view[roomWidth * row + position] = BLANK;
-                    holes++;
-                    if(position-1 >= 2+2*section)
-                        view[roomWidth * row + position-1] = BLANK;
-                    if(position+1 <= 3*section+1)
-                        view[roomWidth * row + position+1] = BLANK;
-                }
+                newHoles(row, position, holes, 2+ 2*section, 1+ 3*section, 1);  
             }                        
         }
         else if(position >= 2+3*section && position <= 1+4*section){
             if(yOccupied < 2+3*section || yOccupied == 2+4*section){
                 // cerchiamo di bucare nel QUARTO quarto
                 //something non è nel QUARTO quarto
-                if(view[roomWidth * row + position] == PLATFORM){
-                    view[roomWidth * row + position] = BLANK;
-                    holes++;
-                    if(position-1 >= 2+3*section)
-                        view[roomWidth * row + position-1] = BLANK;
-                    if(position+1 <= 1+4*section)
-                        view[roomWidth * row + position+1] = BLANK;
-                }
+                newHoles(row, position, holes, 2+ 3*section, 1+ 4*section, 1);  
             }
         }
     }
@@ -264,45 +215,45 @@ void room::roomGenerator(){
                 if (row == 2 && col == 3){
                     char field[13] = {'w','a','s','d',' ','t','o',' ','m','o','v','e', BLANK};
                     for(int i=0; i<13; i++, col++)
-                        view[roomWidth * row + col] = field[i];
+                        view[toSingleArray(row, col)] = field[i];
                 }
-                else if (row == 4 && col == 3){
+                /*   else if (row == 4 && col == 22){
                     char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
                     for(int i=0; i<12; i++, col++)
-                        view[roomWidth * row + col] = field[i];
-                }
-                else if (row == 4 && col == 22){
+                        view[toSingleArray(row, col)] = field[i];
+                } */
+                else if (row == 4 && col == 3){
                     char field[10] = {'p',' ','t','o',' ','p','a','u','s','e'};
                     for(int i=0; i<10; i++, col++)
-                        view[roomWidth * row + col] = field[i];
+                        view[toSingleArray(row, col)] = field[i];
                 }
                 else if (row == 6 && col == 3){
                     char field[15] = {'b','o','n','u','s','e','s',':',' ', HEART,' ', COIN, ' ', MAGAZINE, BLANK};
                     for(int i=0; i<15; i++, col++)
-                        view[roomWidth * row + col] = field[i];
+                        view[toSingleArray(row, col)] = field[i];
                 }
                 else if (row == 8 && col == 3){
                     char field[12] = {'e','n','e','m','i','e','s',':',' ', TURRET,' ', MONSTER};
                     for(int i=0; i<12; i++, col++)
-                        view[roomWidth * row + col] = field[i];
+                        view[toSingleArray(row, col)] = field[i];
                 }
                 //caso tetto
                 else if (row == 0){ 
-                    view[roomWidth * row + col] = ROOF;
+                    view[toSingleArray(row, col)] = ROOF;
                 }
                 //pavimento
                 else if(row == roomHeight-1){
-                    view[roomWidth * row + col] = FLOOR;
+                    view[toSingleArray(row, col)] = FLOOR;
                 }
                 //caso Muro
                 else if (col == 0 || col == roomWidth-1){ 
-                    view[roomWidth * row + col] = WALL;
+                    view[toSingleArray(row, col)] = WALL;
                 }
-                else if (row == roomHeight-3 && (col == 5 || col == 6 || col == 7 || col == 8)){
-                    view[roomWidth * row + col] = PLATFORM;
+                else if (row == roomHeight-3 && col >= 5 &&  col <= 18 + startColPos ){
+                    view[toSingleArray(row, col)] = PLATFORM;
                 }
                 else {
-                    view[roomWidth * row + col] = BLANK;
+                    view[toSingleArray(row, col)] = BLANK;
                 }
             }
         }
@@ -312,10 +263,9 @@ void room::roomGenerator(){
         view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
         view[roomWidth*(roomHeight-2)] = WALL;
         view[roomWidth*(roomHeight-1)] = BOTTOMLEFT;
-        view[roomWidth*8 +15] = BLANK;
-        view[roomWidth*4 +32] = BLANK;
         //inserimento protagonista
         view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
+        initializeEnemies();
     }
     //stanze casuali
     else {
@@ -323,22 +273,22 @@ void room::roomGenerator(){
             for (int col = 0; col < roomWidth; col++) {
                 //caso tetto
                 if (row == 0){ 
-                    view[roomWidth * row + col] = ROOF;
+                    view[toSingleArray(row, col)] = ROOF;
                 }
                 //pavimento
                 else if(row == roomHeight-1){
-                    view[roomWidth * row + col] = FLOOR;
+                    view[toSingleArray(row, col)] = FLOOR;
                 }
                 //caso Muro
                 else if (col == 0 || col == roomWidth - 1){ 
-                view[roomWidth * row + col] = WALL;
+                view[toSingleArray(row, col)] = WALL;
                 }
                 //caso piattaforme
                 else if (row%2==0){ 
-                    view[roomWidth * row + col] = PLATFORM;
+                    view[toSingleArray(row, col)] = PLATFORM;
                 }
                 else {
-                    view[roomWidth * row + col] = BLANK;
+                    view[toSingleArray(row, col)] = BLANK;
                 }    
             }
         }
@@ -350,8 +300,8 @@ void room::roomGenerator(){
         //inserimento protagonista
         view[roomWidth * startRowPos + startColPos] = protagonist.getFigure();
 
-        initializeItems(getRoomNum());
-        initializeEnemies(getRoomNum());
+        initializeItems();
+        initializeEnemies();
 
         spawnItems();
         spawnEnemies();
@@ -361,7 +311,7 @@ void room::roomGenerator(){
 }
 
 //Funzione per inizializzare gli item della stanza corrente
-void room::initializeItems(int currentLevel){
+void room::initializeItems(){
     int numOfBonus = rand()%3;
     int count = 1;
     item newItem;
@@ -379,38 +329,52 @@ void room::initializeItems(int currentLevel){
     }
 }
 
-void room::initializeEnemies(int currentLevel){
-    
-    int numOfEnemies=0;
-    if (roomNum<5) numOfEnemies = 2;
-    else if (roomNum<15) numOfEnemies = 3;
-    else if (roomNum<22) numOfEnemies = 4;
-    else numOfEnemies = 5;
-    
-    int count = 1;
-    enemy monster(true);    //MONSTER
-    currentMonsters = new enemyNode();
-    currentMonsters->monster = monster;
-    currentMonsters->next = NULL;
+void room::initializeEnemies(){
 
-    if(numOfEnemies == 5){
+    if(roomNum == 0){
         enemy monster(true);    //MONSTER
-        enemyNode* newMonster = new enemyNode();
-        newMonster->monster = monster;
-        newMonster->next = currentMonsters;
-        currentMonsters = newMonster;
-        count++;
+        monster.setRowPos(startRowPos);
+        monster.setColPos(startColPos + 18);
+        currentMonsters = new enemyNode();
+        currentMonsters->monster = monster;
+        currentMonsters->next = NULL;
+        view[toSingleArray(monster.getRowPos(), monster.getColPos())] = monster.getFigure();
     }
     
-    while((numOfEnemies-1)>0){
-        //inserimento in testa in una lista
-        enemyNode* tmp = new enemyNode();
-        enemy newEnemy;
-        tmp->monster = newEnemy;
-        tmp->next = currentMonsters;
-        currentMonsters = tmp;
-        count++; numOfEnemies--;
+    else{
+        int numOfEnemies=0;
+        if (roomNum<5) numOfEnemies = 2;
+        else if (roomNum<15) numOfEnemies = 3;
+        else if (roomNum<22) numOfEnemies = 4;
+        else numOfEnemies = 5;
+        
+        int count = 1;
+        enemy monster(true);    //MONSTER
+        currentMonsters = new enemyNode();
+        currentMonsters->monster = monster;
+        currentMonsters->next = NULL;
+
+        if(numOfEnemies == 5){
+            enemy monster(true);    //MONSTER
+            enemyNode* newMonster = new enemyNode();
+            newMonster->monster = monster;
+            newMonster->next = currentMonsters;
+            currentMonsters = newMonster;
+            count++;
+        }
+        
+        while(count < numOfEnemies){
+            //inserimento in testa in una lista
+            enemyNode* tmp = new enemyNode();
+            enemy newEnemy;
+            tmp->monster = newEnemy;
+            tmp->next = currentMonsters;
+            currentMonsters = tmp;
+            count++; 
+        }
+
     }
+    
 }
 
 //controlla che la riga sia disponibile l'inserimento di un MONSTER:
@@ -430,7 +394,7 @@ bool room::checkRow(int row, cast character){
 
 //controllo per lo spawn generico (MONSTER, TURRET, BONUS)
 bool room::isAvailable(int x, int y, cast rookie){
-    if(view[roomWidth * x + y] == BLANK){  
+    if(view[toSingleArray(x, y)] == BLANK){  
         //caso ultima riga (oltre la prima meta')
         if(x == roomHeight-2 && y >= roomWidth/2 && y != roomWidth-1){
             freeRow[x].available = false;
@@ -443,8 +407,8 @@ bool room::isAvailable(int x, int y, cast rookie){
         else if(rookie.getFigure() == MONSTER && x != roomHeight-2 
         && y > 1 && y < roomWidth-2 
         //controllo che due MONSTER non spawnino attaccati: MM
-        && view[roomWidth * x + (y+1)] != MONSTER && view[roomWidth * x + (y+2)] != MONSTER  
-        && view[roomWidth * x + (y-1)] != MONSTER && view[roomWidth * x + (y-2)] != MONSTER){
+        && view[toSingleArray(x, y+1)] != MONSTER && view[toSingleArray(x, y+2)] != MONSTER  
+        && view[toSingleArray(x, y-1)] != MONSTER && view[toSingleArray(x, y-2)] != MONSTER){
             freeRow[x].available = false;        
             freeRow[x].thereIsMonster = true;
         }
@@ -474,7 +438,7 @@ void room::spawnItems(){
 
             iter->Bonus.setRowPos(x);
             iter->Bonus.setColPos(y);
-            view[roomWidth * x + y] = iter->Bonus.getFigure();
+            view[toSingleArray(x, y)] = iter->Bonus.getFigure();
             iter = iter->next;
             }
         else
@@ -498,7 +462,7 @@ void room::spawnEnemies(){
 
             iter->monster.setRowPos(x);
             iter->monster.setColPos(y);
-            view[roomWidth * x + y] = iter->monster.getFigure();
+            view[toSingleArray(x, y)] = iter->monster.getFigure();
             iter = iter->next; 
         }
         else
@@ -533,13 +497,13 @@ enemyNode* room::findMoster(int x, int y){
 bool room::enemyCollision(enemyNode* currentEnemy){
     int offSet;
     offSet = (currentEnemy->monster.getDirection()==LEFT) ? -1 : 1;
-    if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == HERO){
+    if(view[currentEnemy->monster.getPos() + offSet] == HERO){
         currentEnemy->monster.setAlive();
         protagonist.decreaseLife();
         protagonist.setScore(-(roomNum * COLLISION_DMG_MULT)); 
         return true;
     }
-    else if(view[roomWidth * currentEnemy->monster.getRowPos() + (currentEnemy->monster.getColPos() + offSet)] == BULLET){
+    else if(view[currentEnemy->monster.getPos() + offSet] == BULLET){
         bulletNode* currentAmmo = findAmmo(currentEnemy->monster.getRowPos(), currentEnemy->monster.getColPos() + offSet);
         currentEnemy->monster.setAlive();
         currentAmmo->ammo.setAlive();
@@ -551,7 +515,7 @@ bool room::enemyCollision(enemyNode* currentEnemy){
     return false;
 }
 
-void room::enemyMove(){ 
+/* void room::enemyMove(){ 
     enemyNode* iter = currentMonsters;
     int offSet;
     while(iter != NULL){
@@ -577,18 +541,19 @@ void room::enemyMove(){
             else if(iter->monster.getFigure() == MONSTER){
                 //if ternario : se condizione è vera -1, altrimenti 1
                 offSet = (iter->monster.getDirection()==LEFT) ? -1 : 1;
-                if(view[roomWidth * (iter->monster.getRowPos()+1) + (iter->monster.getColPos() + offSet)] != BLANK 
-                    && view[roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos() + offSet)] != WALL
-                    && view[roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos() + offSet)] != MONSTER
-                    && roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos() + offSet) != roomWidth * (roomHeight-2)
-                    && roomWidth * iter->monster.getRowPos() + (iter->monster.getColPos() + offSet) != roomWidth * (roomHeight-2) + roomWidth-1){
+
+                if(view[toSingleArray(iter->monster.getRowPos()+1, iter->monster.getColPos() + offSet)] != BLANK 
+                    && view[iter->monster.getPos()+ offSet] != WALL
+                    && view[iter->monster.getPos() + offSet] != MONSTER
+                    && iter->monster.getPos()+ offSet != toSingleArray(roomHeight-2, 0)
+                    && iter->monster.getPos() + offSet != toSingleArray(roomHeight-2, roomWidth-1)){
                         if(enemyCollision(iter)){
-                            view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = BLANK;
+                            view[iter->monster.getPos()] = BLANK;
                         }
                         else{
-                            view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = BLANK;
+                            view[iter->monster.getPos()] = BLANK;
                             iter->monster.setColPos(iter->monster.getColPos() + offSet);
-                            view[roomWidth * iter->monster.getRowPos() + iter->monster.getColPos()] = iter->monster.getFigure();
+                            view[iter->monster.getPos()] = iter->monster.getFigure();
                         }
                 }
                 else {
@@ -598,7 +563,7 @@ void room::enemyMove(){
         }
         iter = iter->next;
     }
-}
+} */
 
 bulletNode* room::findAmmo(int x, int y){
     bulletNode* iter = currentAmmo;
@@ -634,48 +599,48 @@ void room::generateBullet(bool direction, cast shooter){
     } 
 }
 
-bool room::bulletCollision(int x, int y){
-    if(view[roomWidth * x + y] != BLANK){
-        if(view[roomWidth * x + y] == MONSTER || view[roomWidth * x + y] == TURRET){
+bool room::bulletCollision(int x, int y){            
+    if(view[toSingleArray(x, y)] != BLANK){
+        if(view[toSingleArray(x, y)] == MONSTER || view[toSingleArray(x, y)] == TURRET){
             enemyNode* foundMonster = findMoster(x, y);
             foundMonster->monster.setAlive();
             protagonist.setScore(roomNum * BONUS_KILL_MULT);
-            view[roomWidth * x + y] = BLANK;  
+            view[toSingleArray(x, y)] = BLANK;  
         }
-        else if(view[roomWidth * x + y] == BULLET){
+        else if(view[toSingleArray(x, y)] == BULLET){
             bulletNode* foundBullet = findAmmo(x, y);
             foundBullet->ammo.setAlive();
-            view[roomWidth * x + y] = BLANK;
+            view[toSingleArray(x, y)] = BLANK;
         }
-        else if(view[roomWidth * x + y] == HERO){
+        else if(view[toSingleArray(x, y)] == HERO){
             protagonist.decreaseLife();
             protagonist.setScore(-(roomNum * BULLET_DMG_MULT));
         }
         //i bonus se vengono colpiti sono distrutti
-        else if(view[roomWidth * x + y] == HEART || view[roomWidth * x + y] == COIN || view[roomWidth * x + y] == MAGAZINE) {
+        else if(view[toSingleArray(x, y)] == HEART || view[toSingleArray(x, y)] == COIN || view[toSingleArray(x, y)] == MAGAZINE) {
             itemNode* foundBonus = findBonus(x, y);
             foundBonus->Bonus.setTaken();
-            view[roomWidth * x + y] = BLANK;
+            view[toSingleArray(x, y)] = BLANK;
         }
         return true;
     }
     return false;
 }
 
-void room::bulletMove(){
+/* void room::bulletMove(){
     int offSet;
     bulletNode* iter = currentAmmo;
     while(iter != NULL){
         if(iter->ammo.getAlive()){
             offSet = (iter->ammo.getDirection() == LEFT) ? -1 : 1; 
             //caso muro sinistro, il proiettile sparisce e viene settato a false
-            if(iter->ammo.getPos() -1 == roomWidth * iter->ammo.getRowPos()
+            if(iter->ammo.getPos() -1 == toSingleArray(iter->ammo.getRowPos(), 0) 
                 && offSet == -1){
                 iter->ammo.setAlive();
                 view[iter->ammo.getPos()] = BLANK;
             }
             //caso muro destro
-            else if(iter->ammo.getPos() +1 == roomWidth * (iter->ammo.getRowPos()) + roomWidth-1
+            else if(iter->ammo.getPos() +1 == toSingleArray(iter->ammo.getRowPos(), roomWidth-1)
                 && offSet == 1){
                 iter->ammo.setAlive();
                 view[iter->ammo.getPos()] = BLANK;
@@ -700,7 +665,7 @@ void room::bulletMove(){
         }
         iter = iter->next;
     }
-}
+} */
 
 //ottengo un puntatore all'inizio dell'array
 char* room::getView(){
@@ -728,23 +693,26 @@ int room::getRoomNum(){
 itemNode* room::getCurrentBonus(){
     return currentBonus;
 }
-
-/*
-void room::setCurrentBonus(itemNode* newHead){
-    currentBonus = newHead;
+bulletNode* room::getCurrentAmmo(){
+    return currentAmmo;
 }
 
 enemyNode* room::getCurrentMonsters(){
     return currentMonsters;
 }
 
+/*
+void room::setCurrentBonus(itemNode* newHead){
+    currentBonus = newHead;
+}
+
+
+
 void room::setCurrentMonster(enemyNode* newHead){
     currentMonsters = newHead;
 }
 
-bulletNode* room::getCurrentAmmo(){
-    return currentAmmo;
-}
+
 
 void room::setCurrentAmmo(bulletNode* newHead){
     currentAmmo = newHead;

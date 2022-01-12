@@ -26,7 +26,7 @@ protected:
     void prevRoom();
     void stampView();
     void changeCellOfView(int position, char figure);
-    bool checkNear(int row, int col, char figure);
+    bool checkFigure(int row, int col, char figure);
     void move(char input);    
     void toCharInfo();
     void paste(char arrayToPaste[], int size, int &count, int &col);
@@ -37,7 +37,8 @@ protected:
     void clearEnemy();
     void clearAmmo();
     void clearList();*/
-
+    void bulletMove();
+    void enemyMove();
     void gameOver();
 
 public:

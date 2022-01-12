@@ -43,6 +43,7 @@ protected:
 
     //utility
     void drillRow(const int currentLevel); //funzione per bucare  PLATFORMS
+    void newHoles(int row, int position, int &holes, int start, int finish, bool alsoEqual);
     void oneCastCase(int row, int holes, int position, int maxHoles);
     void twoMonstersCase(int row, int holes, int position, int maxHoles);
     int findYinRow(int row, int second);
@@ -52,18 +53,18 @@ protected:
        
     void spawnItems();
     void spawnEnemies();
-    void initializeItems(int currentLevel);
-    void initializeEnemies(int currentLevel);
+    void initializeItems();
+    void initializeEnemies();
 
     void addToList(bulletNode* newNode);
-    bool bulletCollision(int x, int y);
-    bool enemyCollision(enemyNode* currentEnemy);
+
+
 
 /*       
     void setCurrentBonus(itemNode* newHead);
     void setCurrentMonster(enemyNode* newHead);
     void setCurrentAmmo(bulletNode* newHead);
-    enemyNode* getCurrentMonsters();
+
     bulletNode* getCurrentAmmo();
 */
 public:
@@ -71,11 +72,15 @@ public:
     room(int lvl);
     
     itemNode* getCurrentBonus();
+    bulletNode* getCurrentAmmo();
+    enemyNode* getCurrentMonsters();
 
     void setRoomNum(int newRoomNum);
     int getRoomNum();
 
     char* getView();
+    
+    int toSingleArray(int x, int y);
     //Funzione per riposizionare il personaggio all'inizio di ogni livello
     void nextLevelPos();
     //Funzione per riposizionare il personaggio in caso di ritorno al livello precedente
@@ -88,6 +93,8 @@ public:
     bulletNode* findAmmo(int x, int y);
     
     void generateBullet(bool direction, cast shooter);
-    void bulletMove();
-    void enemyMove();
+    bool bulletCollision(int x, int y);
+    //void bulletMove();
+    //void enemyMove();
+    bool enemyCollision(enemyNode* currentEnemy);
 };

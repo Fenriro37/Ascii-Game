@@ -1,68 +1,58 @@
 #include "Game.hpp"
 #include "conio.h"
 #include "string.h"
-#include <iostream>
-
 extern hero protagonist;
 
 // WORDS colori
-//WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN;
-WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN | FOREGROUND_RED;
-WORD RED = FOREGROUND_RED;
+WORD PLAYER =  FOREGROUND_GREEN;
+WORD ENEMIES = FOREGROUND_RED | FOREGROUND_GREEN ;
+WORD BONUS =  FOREGROUND_GREEN | FOREGROUND_BLUE;
 WORD WHITE = FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE;
+WORD DEF_COLORFOREGROUND = WHITE;
 
 game::game() {
 
-    /* Console stuff
-        ############################
-    */ 
-
-    /* Window size coordinates, be sure to start index at zero! */
+    /* Dimensione console */
     consoleSize = { 0, 0, consoleWidth - 1, consoleHeight - 1 };
-
-    /* A COORD struct for specificying the console's screen buffer dimensions */
+    /*dimensione screen buffer della console */
     COORD bufferSize = { consoleWidth, consoleHeight };
-
-    /* Setting up different variables for passing to WriteConsoleOutput */
+    /* variabili per WriteConsoleOutput */
     characterBufferSize = { consoleWidth, consoleHeight };
     characterPosition = { 0, 0 };
-    //SMALL_RECT consoleWriteArea = {0, 0, consoleWidth - 1, consoleHeight - 1};
-
-    /* A CHAR_INFO structure containing data about a single character */
+    /* CHAR_INFO: struttura contenente informazioni riguardanti un singolo carattere */
     CHAR_INFO consoleBuffer[consoleWidth * consoleHeight];
 
-    /* initialize handles */
     hStdout = GetStdHandle(STD_OUTPUT_HANDLE);
-    hStdin = GetStdHandle(STD_INPUT_HANDLE);
 
-    /* Set the console's title */
-    //SetConsoleTitle("Our shiny new title!");
 	CONSOLE_CURSOR_INFO cursor;
 	GetConsoleCursorInfo(hStdout, &cursor);
-	//infoCursore.bVisible = visible;
+	//Cursore invisibile
     cursor.bVisible = false;
 	SetConsoleCursorInfo(hStdout, &cursor);
+    SetConsoleTitleA("Operation Antarctica");
 
-    /* Set the window size */
+    /*Dimensione della console */
     SetConsoleWindowInfo(hStdout, TRUE, &consoleSize);
 
-    /* Set the screen's buffer size */
+    /*Dimensione del buffer */
     SetConsoleScreenBufferSize(hStdout, bufferSize);
 
-    CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};   //CONSOLE_FONT_INFOEX is defined in some windows header
-    GetCurrentConsoleFontEx(hStdout, false, &font); //PCONSOLE_FONT_INFOEX is the same as CONSOLE_FONT_INFOEX*
+    CONSOLE_FONT_INFOEX font = {sizeof(CONSOLE_FONT_INFOEX)};   
+    GetCurrentConsoleFontEx(hStdout, false, &font); 
     font.dwFontSize.X = 24;
     font.dwFontSize.Y = 35;
     SetCurrentConsoleFontEx(hStdout, false, &font);
 
     currentroom = new roomList(0);
+    toCharInfo();
 }
 
 /*Otteniamo la posizione della cella da cambiare e la sostituiamo con figure
-* Funziona (forse) perchè gli array sono memoria contigua quindi spostandoci di indirizzo senza uscire da 
+* Funziona perchè gli array sono memoria contigua quindi spostandoci di indirizzo 
+* raggiungiamo la cella corretta 
 */
 void game::changeCellOfView(int position, char figure){
-    if(position<= roomWidth*roomHeight && position >= 0){
+    if(position >= 0 && position<= roomWidth*roomHeight){
         char* PtoArray = currentroom->myRoom.getView();
         PtoArray += position;
         *PtoArray = figure;
@@ -71,16 +61,14 @@ void game::changeCellOfView(int position, char figure){
 
 
 //Controlla che la posizione sia uguale a figure
-bool game::checkNear(int row, int col, char figure){
+//ritorn a true se sono diversi
+bool game::checkFigure(int row, int col, char figure){
     char* PtoArray = currentroom->myRoom.getView();
-    PtoArray += roomWidth*row+col;  //aritmetica degli array .-.
+    PtoArray += roomWidth*row+col;  //aritmetica degli array 
     return (*PtoArray != figure);
 }
 
 void game::nextRoom(){
-
-    //qui aggiornavamo le liste rimuovendo i nodi settati a true (morti o raccolti)
-    //clearList();
 
     changeCellOfView(protagonist.getPos(), BLANK);
     if (currentroom->next == NULL){
@@ -100,8 +88,6 @@ void game::nextRoom(){
 //Quando il personaggio vuole tornare indietro
 void game::prevRoom(){
     
-    //clearList();
-
     if (currentroom->prev != NULL){
         changeCellOfView(protagonist.getPos(), BLANK);
         currentroom = currentroom->prev;
@@ -114,9 +100,130 @@ void game::stampView() {
     WriteConsoleOutputA(hStdout, CIview, characterBufferSize, characterPosition, &consoleSize);
 }
 
+void game::bulletMove(){
+    int offSet;
+    bulletNode* iter = currentroom->myRoom.getCurrentAmmo();
+
+    while(iter != NULL){
+        char* position = currentroom->myRoom.getView();
+        char* posPlusOffset = currentroom->myRoom.getView();
+        position += iter->ammo.getPos();
+       
+        if(iter->ammo.getAlive()){
+            offSet = (iter->ammo.getDirection() == LEFT) ? -1 : 1;
+            posPlusOffset += iter->ammo.getPos() +  offSet; 
+            //caso muro 
+            if(*posPlusOffset == WALL){
+                iter->ammo.setAlive();
+                *position = BLANK;
+            }
+            //caso proiettile appena generato
+            else if (*position == HERO){
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                position += offSet;
+                posPlusOffset += offSet;
+                *position = iter->ammo.getFigure();
+                toCharInfo();
+                Sleep(35);
+                *position = BLANK;
+
+                if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet) || *posPlusOffset == WALL){
+                    iter->ammo.setAlive();                
+                }
+                else{
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                *posPlusOffset = iter->ammo.getFigure();
+                }
+            }
+            else if (*position == TURRET){
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                *posPlusOffset = iter->ammo.getFigure();
+            }
+            //caso collisione con nemici, bonus, hero e proiettili
+            else if(currentroom->myRoom.bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
+                iter->ammo.setAlive(); 
+                *position = BLANK;                 
+            }
+            //Proiettile si muove di uno
+            else{
+                *position = BLANK;
+                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
+                *posPlusOffset = iter->ammo.getFigure();
+            }
+        }
+        iter = iter->next;
+    }
+}
+
+void game::enemyMove(){ 
+    enemyNode* iter = currentroom->myRoom.getCurrentMonsters();
+    int offSet;
+    while(iter != NULL){
+        if(iter->monster.getAlive()){
+            //caso TURRET
+            if(iter->monster.getFigure() == TURRET){
+                //caso sparo a sinistra
+                if(protagonist.getColPos()<= iter->monster.getColPos() && iter->monster.getFireDelay() == fireRate){
+                    currentroom->myRoom.generateBullet(LEFT, iter->monster);
+                    iter->monster.resetFireDelay();
+                }
+                //caso sparo a destra
+                else if (iter->monster.getFireDelay()== fireRate){
+                    currentroom->myRoom.generateBullet(RIGHT, iter->monster);
+                    iter->monster.resetFireDelay();
+                }
+                //caso attesa
+                else{
+                    iter->monster.increaseFireDelay();
+                }
+            }
+            //caso MONSTER
+            else if(iter->monster.getFigure() == MONSTER){
+                //if ternario : se condizione è vera -1, altrimenti 1
+                offSet = (iter->monster.getDirection()==LEFT) ? -1 : 1;
+
+                char* posBelow = currentroom->myRoom.getView();
+                posBelow +=  currentroom->myRoom.toSingleArray(iter->monster.getRowPos()+1, iter->monster.getColPos() + offSet);
+                char* posPlusOffset = currentroom->myRoom.getView();
+                posPlusOffset += iter->monster.getPos() + offSet;
+
+                if(*posBelow != BLANK 
+                    && *posPlusOffset != WALL
+                    && *posPlusOffset != MONSTER
+                    && iter->monster.getPos()+ offSet != currentroom->myRoom.toSingleArray(roomHeight-2, 0)
+                    && iter->monster.getPos() + offSet != currentroom->myRoom.toSingleArray(roomHeight-2, roomWidth-1)){
+                        //serve per rendere BLANK la posizione attuale
+                        posPlusOffset -= offSet;
+                        if(currentroom->myRoom.enemyCollision(iter)){
+                            *posPlusOffset = BLANK;
+                        }
+                        else{
+                            *posPlusOffset = BLANK;
+                            iter->monster.setColPos(iter->monster.getColPos() + offSet);
+                            posPlusOffset += offSet;
+                            *posPlusOffset = iter->monster.getFigure();
+                        }
+                }
+                else {
+                    iter->monster.setDirection();
+                }
+            }
+        }
+        iter = iter->next;
+    }
+}
+
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 void game::logic(){
     while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
+        if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) ){
+            int position = roomWidth * 4 + 22;
+            char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
+            for(int i = position,j = 0; i<position+12; i++, j++){
+                changeCellOfView(i, field[j]);
+            }
+            toCharInfo();
+        }
         if(kbhit()){
             move(getch());
             if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)
@@ -126,11 +233,10 @@ void game::logic(){
         }
         Sleep(50);
 
-        currentroom->myRoom.bulletMove();
-        currentroom->myRoom.enemyMove();
+        bulletMove();
+        if(currentroom->myRoom.getRoomNum() != 0)enemyMove();
 
         toCharInfo();
-        stampView();
     }
     gameOver();
 }
@@ -141,8 +247,8 @@ void game::move(char input){
         /*Movimento Sopra e Sotto
          */
         case 'w': 
-        case 'W': if(checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), BLANK) && 
-                     checkNear(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
+        case 'W': if(checkFigure(protagonist.getRowPos()-1, protagonist.getColPos(), BLANK) && 
+                     checkFigure(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setRowPos(protagonist.getRowPos()-2);   //sale di piattaforma -> -2
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
@@ -150,8 +256,8 @@ void game::move(char input){
                     } 
             break;
         case 's':    //+3 per controllare che ci sia la piattaforma sotto i piedi 
-        case 'S': if(checkNear(protagonist.getRowPos()+3, protagonist.getColPos(), BLANK) &&
-                     checkNear(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) ){
+        case 'S': if(checkFigure(protagonist.getRowPos()+3, protagonist.getColPos(), BLANK) &&
+                     checkFigure(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) ){
                         changeCellOfView(protagonist.getPos(), BLANK);  
                         protagonist.setRowPos(protagonist.getRowPos()+2);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 1);
@@ -160,8 +266,8 @@ void game::move(char input){
             break;
         /*Movimento Sinistra e Destra*/    
         case 'a': 
-        case 'A': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()-1, BLANK) &&
-                     checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
+        case 'A': if(checkFigure(protagonist.getRowPos()+1, protagonist.getColPos()-1, BLANK) &&
+                     checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         //change into new value
                         protagonist.setColPos(protagonist.getColPos()-1);
@@ -173,8 +279,8 @@ void game::move(char input){
                     }
             break;
         case 'd': 
-        case 'D': if(checkNear(protagonist.getRowPos()+1, protagonist.getColPos()+1, BLANK) &&
-                     checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
+        case 'D': if(checkFigure(protagonist.getRowPos()+1, protagonist.getColPos()+1, BLANK) &&
+                     checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
                         changeCellOfView(protagonist.getPos(), BLANK);
                         protagonist.setColPos(protagonist.getColPos()+1);
                         playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
@@ -183,43 +289,40 @@ void game::move(char input){
             break;
         
         case 'j': //Proiettile sinistra
-        case 'J': if(protagonist.getBullet() > 0 && checkNear(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && 
-                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()-1 != roomWidth*(roomHeight-2)){
-                    protagonist.decreaseBullet();
-                    currentroom->myRoom.generateBullet(LEFT, protagonist);
-                  }
+        case 'J':    if(protagonist.getBullet() > 0 && checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && 
+                        roomWidth*protagonist.getRowPos()+protagonist.getColPos()-1 != roomWidth*(roomHeight-2))
+                            if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){ 
+                                protagonist.decreaseBullet();
+                                currentroom->myRoom.generateBullet(LEFT, protagonist);
+                            }
             break;
                 //Proiettile destra
-        case 'k': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
-                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1){
-                    protagonist.decreaseBullet();
-                    currentroom->myRoom.generateBullet(RIGHT, protagonist);
-                  }                  
+        case 'k':   if(protagonist.getBullet() > 0  && checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
+                        roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1)
+                            if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){
+                                protagonist.decreaseBullet();
+                                currentroom->myRoom.generateBullet(RIGHT, protagonist);
+                            }                  
             break;
         case 'p':
-        case 'P':   CIview[60].Char.AsciiChar = 'P';
-                    CIview[60].Attributes = DEF_COLORFOREGROUND;
-                    CIview[61].Char.AsciiChar = 'A';
-                    CIview[61].Attributes = DEF_COLORFOREGROUND;
-                    CIview[62].Char.AsciiChar = 'U';
-                    CIview[62].Attributes = DEF_COLORFOREGROUND;
-                    CIview[63].Char.AsciiChar = 'S';
-                    CIview[63].Attributes = DEF_COLORFOREGROUND;
-                    CIview[64].Char.AsciiChar = 'E';
-                    CIview[64].Attributes = DEF_COLORFOREGROUND;
+        case 'P':  { char pause[] = {'P','A','U','S','E'};
+                    for(int i = 60, j = 0; i<65; i++, j++){
+                        CIview[i].Char.AsciiChar = pause[j];
+                        CIview[i].Attributes = DEF_COLORFOREGROUND;
+                    }
+                        
                     stampView();
                     while(1){
                         if(getch() == 'p' || getch() == 'P' ){
-                            CIview[60].Char.AsciiChar = BLANK;
-                            CIview[61].Char.AsciiChar = BLANK;
-                            CIview[62].Char.AsciiChar = BLANK;
-                            CIview[63].Char.AsciiChar = BLANK;
-                            CIview[64].Char.AsciiChar = BLANK;
+                            for(int i = 60; i<65; i++){
+                                CIview[i].Char.AsciiChar = BLANK;
+                            }
                             stampView();
                             break;
                         } 
                     }
                     break;
+                }
         default:    
             break;
     }
@@ -228,15 +331,16 @@ void game::move(char input){
 //Funzione per controllare l'interazione con mostri e items
 //Gestisce le vite e lo score
 void game::playerCollision(int row, int col, int cameFromAbove){
-    if(checkNear(row, col, BLANK)){
+    if(checkFigure(row, col, BLANK)){
         //caso collisione enemy
-        if(!checkNear(row, col, MONSTER) || !checkNear(row, col, TURRET)){
+        if(!checkFigure(row, col, MONSTER) || !checkFigure(row, col, TURRET)){
+            //se siamo arrivati da sopra non subiamo danno
             if(cameFromAbove){
-                protagonist.setScore(currentroom->myRoom.getRoomNum() * BONUS_KILL_MULT);   // y=3x bonus da uccisione mostro
+                protagonist.setScore(currentroom->myRoom.getRoomNum() * BONUS_KILL_MULT);   
             }
             else {
                 protagonist.decreaseLife();
-                protagonist.setScore(-(currentroom->myRoom.getRoomNum() * COLLISION_DMG_MULT));  // y=4x danno da collisione con mostro
+                protagonist.setScore(-(currentroom->myRoom.getRoomNum() * COLLISION_DMG_MULT));  
             }            
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
             enemyNode* iter;
@@ -244,28 +348,28 @@ void game::playerCollision(int row, int col, int cameFromAbove){
             iter->monster.setAlive();
         }
         //caso bullet 
-        else if(!checkNear(row, col, BULLET)){
+        else if(!checkFigure(row, col, BULLET)){
             bulletNode* iter;
             iter = currentroom->myRoom.findAmmo(row, col);
             iter->ammo.setAlive();
             protagonist.decreaseLife();
-            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * BULLET_DMG_MULT));  // y=2x danno da collisione con proiettile
+            protagonist.setScore(-(currentroom->myRoom.getRoomNum() * BULLET_DMG_MULT));  
         }
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
         else{
             itemNode* currentItem;
-            if(!checkNear(row, col, HEART)){
+            if(!checkFigure(row, col, HEART)){
                 currentItem = currentroom->myRoom.findBonus(row, col);
                 currentItem->Bonus.setTaken();
                 protagonist.increaseLife();
             }
-            else if(!checkNear(row, col, MAGAZINE)){
+            else if(!checkFigure(row, col, MAGAZINE)){
                 currentItem = currentroom->myRoom.findBonus(row, col);
                 currentItem->Bonus.setTaken();
-                protagonist.setBullet(protagonist.getBullet() + BULLET_BONUS);
+                protagonist.setBullet(BULLET_BONUS);
             }
-            else if(!checkNear(row, col, COIN)){
+            else if(!checkFigure(row, col, COIN)){
                 currentItem = currentroom->myRoom.findBonus(row, col);
                 currentItem->Bonus.setTaken();
                 protagonist.setScore(currentroom->myRoom.getRoomNum() * COIN_MULT); 
@@ -274,6 +378,7 @@ void game::playerCollision(int row, int col, int cameFromAbove){
     }
 }
 
+//copia l'array passato come argomento aggiornando le variabili passate per indirizzo
 void game::paste (char arrayToPaste[], int size, int &count, int &col){
     for (int i=0; i<size-1; i++){
         CIview[count].Char.AsciiChar = arrayToPaste[i];
@@ -296,7 +401,11 @@ void game::toCharInfo() {
                 switch (CIview[count].Char.AsciiChar) {
                     case HEART:
                     case COIN: 
-                    case MAGAZINE: CIview[count].Attributes = WHITE; break;
+                    case MAGAZINE: CIview[count].Attributes = BONUS; break;
+                    case BULLET:
+                    case MONSTER:
+                    case TURRET: CIview[count].Attributes = ENEMIES ; break;
+                    case HERO: CIview[count].Attributes = PLAYER ; break;
                     default: CIview[count].Attributes = DEF_COLORFOREGROUND; break;
                 }
             }
@@ -343,8 +452,10 @@ void game::toCharInfo() {
             }
         }
     }
+    stampView();
 }
 
+//funzione che scrive gameover in caso di perdita
 void game::gameOver() {   
     int count = 0;
     int myCol = 6;

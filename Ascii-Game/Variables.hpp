@@ -45,8 +45,8 @@ const int maxScore = 999999;
 const int maxAmmo = 90;
 
 //COSTANTI PER FORMULE
-const int BULLET_DMG_MULT = 3;
-const int COLLISION_DMG_MULT = 4;
-const int BONUS_KILL_MULT = 2;
-const int COIN_MULT = 8;
+const int BULLET_DMG_MULT = 14;
+const int COLLISION_DMG_MULT = 20;
+const int BONUS_KILL_MULT = 4;
+const int COIN_MULT = 10;
 const int BULLET_BONUS = 4;
