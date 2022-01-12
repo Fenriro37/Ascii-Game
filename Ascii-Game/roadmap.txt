@@ -6,3 +6,8 @@ vantaggi:
     bonus               -> livello  
     uccisione nemici    -> livello  
     cambio stanza       -> fisso    
+
+
+idea per clearlist:
+creo nuova lista con i nodi che sopravvivono
+deleto la precedente

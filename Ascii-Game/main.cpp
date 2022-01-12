@@ -5,4 +5,4 @@ int main() {
     game x;
     x.logic();    
     return 0;
-} 
+}

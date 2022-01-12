@@ -21,10 +21,10 @@
 #define RIGHTDOOR (char)10
 #define HEART (char)3
 #define COIN (char)184
+#define MAGAZINE (char)169
 #define HERO 'P'
 #define MONSTER 'M'
 #define TURRET 'T'
-#define MAGAZINE (char)169
 #define BULLET (char)9
 
 //MISURE
@@ -35,7 +35,6 @@ const int consoleHeight = roomHeight;
 
 //COSTANTI DI GIOCO
 const int maxNumOfBonus = 2;
-const int maxNumOfEnemies = 4;
 const int startRowPos = roomHeight-2;
 const int startColPos = 1;
 const int endRowPos = roomHeight-2;
@@ -46,14 +45,8 @@ const int maxScore = 999999;
 const int maxAmmo = 90;
 
 //COSTANTI PER FORMULE
-const int BULLET_DMG_MULT = 2;
-const int BODY_COLLISION_MULT = 4;
-const int BONUS_KILL_MULT = 3;
-
-//Qui partono le variabili contenute in Variables.cpp
-//Colori
-extern WORD DEF_COLORFOREGROUND;
-extern hero protagonist;
-
-
-
+const int BULLET_DMG_MULT = 3;
+const int COLLISION_DMG_MULT = 4;
+const int BONUS_KILL_MULT = 2;
+const int COIN_MULT = 8;
+const int BULLET_BONUS = 4;

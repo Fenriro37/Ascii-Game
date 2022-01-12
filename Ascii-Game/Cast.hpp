@@ -1,33 +1,18 @@
 #pragma once
-class cast{
-    
-    protected:
+class cast{    
+protected:
     int rowPos;
     int colPos;
-    char figure;
+    char figure;    
     
-    public:
+public:
     cast();
     cast(int x, int y);
     void setRowPos(int newRowpos);
-    void setColPos(int newColpos);
-    /*
-    void setPrevRowPos(int currentRowPos);
-    void setPrevColPos(int currentColPos);
-    */
-    void setFigure(char newFigure);
-    /*
-    void increaseRow();
-    void increaseCol();
-    void decreaseRow();
-    void decreaseCol();
-    */
     int getRowPos();
+    void setColPos(int newColpos);
     int getColPos();
     int getPos();
-    /*
-    int getPrevRowPos();
-    int getPrevColPos();
-    */
+    void setFigure(char newFigure);
     char getFigure(); 
 };

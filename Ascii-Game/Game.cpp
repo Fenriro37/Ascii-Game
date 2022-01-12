@@ -3,6 +3,14 @@
 #include "string.h"
 #include <iostream>
 
+extern hero protagonist;
+
+// WORDS colori
+//WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN;
+WORD DEF_COLORFOREGROUND = FOREGROUND_GREEN | FOREGROUND_RED;
+WORD RED = FOREGROUND_RED;
+WORD WHITE = FOREGROUND_GREEN | FOREGROUND_RED | FOREGROUND_BLUE;
+
 game::game() {
 
     /* Console stuff
@@ -47,7 +55,7 @@ game::game() {
     font.dwFontSize.Y = 35;
     SetCurrentConsoleFontEx(hStdout, false, &font);
 
-    currentroom = new roomList(1);
+    currentroom = new roomList(0);
 }
 
 /*Otteniamo la posizione della cella da cambiare e la sostituiamo con figure
@@ -61,131 +69,6 @@ void game::changeCellOfView(int position, char figure){
     }
 }
 
-void game::clearList(){
-    clearBonus();
-    clearEnemy();
-    clearAmmo();
-}
-
-void game::clearBonus(){
-    itemNode* bonus  = currentroom->myRoom.getCurrentBonus();
-    itemNode* prev;
-    prev = bonus;
-    while(bonus != NULL){
-        //caso testa. La condizione ci permette di controllare se siamo ancora la testa
-        if (bonus->Bonus.getTaken() && prev == bonus){
-            if(bonus->next != NULL){                                
-                bonus = bonus->next;
-                //delete prev;
-                prev = bonus;
-
-            }
-            //testa unico nodo
-            else {
-                //delete bonus;
-                currentroom->myRoom.setCurrentBonus(NULL);
-                bonus = NULL;
-                prev = NULL;
-            }
-        }
-        //se non devo eliminare il primo sposto di uno bonus da prev
-        else if (!bonus->Bonus.getTaken() && prev == bonus){  
-            currentroom->myRoom.setCurrentBonus(bonus);
-            bonus = bonus->next;
-        }
-        //se devo eliminare un nodo che non è in testa
-        else if (bonus->Bonus.getTaken() && prev != bonus){
-            prev->next = bonus->next;
-            //delete bonus;
-            bonus = prev->next;
-        }
-        //se non devo eliminare un nodo non in testa
-        else{
-            prev = bonus;
-            bonus = bonus->next;
-        }   
-    }
-}
-
-void game::clearEnemy(){
-    enemyNode* enemy  = currentroom->myRoom.getCurrentMonsters();
-    enemyNode* prev;
-    prev = enemy;
-    while(enemy != NULL){
-        //caso testa. La condizione ci permette di controllare se siamo ancora la testa
-        if (enemy->monster.getAlive() && prev == enemy){
-            if(enemy->next != NULL){                                
-                enemy = enemy->next;
-                //delete prev;
-                prev = enemy;
-
-            }
-            //testa unico nodo
-            else {
-                //delete bonus;
-                currentroom->myRoom.setCurrentMonster(NULL);
-                enemy = NULL;
-                prev = NULL;
-            }
-        }
-        //se non devo eliminare il primo sposto di uno bonus da prev
-        else if (!enemy->monster.getAlive() && prev == enemy){  
-            currentroom->myRoom.setCurrentMonster(enemy);
-            enemy = enemy->next;
-        }
-        //se devo eliminare un nodo che non è in testa
-        else if (enemy->monster.getAlive() && prev != enemy){
-            prev->next = enemy->next;
-            //delete bonus;
-            enemy = prev->next;
-        }
-        //se non devo eliminare un nodo non in testa
-        else{
-            prev = enemy;
-            enemy = enemy->next;
-        }   
-    }
-}
-
-void game::clearAmmo(){
-    bulletNode* bullet  = currentroom->myRoom.getCurrentAmmo();
-    bulletNode* prev;
-    prev = bullet;
-    while(bullet != NULL){
-        //caso testa. La condizione ci permette di controllare se siamo ancora la testa
-        if (bullet->ammo.getAlive() && prev == bullet){
-            if(bullet->next != NULL){                                
-                bullet = bullet->next;
-                //delete prev;
-                prev = bullet;
-
-            }
-            //testa unico nodo
-            else {
-                //delete bonus;
-                currentroom->myRoom.setCurrentAmmo(NULL);
-                bullet = NULL;
-                prev = NULL;
-            }
-        }
-        //se non devo eliminare il primo sposto di uno bonus da prev
-        else if (!bullet->ammo.getAlive() && prev == bullet){  
-            currentroom->myRoom.setCurrentAmmo(bullet);
-            bullet = bullet->next;
-        }
-        //se devo eliminare un nodo che non è in testa
-        else if (bullet->ammo.getAlive() && prev != bullet){
-            prev->next = bullet->next;
-            //delete bonus;
-            bullet = prev->next;
-        }
-        //se non devo eliminare un nodo non in testa
-        else{
-            prev = bullet;
-            bullet = bullet->next;
-        }   
-    }
-}
 
 //Controlla che la posizione sia uguale a figure
 bool game::checkNear(int row, int col, char figure){
@@ -196,8 +79,8 @@ bool game::checkNear(int row, int col, char figure){
 
 void game::nextRoom(){
 
-    //qui aggiorniamo le liste rimuovendo i nodi settati a true (morti o raccolti)
-    clearList();
+    //qui aggiornavamo le liste rimuovendo i nodi settati a true (morti o raccolti)
+    //clearList();
 
     changeCellOfView(protagonist.getPos(), BLANK);
     if (currentroom->next == NULL){
@@ -216,7 +99,8 @@ void game::nextRoom(){
 
 //Quando il personaggio vuole tornare indietro
 void game::prevRoom(){
-    clearList();
+    
+    //clearList();
 
     if (currentroom->prev != NULL){
         changeCellOfView(protagonist.getPos(), BLANK);
@@ -306,27 +190,38 @@ void game::move(char input){
                   }
             break;
                 //Proiettile destra
-        case 'k':if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
+        case 'k': if(protagonist.getBullet() > 0  && checkNear(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
                      roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1){
                     protagonist.decreaseBullet();
                     currentroom->myRoom.generateBullet(RIGHT, protagonist);
                   }                  
             break;
-
+        case 'p':
+        case 'P':   CIview[60].Char.AsciiChar = 'P';
+                    CIview[60].Attributes = DEF_COLORFOREGROUND;
+                    CIview[61].Char.AsciiChar = 'A';
+                    CIview[61].Attributes = DEF_COLORFOREGROUND;
+                    CIview[62].Char.AsciiChar = 'U';
+                    CIview[62].Attributes = DEF_COLORFOREGROUND;
+                    CIview[63].Char.AsciiChar = 'S';
+                    CIview[63].Attributes = DEF_COLORFOREGROUND;
+                    CIview[64].Char.AsciiChar = 'E';
+                    CIview[64].Attributes = DEF_COLORFOREGROUND;
+                    stampView();
+                    while(1){
+                        if(getch() == 'p' || getch() == 'P' ){
+                            CIview[60].Char.AsciiChar = BLANK;
+                            CIview[61].Char.AsciiChar = BLANK;
+                            CIview[62].Char.AsciiChar = BLANK;
+                            CIview[63].Char.AsciiChar = BLANK;
+                            CIview[64].Char.AsciiChar = BLANK;
+                            stampView();
+                            break;
+                        } 
+                    }
+                    break;
         default:    
             break;
-    }
-}
-
-//trova l'item raccolto dal protagonista nella lista degli item, chiama setTaken()
-void game::findItem(int row, int col){
-    itemNode* iter = currentroom->myRoom.getCurrentBonus();
-    while(iter!= NULL){
-        if(iter->Bonus.getRowPos() == row && iter->Bonus.getColPos() == col){
-            iter->Bonus.setTaken();
-            break;
-        }
-        iter = iter->next;
     }
 }
 
@@ -341,7 +236,7 @@ void game::playerCollision(int row, int col, int cameFromAbove){
             }
             else {
                 protagonist.decreaseLife();
-                protagonist.setScore(-(currentroom->myRoom.getRoomNum() * BODY_COLLISION_MULT));  // y=4x danno da collisione con mostro
+                protagonist.setScore(-(currentroom->myRoom.getRoomNum() * COLLISION_DMG_MULT));  // y=4x danno da collisione con mostro
             }            
             //dobbiamo muoverci nella lista per vedere con quale nemico ci siamo scontrati
             enemyNode* iter;
@@ -359,18 +254,21 @@ void game::playerCollision(int row, int col, int cameFromAbove){
         //caso item
         //Se non era un mostro dobbiamo controllare quale bonus si trovava in quella posizione
         else{
+            itemNode* currentItem;
             if(!checkNear(row, col, HEART)){
-                findItem(row, col);
+                currentItem = currentroom->myRoom.findBonus(row, col);
+                currentItem->Bonus.setTaken();
                 protagonist.increaseLife();
             }
             else if(!checkNear(row, col, MAGAZINE)){
-                findItem(row, col);
-                protagonist.setBullet(protagonist.getBullet() + 3);
+                currentItem = currentroom->myRoom.findBonus(row, col);
+                currentItem->Bonus.setTaken();
+                protagonist.setBullet(protagonist.getBullet() + BULLET_BONUS);
             }
             else if(!checkNear(row, col, COIN)){
-                findItem(row, col);
-                protagonist.setScore(10* currentroom->myRoom.getRoomNum() + 20); 
-               
+                currentItem = currentroom->myRoom.findBonus(row, col);
+                currentItem->Bonus.setTaken();
+                protagonist.setScore(currentroom->myRoom.getRoomNum() * COIN_MULT); 
             }
         }
     }
@@ -395,11 +293,16 @@ void game::toCharInfo() {
                 char* tmp = currentroom->myRoom.getView();
                 tmp += roomWidth * row + col;
                 CIview[count].Char.AsciiChar = *tmp;
-                CIview[count].Attributes = DEF_COLORFOREGROUND;
+                switch (CIview[count].Char.AsciiChar) {
+                    case HEART:
+                    case COIN: 
+                    case MAGAZINE: CIview[count].Attributes = WHITE; break;
+                    default: CIview[count].Attributes = DEF_COLORFOREGROUND; break;
+                }
             }
             /*
             * lvl, hp, score, ammo */
-            else if (row == 2 && col == roomWidth+10){
+            else if (row == 1 && col == roomWidth+10){
                 char field[8] = {'L','V','L',':',BLANK};
                 char value[3];
                 /* _itoa() funzione che converte il primo argomento (intero) in stringa
@@ -410,7 +313,7 @@ void game::toCharInfo() {
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == 4 && col == roomWidth+10){
+            else if (row == 3 && col == roomWidth+10){
                 char field[13] = {'S','C','O','R','E',':',BLANK};
                 char value[6]; //fino a 999.999
                 _itoa(protagonist.getScore() , value, 10);
@@ -418,7 +321,7 @@ void game::toCharInfo() {
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == 7 && col == roomWidth+10){
+            else if (row == 6 && col == roomWidth+10){
                 char field[6] = {'H','P',':',BLANK};
                 char value[2]; //fino a 99
                 _itoa(protagonist.getLife(), value, 10);
@@ -426,7 +329,7 @@ void game::toCharInfo() {
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == 9 && col == roomWidth+10){
+            else if (row == 8 && col == roomWidth+10){
                 char field[8] = {'A','M','M','O',':',BLANK};
                 char value[3]; //fino a 99
                 _itoa(protagonist.getBullet(), value, 10);
@@ -444,66 +347,75 @@ void game::toCharInfo() {
 
 void game::gameOver() {   
     int count = 0;
+    int myCol = 6;
     for (int row = 0; row < consoleHeight; row++) {
-        for (int col = 0; col < roomWidth; col++, count++) {
-            int myRow = 2;
-            if (row == myRow++ && col == 3){
+        for (int col = 0; col < consoleWidth; col++, count++) {
+            int myRow = 1;
+            if (row == myRow++ && col == myCol){
                 char field[9] = {' ',' ',' ','_','_','_','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[27] = {' ',' ','/',' ','_','_','_','_','/','_','_','_',' ','_','_','_','_','_',' ','_','_','_',' ',' ','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[28] = {' ','/',' ','/',' ','_','_','/',' ','_','_',' ','`','/',' ','_','_',' ','`','_','_',' ','\\','/',' ','_',' ','\\'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[28] = {'/',' ','/','_','/',' ','/',' ','/','_','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ','/',' ',' ','_','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[27] = {'\\','_','_','_','_','/','\\','_','_',',','_','/','_','/',' ','/','_','/',' ','/','_','/','\\','_','_','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
 
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[7] = {' ',' ',' ','_','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[24] = {' ',' ','/',' ','_','_',' ','\\','_',' ',' ',' ','_','_','_','_','_',' ',' ','_','_','_','_','_'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[24] = {' ','/',' ','/',' ','/',' ','/',' ','|',' ','/',' ','/',' ','_',' ','\\','/',' ','_','_','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[20] = {'/',' ','/','_','/',' ','/','|',' ','|','/',' ','/',' ',' ','_','_','/',' ','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else if (row == myRow++ && col == 3){
+            else if (row == myRow++ && col == myCol){
                 char field[19] = {'\\','_','_','_','_','/',' ','|','_','_','_','/','\\','_','_','_','/','_','/'};
                 int size = sizeof(field)/sizeof(field[0]);
                 paste(field, size, count, col);
             }
-            else { 
-                CIview[count].Char.AsciiChar = BLANK;
-                CIview[count].Attributes = DEF_COLORFOREGROUND;
+            else if (row == 10 && col == roomWidth+10){
+                char field[9] = {'p','r','e','s','s',' ','E','S','C'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
+            }
+            else if (row == 11 && col == roomWidth+10){
+                char field[10] = {'t','o',' ','e','x','i','t','.','.','.'};
+                int size = sizeof(field)/sizeof(field[0]);
+                paste(field, size, count, col);
             }
         }
     }
     stampView();
-    while(1){if(kbhit()) break;}
+    while(1){
+        if(getch() == (char)27) break;
+    }
 }

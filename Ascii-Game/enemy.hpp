@@ -10,10 +10,11 @@ protected:
 
 public:
     enemy();
+    enemy(bool rigged);
     void setLife(int newLife);
+    int  getLife();
     void decreaseLife();
     void setAlive();
-    int  getLife();
     bool getAlive();
     bool getDirection();
     void setDirection();
