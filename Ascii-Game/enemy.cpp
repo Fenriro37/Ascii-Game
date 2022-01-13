@@ -2,44 +2,25 @@
 #include "Variables.hpp"
 
 enemy::enemy(){
-    int life = 1;
-    bool alive = true;
+    alive = true;
     if(rand()%10 <4){
-        //torretta
         cast::figure = TURRET;
-        fireDelay = 0;
     }
     else {
         cast::figure = MONSTER;
-        direction = rand()%2;
     }
-}
-
-//costruttore truccato, sempre MONSTER
-//idea: passare la probabilità al costruttore
-enemy::enemy(bool rigged){
-    int life = 1;
-    bool alive = true;
-    cast::figure = MONSTER;
+    fireDelay = 0;
     direction = rand()%2;
 }
 
-void enemy::setLife(int newLife){
-    life = newLife;
+enemy::enemy(bool rigged){
+    alive = rigged;
+    cast::figure = MONSTER;
+    fireDelay = 0;
+    direction = rand()%2;
 }
 
-int  enemy::getLife(){
-    return life;
-}
-
-void enemy::decreaseLife(){
-    life--;
-    if (life <= 0){
-        alive = false;
-    }
-}
-
-void enemy::setAlive(){
+void enemy::setAliveFalse(){
     alive = false;
 }
 

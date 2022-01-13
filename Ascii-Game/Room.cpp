@@ -33,7 +33,6 @@ int room::toSingleArray(int x, int y){
 void room::drillRow(const int currentLevel){
 
     for (int row = 2; row < roomHeight-1; row+=2) {
-
         int numberOfHoles = 0; 
         int position = 0;
         int maxHoles = currentLevel/5 + 2;
@@ -97,27 +96,25 @@ void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
     int yFirst = findYinRow(row-1, 0);
     int ySecond = findYinRow(row-1, 1);
     
-    int lefter = (yFirst < ySecond) ? yFirst:ySecond;
-    int righter = (yFirst < ySecond) ? ySecond:yFirst;
+    int lefter = (yFirst < ySecond) ? yFirst : ySecond;
+    int righter = (yFirst < ySecond) ? ySecond : yFirst;
     //entrambi sono nella metà di sinistra
     if(righter <= roomWidth/2){
         while(holes < 2){
-            position = roomWidth/2 + rand()%(roomWidth/2-2);
-            newHoles(row, position, holes, roomWidth-2, roomWidth/2, 0);
+            position = roomWidth/2 + rand()%(roomWidth/2-3) +1;
+            newHoles(row, position, holes, roomWidth/2, roomWidth-2, 0);
         }
     }
     //entrambi sono nella metà di destra
     else if (lefter > roomWidth/2){
         while(holes < 2){
-            position = rand()%(roomWidth/2)+2;
-            newHoles(row, position, holes, roomWidth/2, 2, 0);
+            position = rand()%(roomWidth/2-2)+2;
+            newHoles(row, position, holes, 2, roomWidth/2, 0);
         }
     }
     //sono in due metà diverse                    
-
     else{
         int section = (roomWidth-4)/4;
-        //while(numberOfHoles < 2){   //forse inutile
         if(lefter >= 1 && lefter <= 1+section){                                                                
             // Buchiamo nel SECONDO quarto
             //section + 2 per l'offset
@@ -217,11 +214,6 @@ void room::roomGenerator(){
                     for(int i=0; i<13; i++, col++)
                         view[toSingleArray(row, col)] = field[i];
                 }
-                /*   else if (row == 4 && col == 22){
-                    char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
-                    for(int i=0; i<12; i++, col++)
-                        view[toSingleArray(row, col)] = field[i];
-                } */
                 else if (row == 4 && col == 3){
                     char field[10] = {'p',' ','t','o',' ','p','a','u','s','e'};
                     for(int i=0; i<10; i++, col++)
@@ -261,6 +253,7 @@ void room::roomGenerator(){
         view[0] = TOPLEFT;
         view[roomWidth-1] = TOPRIGHT;
         view[roomWidth * (roomHeight-2) + roomWidth-1] = BLANK;
+        view[roomWidth * 8 + 15] = BLANK;
         view[roomWidth*(roomHeight-2)] = WALL;
         view[roomWidth*(roomHeight-1)] = BOTTOMLEFT;
         //inserimento protagonista
@@ -330,7 +323,6 @@ void room::initializeItems(){
 }
 
 void room::initializeEnemies(){
-
     if(roomNum == 0){
         enemy monster(true);    //MONSTER
         monster.setRowPos(startRowPos);
@@ -340,41 +332,41 @@ void room::initializeEnemies(){
         currentMonsters->next = NULL;
         view[toSingleArray(monster.getRowPos(), monster.getColPos())] = monster.getFigure();
     }
-    
     else{
-        int numOfEnemies=0;
-        if (roomNum<5) numOfEnemies = 2;
-        else if (roomNum<15) numOfEnemies = 3;
-        else if (roomNum<22) numOfEnemies = 4;
-        else numOfEnemies = 5;
+        //Quanti nemici per stanza
+        int numOfEnemies=5;
+        //if (roomNum<5) numOfEnemies = 2;
+        //else if (roomNum<15) numOfEnemies = 3;
+        //else if (roomNum<22) numOfEnemies = 4;
+        //else numOfEnemies = 5;
         
-        int count = 1;
         enemy monster(true);    //MONSTER
-        currentMonsters = new enemyNode();
-        currentMonsters->monster = monster;
-        currentMonsters->next = NULL;
-
+        enemyNode* tmp = new enemyNode();
+        tmp->monster = monster;
+        tmp->next = NULL;
+        currentMonsters = tmp;
+        
         if(numOfEnemies == 5){
             enemy monster(true);    //MONSTER
             enemyNode* newMonster = new enemyNode();
             newMonster->monster = monster;
             newMonster->next = currentMonsters;
             currentMonsters = newMonster;
-            count++;
+            numOfEnemies--;
         }
+
+        numOfEnemies--;
         
-        while(count < numOfEnemies){
+        while(numOfEnemies > 0){
             //inserimento in testa in una lista
             enemyNode* tmp = new enemyNode();
             enemy newEnemy;
             tmp->monster = newEnemy;
             tmp->next = currentMonsters;
             currentMonsters = tmp;
-            count++; 
+            numOfEnemies--; 
         }
-
-    }
-    
+    }    
 }
 
 //controlla che la riga sia disponibile l'inserimento di un MONSTER:
@@ -498,15 +490,15 @@ bool room::enemyCollision(enemyNode* currentEnemy){
     int offSet;
     offSet = (currentEnemy->monster.getDirection()==LEFT) ? -1 : 1;
     if(view[currentEnemy->monster.getPos() + offSet] == HERO){
-        currentEnemy->monster.setAlive();
+        currentEnemy->monster.setAliveFalse();
         protagonist.decreaseLife();
         protagonist.setScore(-(roomNum * COLLISION_DMG_MULT)); 
         return true;
     }
     else if(view[currentEnemy->monster.getPos() + offSet] == BULLET){
         bulletNode* currentAmmo = findAmmo(currentEnemy->monster.getRowPos(), currentEnemy->monster.getColPos() + offSet);
-        currentEnemy->monster.setAlive();
-        currentAmmo->ammo.setAlive();
+        currentEnemy->monster.setAliveFalse();
+        currentAmmo->ammo.setAliveFalse();
         protagonist.setScore(roomNum * BONUS_KILL_MULT);
         view[currentAmmo->ammo.getPos()] = BLANK;
 
@@ -514,56 +506,6 @@ bool room::enemyCollision(enemyNode* currentEnemy){
     }
     return false;
 }
-
-/* void room::enemyMove(){ 
-    enemyNode* iter = currentMonsters;
-    int offSet;
-    while(iter != NULL){
-        if(iter->monster.getAlive()){
-            //caso TURRET
-            if(iter->monster.getFigure() == TURRET){
-                //caso sparo a sinistra
-                if(protagonist.getColPos()<= iter->monster.getColPos() && iter->monster.getFireDelay() == fireRate){
-                    generateBullet(LEFT, iter->monster);
-                    iter->monster.resetFireDelay();
-                }
-                //caso sparo a destra
-                else if (iter->monster.getFireDelay()== fireRate){
-                    generateBullet(RIGHT, iter->monster);
-                    iter->monster.resetFireDelay();
-                }
-                //caso attesa
-                else{
-                    iter->monster.increaseFireDelay();
-                }
-            }
-            //caso MONSTER
-            else if(iter->monster.getFigure() == MONSTER){
-                //if ternario : se condizione è vera -1, altrimenti 1
-                offSet = (iter->monster.getDirection()==LEFT) ? -1 : 1;
-
-                if(view[toSingleArray(iter->monster.getRowPos()+1, iter->monster.getColPos() + offSet)] != BLANK 
-                    && view[iter->monster.getPos()+ offSet] != WALL
-                    && view[iter->monster.getPos() + offSet] != MONSTER
-                    && iter->monster.getPos()+ offSet != toSingleArray(roomHeight-2, 0)
-                    && iter->monster.getPos() + offSet != toSingleArray(roomHeight-2, roomWidth-1)){
-                        if(enemyCollision(iter)){
-                            view[iter->monster.getPos()] = BLANK;
-                        }
-                        else{
-                            view[iter->monster.getPos()] = BLANK;
-                            iter->monster.setColPos(iter->monster.getColPos() + offSet);
-                            view[iter->monster.getPos()] = iter->monster.getFigure();
-                        }
-                }
-                else {
-                    iter->monster.setDirection();
-                }
-            }
-        }
-        iter = iter->next;
-    }
-} */
 
 bulletNode* room::findAmmo(int x, int y){
     bulletNode* iter = currentAmmo;
@@ -603,13 +545,13 @@ bool room::bulletCollision(int x, int y){
     if(view[toSingleArray(x, y)] != BLANK){
         if(view[toSingleArray(x, y)] == MONSTER || view[toSingleArray(x, y)] == TURRET){
             enemyNode* foundMonster = findMoster(x, y);
-            foundMonster->monster.setAlive();
+            foundMonster->monster.setAliveFalse();
             protagonist.setScore(roomNum * BONUS_KILL_MULT);
             view[toSingleArray(x, y)] = BLANK;  
         }
         else if(view[toSingleArray(x, y)] == BULLET){
             bulletNode* foundBullet = findAmmo(x, y);
-            foundBullet->ammo.setAlive();
+            foundBullet->ammo.setAliveFalse();
             view[toSingleArray(x, y)] = BLANK;
         }
         else if(view[toSingleArray(x, y)] == HERO){
@@ -626,46 +568,6 @@ bool room::bulletCollision(int x, int y){
     }
     return false;
 }
-
-/* void room::bulletMove(){
-    int offSet;
-    bulletNode* iter = currentAmmo;
-    while(iter != NULL){
-        if(iter->ammo.getAlive()){
-            offSet = (iter->ammo.getDirection() == LEFT) ? -1 : 1; 
-            //caso muro sinistro, il proiettile sparisce e viene settato a false
-            if(iter->ammo.getPos() -1 == toSingleArray(iter->ammo.getRowPos(), 0) 
-                && offSet == -1){
-                iter->ammo.setAlive();
-                view[iter->ammo.getPos()] = BLANK;
-            }
-            //caso muro destro
-            else if(iter->ammo.getPos() +1 == toSingleArray(iter->ammo.getRowPos(), roomWidth-1)
-                && offSet == 1){
-                iter->ammo.setAlive();
-                view[iter->ammo.getPos()] = BLANK;
-            }
-            //caso proiettile appena generato
-            else if (view[iter->ammo.getPos()] == HERO 
-                     || view[iter->ammo.getPos()] == TURRET){
-                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
-                view[iter->ammo.getPos()] = iter->ammo.getFigure();
-            }
-            //caso collisione con nemici, bonus, hero e proiettili
-            else if(bulletCollision(iter->ammo.getRowPos(), iter->ammo.getColPos() + offSet)){
-                iter->ammo.setAlive();                  
-                view[iter->ammo.getPos()] = BLANK;
-            }
-            //Proiettile si muove di uno
-            else{
-                view[iter->ammo.getPos()] = BLANK;
-                iter->ammo.setColPos(iter->ammo.getColPos() + offSet);
-                view[iter->ammo.getPos()] = iter->ammo.getFigure();
-            }
-        }
-        iter = iter->next;
-    }
-} */
 
 //ottengo un puntatore all'inizio dell'array
 char* room::getView(){
@@ -700,21 +602,3 @@ bulletNode* room::getCurrentAmmo(){
 enemyNode* room::getCurrentMonsters(){
     return currentMonsters;
 }
-
-/*
-void room::setCurrentBonus(itemNode* newHead){
-    currentBonus = newHead;
-}
-
-
-
-void room::setCurrentMonster(enemyNode* newHead){
-    currentMonsters = newHead;
-}
-
-
-
-void room::setCurrentAmmo(bulletNode* newHead){
-    currentAmmo = newHead;
-}
-*/

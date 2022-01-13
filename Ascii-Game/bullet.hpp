@@ -12,6 +12,6 @@ public:
     bullet(bool newDirection);
     bool getDirection();
     void setDirection();
-    void setAlive();
+    void setAliveFalse();
     bool getAlive();
 };

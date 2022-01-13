@@ -8,12 +8,12 @@
 
 struct itemNode {
     item Bonus;
-    itemNode* next;
+    itemNode* next = NULL;
 };
 
 struct enemyNode{
     enemy monster;
-    enemyNode* next;
+    enemyNode* next = NULL;
 };
 
 struct bulletNode{
@@ -58,15 +58,6 @@ protected:
 
     void addToList(bulletNode* newNode);
 
-
-
-/*       
-    void setCurrentBonus(itemNode* newHead);
-    void setCurrentMonster(enemyNode* newHead);
-    void setCurrentAmmo(bulletNode* newHead);
-
-    bulletNode* getCurrentAmmo();
-*/
 public:
     room();
     room(int lvl);
@@ -94,7 +85,5 @@ public:
     
     void generateBullet(bool direction, cast shooter);
     bool bulletCollision(int x, int y);
-    //void bulletMove();
-    //void enemyMove();
     bool enemyCollision(enemyNode* currentEnemy);
 };

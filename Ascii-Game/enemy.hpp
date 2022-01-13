@@ -2,8 +2,7 @@
 #include "Cast.hpp"
 
 class enemy: public cast{
-protected:    
-    int life;
+protected:
     bool alive;
     bool direction;
     int fireDelay;
@@ -11,10 +10,7 @@ protected:
 public:
     enemy();
     enemy(bool rigged);
-    void setLife(int newLife);
-    int  getLife();
-    void decreaseLife();
-    void setAlive();
+    void setAliveFalse();
     bool getAlive();
     bool getDirection();
     void setDirection();

@@ -2,8 +2,8 @@
 #include "Variables.hpp"
 
 cast::cast(){ 
-    int rowPos=0;
-    int colPos=0;
+    rowPos=0;
+    colPos=0;
 }
 cast::cast(int x, int y){
     rowPos = x;

@@ -19,7 +19,7 @@ bool bullet::getAlive(){
     return alive;
 }
 
-void bullet::setAlive(){
+void bullet::setAliveFalse(){
     alive = false;
 }
 
