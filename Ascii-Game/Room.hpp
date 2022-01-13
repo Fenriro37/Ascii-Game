@@ -58,6 +58,11 @@ protected:
 
     void addToList(bulletNode* newNode);
 
+    void clearEnemies();
+    void clearBonus();
+    void clearBullet();
+
+
 public:
     room();
     room(int lvl);
@@ -86,4 +91,7 @@ public:
     void generateBullet(bool direction, cast shooter);
     bool bulletCollision(int x, int y);
     bool enemyCollision(enemyNode* currentEnemy);
+
+    void clearList();
+
 };

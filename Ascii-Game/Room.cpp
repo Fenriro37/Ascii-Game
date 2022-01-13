@@ -608,3 +608,95 @@ bulletNode* room::getCurrentAmmo(){
 enemyNode* room::getCurrentMonsters(){
     return currentMonsters;
 }
+
+void room::clearEnemies(){
+
+    enemyNode* prev;
+    //eliminiamo eventuali nodi in testa
+    //questo primo blocco sembra funzionare: non crasha e elimina guardando col breakpoint
+    while(currentMonsters != NULL && currentMonsters->monster.getAlive() != true){
+        prev = currentMonsters;
+        currentMonsters = currentMonsters->next;
+        prev->next = NULL;
+        delete prev;
+    }
+    //controlliamo il resto della lista
+    //per uscire dal primo while o currentMonster è nullo e abbiamo finito o il suo mostro è vivo.
+    //controlliamo allora il successivo per assegnarlo a enemy e a prev e controlliamo il resto della lista
+    if(currentMonsters != NULL && currentMonsters->next != NULL){
+        enemyNode* enemy = currentMonsters->next;
+        prev = currentMonsters;
+        while(enemy != NULL){
+            if(enemy->monster.getAlive() == false){
+                prev->next = enemy->next;
+                enemy->next = NULL;
+                delete enemy;
+                enemy = prev->next;
+            } 
+            else{
+                prev = enemy;
+                enemy = enemy->next;
+            }
+        } 
+    } 
+}
+
+void room::clearBonus(){
+
+    itemNode* prev;
+    while(currentBonus != NULL && currentBonus->Bonus.getTaken() != false){
+        prev = currentBonus;
+        currentBonus = currentBonus->next;
+        prev->next = NULL;
+        delete prev;
+    }
+    if(currentBonus != NULL && currentBonus->next != NULL){
+        itemNode* bonus = currentBonus->next;
+        prev = currentBonus;
+        while(bonus != NULL){
+            if(bonus->Bonus.getTaken() == true){
+                prev->next = bonus->next;
+                bonus->next = NULL;
+                delete bonus;
+                bonus = prev->next;
+            } 
+            else{
+                prev = bonus;
+                bonus = bonus->next;
+            }
+        } 
+    } 
+}
+
+void room::clearBullet(){
+    
+    bulletNode* prev;
+    while(currentAmmo != NULL && currentAmmo->ammo.getAlive() != true){
+        prev = currentAmmo;
+        currentAmmo = currentAmmo->next;
+        prev->next = NULL;
+        delete prev;
+    }
+    if(currentAmmo != NULL && currentAmmo->next != NULL){
+        bulletNode* bullet = currentAmmo->next;
+        prev = currentAmmo;
+        while(bullet != NULL){
+            if(bullet->ammo.getAlive() == false){
+                prev->next = bullet->next;
+                bullet->next = NULL;
+                delete bullet;
+                bullet = prev->next;
+            } 
+            else{
+                prev = bullet;
+                bullet = bullet->next;
+            }
+        } 
+    } 
+}
+
+void room::clearList(){
+    clearBonus();
+    clearEnemies();
+    clearBullet();
+}

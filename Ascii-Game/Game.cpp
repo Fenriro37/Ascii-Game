@@ -72,6 +72,7 @@ bool game::checkFigure(int row, int col, char figure){
 
 void game::nextRoom(){
     changeCellOfView(protagonist.getPos(), BLANK);
+    currentroom->myRoom.clearList();
     if (currentroom->next == NULL){
         protagonist.setScore(50);   //+50 pti per il cambio stanza
         currentroom->next = new roomList(currentroom->myRoom.getRoomNum() + 1);
@@ -86,6 +87,7 @@ void game::nextRoom(){
 }
 
 void game::prevRoom(){
+    currentroom->myRoom.clearList();
     if (currentroom->prev != NULL){
         changeCellOfView(protagonist.getPos(), BLANK);
         currentroom = currentroom->prev;
@@ -213,7 +215,7 @@ void game::enemyMove(){
 
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 void game::logic(){
-    title();
+    //title();
     while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
         if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER)){
             int position = roomWidth * 4 + 22;
