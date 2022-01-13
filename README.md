@@ -1,5 +1,5 @@
 ### Situazione attuale:
-    Scivere relazione e registrare video
+    Scivere relazione
 
 ### Miglioramenti:
     Pulizia liste
