@@ -30,12 +30,12 @@ int room::toSingleArray(int x, int y){
 }
 
 //Funzione per bucare una serie di piattaforme
-void room::drillRow(const int currentLevel){
+void room::drillRow(){
 
     for (int row = 2; row < roomHeight-1; row+=2) {
         int numberOfHoles = 0; 
         int position = 0;
-        int maxHoles = currentLevel/5 + 2;
+        int maxHoles = roomNum/5 + 2;
         if (maxHoles > 5) maxHoles = 5;
 
         // Riga vuota
@@ -43,8 +43,8 @@ void room::drillRow(const int currentLevel){
             while(numberOfHoles < maxHoles){
                 position = rand()%roomWidth;
                 //primo buco, position != da: prima, seconda, ultima, penultima colonna
-                if(position!=1 && position!=roomWidth-2){
-                    newHoles(row, position, numberOfHoles, 1, roomWidth-2, 0);
+                if(position>1 && position<roomWidth-2){
+                    newHoles(row, position, numberOfHoles, 1, roomWidth-2, false);
                 }
             }
         }
@@ -53,21 +53,21 @@ void room::drillRow(const int currentLevel){
             // Caso 1 o 2 mostri
             if(freeRow[row-1].thereIsMonster){
                 //caso un nemico
-                if(freeRow[row-1].numberOfMonsters == 1){
-                    oneCastCase(row, numberOfHoles, position, maxHoles);  
-                }
+                 if(freeRow[row-1].numberOfMonsters == 1){
+                    oneCastCase(row);  
+                } 
                 //caso due nemici
                 // itero sulla riga per cercare i due mostri
                 else {
-                    twoMonstersCase(row, numberOfHoles, position, maxHoles);
-                }
+                    twoMonstersCase(row, numberOfHoles);
+                }  
             }
             // Caso bonus o torretta
             // divido la riga in 4 parti, buco quelle dove non c'è il qualcosa
             else {
-                oneCastCase(row, numberOfHoles, position, maxHoles);
-            }
-        } 
+                oneCastCase(row);
+            } 
+        }
     }    
 }
 
@@ -92,24 +92,25 @@ void room::newHoles(int row, int position, int &holes, int start, int finish, bo
     }
 }
 
-void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
+void room::twoMonstersCase(int row, int holes){
     int yFirst = findYinRow(row-1, 0);
     int ySecond = findYinRow(row-1, 1);
     
     int lefter = (yFirst < ySecond) ? yFirst : ySecond;
     int righter = (yFirst < ySecond) ? ySecond : yFirst;
+    int position = 0;
     //entrambi sono nella metà di sinistra
     if(righter <= roomWidth/2){
         while(holes < 2){
             position = roomWidth/2 + rand()%(roomWidth/2-3) +1;
-            newHoles(row, position, holes, roomWidth/2, roomWidth-2, 0);
+            newHoles(row, position, holes, roomWidth/2, roomWidth-2, false);
         }
     }
     //entrambi sono nella metà di destra
     else if (lefter > roomWidth/2){
         while(holes < 2){
             position = rand()%(roomWidth/2-2)+2;
-            newHoles(row, position, holes, 2, roomWidth/2, 0);
+            newHoles(row, position, holes, 2, roomWidth/2, false);
         }
     }
     //sono in due metà diverse                    
@@ -120,61 +121,62 @@ void room::twoMonstersCase(int row, int holes, int position, int maxHoles){
             //section + 2 per l'offset
             //rand()%(section-1) per non finire nel 3/4
             position = (section + 2) + rand()%(section);
-            newHoles(row, position, holes, section + 2, 1 + 2*section, 1);                        
+            newHoles(row, position, holes, section + 2, 1 + 2*section, true);                        
         }
         // Buchiamo nel PRIMO quarto
         else if(lefter >= 2+section && lefter <=  1+2*section) {
             position =  2 + rand()%(section);
-            newHoles(row, position, holes, 2, 1 + section, 1);   
+            newHoles(row, position, holes, 2, 1 + section, true);   
         }
         if(righter >= 2+2*section && righter  <= 3*section+1){                                                                
             // Buchiamo nel QUARTO quarto
             position = 2 + 3*section + rand()%(section);
-            newHoles(row, position, holes, 2+ 3*section, 1+ 4*section, 1);                            
+            newHoles(row, position, holes, 2+ 3*section, 1+ 4*section, true);                            
         }
         else if(righter >= 2+3*section  && righter  <= 2+4*section) {
             // Buchiamo nel TERZO quarto
             position = 2 + 2*section + rand()%(section);
-            newHoles(row, position, holes, 2+ 2*section, 1+ 3*section, 1);    
+            newHoles(row, position, holes, 2+ 2*section, 1+ 3*section, true);    
         }                                                       
     }
 }
 
 //caso con un solo elemento nella riga
-void room::oneCastCase(int row, int holes, int position, int maxHoles){
+void room::oneCastCase(int row){
     int yOccupied = findYinRow(row-1, 0);    //posizione del qualcosa, findYinRow( , 0) per il primo
     int section = (roomWidth-4)/4;      //grandezza dei quarti di riga
-
-    while(holes < maxHoles){
-        position = rand()%roomWidth;
-        if(position >= 2 && position <= 1+section){
-            if(yOccupied == 1 || yOccupied > 1+section){
-                // cerchiamo di bucare nel  PRIMO quarto
-                //something non è nel PRIMO quarto
-                newHoles(row, position, holes, 2, 1+section, 1);  
-            }                        
-        }
-        else if(position >= 2+section && position <= 1+2*section){
-            if(yOccupied < 2+section || yOccupied > 1+2*section){
-                // cerchiamo di bucare nel SECONDO quarto
-                //something non è nel SECONDO quarto
-                newHoles(row, position, holes, 2+section, 1+ 2*section, 1);  
-            }                        
-        }
-        else if(position >= 2+2*section && position <= 3*section+1){
-            if(yOccupied < 2+2*section || yOccupied > 3*section+1){
-                // cerchiamo di bucare nel TERZO quarto
-                //something non è nel TERZO quarto
-                newHoles(row, position, holes, 2+ 2*section, 1+ 3*section, 1);  
-            }                        
-        }
-        else if(position >= 2+3*section && position <= 1+4*section){
-            if(yOccupied < 2+3*section || yOccupied == 2+4*section){
-                // cerchiamo di bucare nel QUARTO quarto
-                //something non è nel QUARTO quarto
-                newHoles(row, position, holes, 2+ 3*section, 1+ 4*section, 1);  
-            }
-        }
+    int holes = 0;
+    //serve per trovare la posizione da bucare
+    int position = 0;
+    
+    position = rand()%(roomWidth-3)+2;
+    //if(position >= 2 && position <= 1+section)
+    if(yOccupied > 1+section){
+        position = rand()%section + 2;
+        // cerchiamo di bucare nel  PRIMO quarto
+        //something non è nel PRIMO quarto
+        newHoles(row, position, holes, 2, 1+section, true);  
+    }                        
+    //else if(position >= 2+section && position <= 1+2*section){
+    if(yOccupied < 2+section || yOccupied > 1+2*section){
+        // cerchiamo di bucare nel SECONDO quarto
+        //something non è nel SECONDO quarto
+        position = rand()%section + 2 + section;
+        newHoles(row, position, holes, 2+section, 1+ 2*section, true);  
+    }                        
+    //else if(position >= 2+2*section && position <= 3*section+1){
+    if(yOccupied < 2+2*section || yOccupied > 3*section+1){
+        // cerchiamo di bucare nel TERZO quarto
+        //something non è nel TERZO quarto
+        position = rand()%section + 2 + 2*section;
+        newHoles(row, position, holes, 2+ 2*section, 1+ 3*section, true);  
+    }                        
+    //else if(position >= 2+3*section && position <= 1+4*section){
+    if(yOccupied < 2+3*section){
+        // cerchiamo di bucare nel QUARTO quarto
+        //something non è nel QUARTO quarto
+        position = rand()%section + 2 + 3*section;
+        newHoles(row, position, holes, 2 + 3*section, 1+ 4*section, true);  
     }
 }
 
@@ -299,7 +301,7 @@ void room::roomGenerator(){
         spawnItems();
         spawnEnemies();
 
-        drillRow(roomNum);
+        drillRow();
     }
 }
 
@@ -334,11 +336,11 @@ void room::initializeEnemies(){
     }
     else{
         //Quanti nemici per stanza
-        int numOfEnemies=5;
-        //if (roomNum<5) numOfEnemies = 2;
-        //else if (roomNum<15) numOfEnemies = 3;
-        //else if (roomNum<22) numOfEnemies = 4;
-        //else numOfEnemies = 5;
+        int numOfEnemies=2;
+        if (roomNum<5) numOfEnemies = 2;
+        else if (roomNum<15) numOfEnemies = 3;
+        else if (roomNum<22) numOfEnemies = 4;
+        else numOfEnemies = 5;
         
         enemy monster(true);    //MONSTER
         enemyNode* tmp = new enemyNode();
@@ -388,7 +390,7 @@ bool room::checkRow(int row, cast character){
 bool room::isAvailable(int x, int y, cast rookie){
     if(view[toSingleArray(x, y)] == BLANK){  
         //caso ultima riga (oltre la prima meta')
-        if(x == roomHeight-2 && y >= roomWidth/2 && y != roomWidth-1){
+        if(x == roomHeight-2 && y >= roomWidth/2 && y < roomWidth-2){
             freeRow[x].available = false;
         }
         //non ultima riga, non mostro, riga senza mostri
@@ -416,16 +418,18 @@ void room::spawnItems(){
     int x, y;
     itemNode* iter = currentBonus;
     int empty[6] = {1,3,5,7,9,11};
+    int rowGuess = rand()%6;
     while(iter != NULL){
         //remind il booleano taken parte sempre come falso
         if(!iter->Bonus.getTaken()){
             //fissiamo la x
-            do{
-                x = empty[rand()%6];
+            do{        
+                x = empty[rowGuess];
+                rowGuess = (rowGuess + 1)%6;
             }while(checkRow(x, iter->Bonus));
             //fissiamo la y
             do{
-                y = rand()%roomWidth;
+                y = rand()%(roomWidth-3)+2;
             }while(isAvailable(x,y, iter->Bonus));
 
             iter->Bonus.setRowPos(x);
@@ -442,14 +446,16 @@ void room::spawnEnemies(){
     int x, y;
     enemyNode* iter = currentMonsters;
     int empty[6] = {1,3,5,7,9,11};
+    int rowGuess = rand()%6;
     while(iter != NULL){
         if(iter->monster.getAlive()){
             do{
-                x = empty[rand()%6];
+                x = empty[rowGuess];
+                rowGuess = (rowGuess + 1)%6;
             }while(checkRow(x, iter->monster));
             
             do{
-                y = rand()%roomWidth;
+                y = rand()%(roomWidth-3)+2;
             }while(isAvailable(x,y, iter->monster));
 
             iter->monster.setRowPos(x);

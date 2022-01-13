@@ -213,7 +213,7 @@ void game::enemyMove(){
 
 //Funzione per gestire spostamento, cambio stanza, impatto e nemici
 void game::logic(){
-    //title();
+    title();
     while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
         if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER)){
             int position = roomWidth * 4 + 22;
@@ -406,8 +406,8 @@ void game::toCharInfo() {
             }
             //Console
             else if (row == 1 && col == roomWidth+10){
-                char field[8] = {'L','V','L',':',BLANK};
-                char value[3];
+                char field[9] = {'L','V','L',':',BLANK};
+                char value[4];
                 /* _itoa() funzione che converte il primo argomento (intero) in stringa
                 * e lo salva nel secondo argomento, il terzo argomento è la base di conversione
                 */

@@ -42,10 +42,10 @@ protected:
     bulletNode* currentAmmo;
 
     //utility
-    void drillRow(const int currentLevel); //funzione per bucare  PLATFORMS
+    void drillRow(); //funzione per bucare  PLATFORMS
     void newHoles(int row, int position, int &holes, int start, int finish, bool alsoEqual);
-    void oneCastCase(int row, int holes, int position, int maxHoles);
-    void twoMonstersCase(int row, int holes, int position, int maxHoles);
+    void oneCastCase(int row);
+    void twoMonstersCase(int row, int holes);
     int findYinRow(int row, int second);
     bool checkRow(int row, cast character);
     //Funzione per controllare che la cella sia vuota
