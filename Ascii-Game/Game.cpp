@@ -407,8 +407,8 @@ void game::toCharInfo() {
             }
             //Console
             else if (row == 1 && col == roomWidth+10){
-                char field[9] = {'L','V','L',':',BLANK};
-                char value[4];
+                char field[12] = {'L','V','L',':',BLANK};
+                char value[7];
                 /* _itoa() funzione che converte il primo argomento (intero) in stringa
                 * e lo salva nel secondo argomento, il terzo argomento è la base di conversione
                 */
