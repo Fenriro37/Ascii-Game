@@ -1,5 +1,4 @@
 #include "Cast.hpp"
-#include "Variables.hpp"
 
 cast::cast(){ 
     rowPos=0;

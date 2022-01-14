@@ -1,6 +1,4 @@
 #include "Game.hpp"
-#include "conio.h"
-#include "string.h"
 extern hero protagonist;
 
 // WORDS colori
@@ -47,6 +45,118 @@ game::game() {
 
     currentroom = new roomList(0);
     toCharInfo();
+}
+
+//Funzione per gestire spostamento, cambio stanza, impatto e nemici
+void game::logic(){
+    title();
+    srand(time(0));
+    while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
+        if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER)){
+            int position = roomWidth * 4 + 22;
+            char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
+            for(int i = position,j = 0; i<position+12; i++, j++){
+                changeCellOfView(i, field[j]);
+            }
+            toCharInfo();
+        }
+        if(kbhit()){
+            move(getch());
+            if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)
+                nextRoom();
+            if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
+                prevRoom(); 
+        }
+        Sleep(50);
+
+        bulletMove();
+        if(currentroom->myRoom.getRoomNum() != 0) enemyMove();
+
+        toCharInfo();
+    }
+    gameOver();
+}
+
+//Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello
+void game::move(char input){
+    switch(input){
+        /*Movimento Sopra e Sotto
+         */
+        case 'w': if(checkFigure(protagonist.getRowPos()-1, protagonist.getColPos(), BLANK) && 
+                     checkFigure(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
+                        changeCellOfView(protagonist.getPos(), BLANK);
+                        protagonist.setRowPos(protagonist.getRowPos()-2);   //sale di piattaforma -> -2
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure());
+                    } 
+            break;
+        //+3 per controllare che ci sia la piattaforma sotto i piedi 
+        case 's': if(checkFigure(protagonist.getRowPos()+3, protagonist.getColPos(), BLANK) &&
+                     checkFigure(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) ){
+                        changeCellOfView(protagonist.getPos(), BLANK);  
+                        protagonist.setRowPos(protagonist.getRowPos()+2);
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 1);
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure());
+                    }
+            break;
+        /*Movimento Sinistra e Destra*/    
+        case 'a': if(checkFigure(protagonist.getRowPos()+1, protagonist.getColPos()-1, BLANK) &&
+                     checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
+                        changeCellOfView(protagonist.getPos(), BLANK);
+                        //change into new value
+                        protagonist.setColPos(protagonist.getColPos()-1);
+                        //controlliamo la posizione su cui ci spostiamo
+                        //se impattiamo contro porta
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
+                        //altrimente se ci siamo scontrati con nulla o con item o nemici 
+                    }
+            break;
+        case 'd': if(checkFigure(protagonist.getRowPos()+1, protagonist.getColPos()+1, BLANK) &&
+                     checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
+                        changeCellOfView(protagonist.getPos(), BLANK);
+                        protagonist.setColPos(protagonist.getColPos()+1);
+                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
+                        changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
+                    } 
+            break;
+        //Proiettile sinistra
+        case 'j': if(protagonist.getBullet() > 0 && checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && 
+                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()-1 != roomWidth*(roomHeight-2))
+                    if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){ 
+                        protagonist.decreaseBullet();
+                        currentroom->myRoom.generateBullet(LEFT, protagonist);
+                    }
+            break;
+                //Proiettile destra
+        case 'k':   if(protagonist.getBullet() > 0  && checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
+                        roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1)
+                            if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){
+                                protagonist.decreaseBullet();
+                                currentroom->myRoom.generateBullet(RIGHT, protagonist);
+                            }                  
+            break;
+        case 'p': { char pause[] = {'P','A','U','S','E'};
+                    for(int i = 60, j = 0; i<65; i++, j++){
+                        CIview[i].Char.AsciiChar = pause[j];
+                        CIview[i].Attributes = DEF_COLORFOREGROUND;
+                    }
+                        
+                    stampView();
+                    while(1){
+                        if(getch() == 'p' || getch() == 'P' ){
+                            for(int i = 60; i<65; i++){
+                                CIview[i].Char.AsciiChar = BLANK;
+                            }
+                            stampView();
+                            break;
+                        } 
+                    }
+                    break;
+                }
+        default:    
+            break;
+    }
 }
 
 /*Otteniamo la posizione della cella da cambiare e la sostituiamo con figure
@@ -210,117 +320,6 @@ void game::enemyMove(){
             }
         }
         iter = iter->next;
-    }
-}
-
-//Funzione per gestire spostamento, cambio stanza, impatto e nemici
-void game::logic(){
-    //title();
-    while(protagonist.getLife() > 0 && protagonist.getScore() > 0){
-        if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER)){
-            int position = roomWidth * 4 + 22;
-            char field[12] = {'j',' ','k',' ','t','o',' ','f','i','r','e', BLANK};
-            for(int i = position,j = 0; i<position+12; i++, j++){
-                changeCellOfView(i, field[j]);
-            }
-            toCharInfo();
-        }
-        if(kbhit()){
-            move(getch());
-            if(protagonist.getColPos() == roomWidth - 1 && protagonist.getRowPos() == roomHeight-2)
-                nextRoom();
-            if (protagonist.getColPos() == 0 && protagonist.getRowPos() == roomHeight-2)
-                prevRoom(); 
-        }
-        Sleep(50);
-
-        bulletMove();
-        if(currentroom->myRoom.getRoomNum() != 0)enemyMove();
-
-        toCharInfo();
-    }
-    gameOver();
-}
-
-//Il caso A è il più commentato perchè stato fatto per primo. Per dubbi riferirsi a quello
-void game::move(char input){
-    switch(input){
-        /*Movimento Sopra e Sotto
-         */
-        case 'w': if(checkFigure(protagonist.getRowPos()-1, protagonist.getColPos(), BLANK) && 
-                     checkFigure(protagonist.getRowPos()-1, protagonist.getColPos(), ROOF)){
-                        changeCellOfView(protagonist.getPos(), BLANK);
-                        protagonist.setRowPos(protagonist.getRowPos()-2);   //sale di piattaforma -> -2
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
-                        changeCellOfView(protagonist.getPos(), protagonist.getFigure());
-                    } 
-            break;
-        //+3 per controllare che ci sia la piattaforma sotto i piedi 
-        case 's': if(checkFigure(protagonist.getRowPos()+3, protagonist.getColPos(), BLANK) &&
-                     checkFigure(protagonist.getRowPos()+1, protagonist.getColPos(), FLOOR) ){
-                        changeCellOfView(protagonist.getPos(), BLANK);  
-                        protagonist.setRowPos(protagonist.getRowPos()+2);
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 1);
-                        changeCellOfView(protagonist.getPos(), protagonist.getFigure());
-                    }
-            break;
-        /*Movimento Sinistra e Destra*/    
-        case 'a': if(checkFigure(protagonist.getRowPos()+1, protagonist.getColPos()-1, BLANK) &&
-                     checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL)){
-                        changeCellOfView(protagonist.getPos(), BLANK);
-                        //change into new value
-                        protagonist.setColPos(protagonist.getColPos()-1);
-                        //controlliamo la posizione su cui ci spostiamo
-                        //se impattiamo contro porta
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
-                        changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
-                        //altrimente se ci siamo scontrati con nulla o con item o nemici 
-                    }
-            break;
-        case 'd': if(checkFigure(protagonist.getRowPos()+1, protagonist.getColPos()+1, BLANK) &&
-                     checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL)){
-                        changeCellOfView(protagonist.getPos(), BLANK);
-                        protagonist.setColPos(protagonist.getColPos()+1);
-                        playerCollision(protagonist.getRowPos(), protagonist.getColPos(), 0);
-                        changeCellOfView(protagonist.getPos(), protagonist.getFigure()); 
-                    } 
-            break;
-        //Proiettile sinistra
-        case 'j': if(protagonist.getBullet() > 0 && checkFigure(protagonist.getRowPos(), protagonist.getColPos()-1, WALL) && 
-                     roomWidth*protagonist.getRowPos()+protagonist.getColPos()-1 != roomWidth*(roomHeight-2))
-                    if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){ 
-                        protagonist.decreaseBullet();
-                        currentroom->myRoom.generateBullet(LEFT, protagonist);
-                    }
-            break;
-                //Proiettile destra
-        case 'k':   if(protagonist.getBullet() > 0  && checkFigure(protagonist.getRowPos(), protagonist.getColPos()+1, WALL) && 
-                        roomWidth*protagonist.getRowPos()+protagonist.getColPos()+1 != roomWidth*(roomHeight-2)+roomWidth-1)
-                            if(currentroom->myRoom.getRoomNum() == 0 && checkFigure(startRowPos, startColPos+ 18, MONSTER) || currentroom->myRoom.getRoomNum() != 0){
-                                protagonist.decreaseBullet();
-                                currentroom->myRoom.generateBullet(RIGHT, protagonist);
-                            }                  
-            break;
-        case 'p': { char pause[] = {'P','A','U','S','E'};
-                    for(int i = 60, j = 0; i<65; i++, j++){
-                        CIview[i].Char.AsciiChar = pause[j];
-                        CIview[i].Attributes = DEF_COLORFOREGROUND;
-                    }
-                        
-                    stampView();
-                    while(1){
-                        if(getch() == 'p' || getch() == 'P' ){
-                            for(int i = 60; i<65; i++){
-                                CIview[i].Char.AsciiChar = BLANK;
-                            }
-                            stampView();
-                            break;
-                        } 
-                    }
-                    break;
-                }
-        default:    
-            break;
     }
 }
 

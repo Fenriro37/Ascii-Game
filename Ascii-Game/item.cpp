@@ -1,5 +1,5 @@
 #include "item.hpp"
-#include "Variables.hpp"
+
 item::item(){
     taken = false;
     int random = rand()%10;

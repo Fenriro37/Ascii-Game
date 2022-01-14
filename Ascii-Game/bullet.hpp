@@ -1,6 +1,6 @@
 #pragma once
 #include "Cast.hpp"
-#include "Variables.hpp"
+#include "Constants.hpp"
 
 class bullet: public cast{
 protected:

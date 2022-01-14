@@ -1,5 +1,4 @@
 #include "Room.hpp"
-#include <string>
 
 hero protagonist;
 

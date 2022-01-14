@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Variables.hpp"
 #include "hero.hpp"
 #include "item.hpp"
 #include "enemy.hpp"

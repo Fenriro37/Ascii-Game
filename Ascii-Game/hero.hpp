@@ -1,5 +1,6 @@
 #pragma once
 #include "Cast.hpp"
+#include "Constants.hpp"
 
 class hero : public cast{
 protected: 

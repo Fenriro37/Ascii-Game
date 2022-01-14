@@ -1,4 +1,6 @@
 #pragma once
+#include "Constants.hpp"
+
 class cast{    
 protected:
     int rowPos;

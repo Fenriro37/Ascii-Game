@@ -1,4 +1,8 @@
 #pragma once
+#include "windows.h"
+#include "conio.h"
+#include "string.h"
+
 #include "Room.hpp"
 
 struct roomList {
@@ -22,24 +26,19 @@ protected:
 
     roomList* currentroom;
 
+    void title();
+    void move(char input);  
     void nextRoom();
     void prevRoom();
     void stampView();
     void changeCellOfView(int position, char figure);
     bool checkFigure(int row, int col, char figure);
-    void move(char input);    
     void toCharInfo();
     void paste(char arrayToPaste[], int size, int &count, int &col);
 
     void playerCollision(int row, int col, int cameFromAbove);
-
-    /*void clearBonus();
-    void clearEnemy();
-    void clearAmmo();
-    void clearList();*/
     void bulletMove();
     void enemyMove();
-    void title();
     void gameOver();
 
 public:

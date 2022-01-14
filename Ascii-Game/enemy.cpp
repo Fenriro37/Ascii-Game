@@ -1,5 +1,4 @@
 #include "enemy.hpp"
-#include "Variables.hpp"
 
 enemy::enemy(){
     alive = true;

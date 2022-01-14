@@ -1,5 +1,4 @@
 #include "hero.hpp"
-#include "Variables.hpp"
 
 hero::hero(){
     cast::setRowPos(startRowPos);

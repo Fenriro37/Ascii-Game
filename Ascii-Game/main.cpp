@@ -1,8 +1,7 @@
 #include "Game.hpp"
 
 int main() {
-    srand(time(0));
-    game x;
-    x.logic();    
+    game operationAntarctica;
+    operationAntarctica.logic();    
     return 0;
 }

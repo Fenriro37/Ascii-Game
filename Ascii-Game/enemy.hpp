@@ -1,5 +1,7 @@
 #pragma once
+
 #include "Cast.hpp"
+#include "Constants.hpp"
 
 class enemy: public cast{
 protected:
