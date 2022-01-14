@@ -51,10 +51,12 @@ protected:
     bool isAvailable(int x, int y, cast rookie);
        
     void spawnItems();
-    void spawnEnemies();
     void initializeItems();
-    void initializeEnemies();
+    itemNode* getCurrentBonus();
 
+    void spawnEnemies();
+    void initializeEnemies();
+    
     void addToList(bulletNode* newNode);
 
     void clearEnemies();
@@ -66,7 +68,7 @@ public:
     room();
     room(int lvl);
     
-    itemNode* getCurrentBonus();
+    
     bulletNode* getCurrentAmmo();
     enemyNode* getCurrentMonsters();
 
