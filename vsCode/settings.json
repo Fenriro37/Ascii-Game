@@ -44,6 +44,5 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp"
-    },
-    "python.pythonPath": "python"
+    }
 }
