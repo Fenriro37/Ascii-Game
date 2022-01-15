@@ -23,6 +23,3 @@ void bullet::setAliveFalse(){
     alive = false;
 }
 
-void bullet::setDirection(){
-    direction = !direction;
-}

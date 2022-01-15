@@ -597,9 +597,6 @@ int room::getRoomNum(){
     return roomNum;
 }
 
-itemNode* room::getCurrentBonus(){
-    return currentBonus;
-}
 bulletNode* room::getCurrentAmmo(){
     return currentAmmo;
 }

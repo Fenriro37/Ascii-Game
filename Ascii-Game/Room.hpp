@@ -52,7 +52,6 @@ protected:
        
     void spawnItems();
     void initializeItems();
-    itemNode* getCurrentBonus();
 
     void spawnEnemies();
     void initializeEnemies();
