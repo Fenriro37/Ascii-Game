@@ -5,6 +5,9 @@
   Abbiamo incluso le nostre impostazioni, ma nel caso le vogliate usare, probabilmente, dovrete modificare:  
   - launch.json -> configurations -> miDebuggerPath  
   - tasks.json -> tasks -> command
+    
+      
+ ### Trama
 
 >_>Player?  
 >_>...  
