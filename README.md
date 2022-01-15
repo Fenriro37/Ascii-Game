@@ -1,5 +1,11 @@
 ### Operation Antarctica - Progetto Programmazione 2020-2021
 
+### Compilare
+  In questo progetto abbiamo usato Visual Studio Code e le librerie windows.h e conio.h.  
+  Abbiamo incluso le nostre impostazioni, ma nel caso le vogliate usare, probabilmente, dovrete modificare:  
+  - launch.json -> configurations -> miDebuggerPath  
+  - tasks.json -> tasks -> command
+
 >_>Player?  
 >_>...  
 >_>Player mi senti?  
