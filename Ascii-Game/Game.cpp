@@ -68,10 +68,9 @@ void game::logic(){
                 prevRoom(); 
         }
         Sleep(50);
-
+	
+	if(currentroom->myRoom.getRoomNum() != 0) enemyMove();
         bulletMove();
-        if(currentroom->myRoom.getRoomNum() != 0) enemyMove();
-
         toCharInfo();
     }
     gameOver();
